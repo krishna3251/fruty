@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ArrowDownRight, ArrowUpRight } from "lucide-react";
@@ -11,7 +11,7 @@ const stories = [
     eyebrow: "01 / THE GOLDEN CHILD",
     title: "Meet your sunshine.",
     copy: "Velvety. Fragrant. Unforgettably sweet.",
-    color: "#f0ce68",
+    color: "#e9d397",
   },
   {
     id: "strawberry",
@@ -19,7 +19,7 @@ const stories = [
     eyebrow: "02 / SWEET LITTLE THINGS",
     title: "Love at first bite.",
     copy: "A little tart. A little sweet. All heart.",
-    color: "#edbec8",
+    color: "#e7cbd1",
   },
   {
     id: "blueberry",
@@ -27,7 +27,7 @@ const stories = [
     eyebrow: "03 / LITTLE BLUE WONDERS",
     title: "Small fruit. Big mood.",
     copy: "Tiny bursts of joy, by the handful.",
-    color: "#bdcfe6",
+    color: "#c8d7e5",
   },
   {
     id: "orange",
@@ -35,16 +35,21 @@ const stories = [
     eyebrow: "04 / THE BRIGHT SIDE",
     title: "Squeeze the day.",
     copy: "Sun-ripened goodness. A fresh kind of energy.",
-    color: "#efc49d",
+    color: "#e9d1b9",
   },
 ];
 export default function Showcase({
   onProduct,
+  paused = false,
 }: {
   onProduct: (p: Product) => void;
+  paused?: boolean;
 }) {
   const ref = useRef<HTMLElement>(null);
+  const trigger = useRef<ScrollTrigger | null>(null);
+  const [active, setActive] = useState(0);
   useLayoutEffect(() => {
+    if (paused) return;
     const mm = gsap.matchMedia();
     mm.add(
       "(min-width: 768px) and (prefers-reduced-motion: no-preference)",
@@ -61,10 +66,13 @@ export default function Showcase({
               start: "top top",
               end: () => `+=${window.innerHeight * 3.6}`,
               pin: true,
+              anticipatePin: 1,
+              onUpdate: (self) => setActive(Math.round(self.progress * 3)),
               scrub: 1,
               invalidateOnRefresh: true,
             },
           });
+          trigger.current = scroll.scrollTrigger || null;
           scroll.to(track, { xPercent: -75, ease: "none", duration: 3 }, 0);
           panels.forEach((panel, i) => {
             scroll.fromTo(
@@ -74,7 +82,7 @@ export default function Showcase({
                 y: -40,
                 rotation: 12,
                 scale: 1.06,
-                duration: 1.3,
+                duration: Math.min(1.3, 3 - Math.max(0, i - 0.5)),
                 ease: "none",
               },
               Math.max(0, i - 0.5),
@@ -82,7 +90,11 @@ export default function Showcase({
             scroll.fromTo(
               panel.querySelector(".scene-word"),
               { x: 80 },
-              { x: -80, duration: 1.3, ease: "none" },
+              {
+                x: -80,
+                duration: Math.min(1.3, 3 - Math.max(0, i - 0.5)),
+                ease: "none",
+              },
               Math.max(0, i - 0.5),
             );
             panel.querySelectorAll(".orbit").forEach((fruit, j) =>
@@ -92,7 +104,7 @@ export default function Showcase({
                 {
                   y: -90 * (j % 2 ? 1 : -1),
                   rotation: 30,
-                  duration: 1.4,
+                  duration: Math.min(1.4, 3 - Math.max(0, i - 0.5)),
                   ease: "none",
                 },
                 Math.max(0, i - 0.5),
@@ -110,18 +122,55 @@ export default function Showcase({
               );
           });
         }, ref);
-        return () => ctx.revert();
+        return () => {
+          ctx.revert();
+          trigger.current = null;
+        };
       },
     );
     return () => mm.revert();
-  }, []);
+  }, [paused]);
   return (
     <section
       ref={ref}
-      className="showcase"
+      className={`showcase ${paused ? "showcase-paused" : ""}`}
       aria-label="Explore four fruit collections"
       id="collections"
     >
+      <div className="chapter-nav" aria-label="Fruit story chapters">
+        {stories.map((s, i) => (
+          <button
+            key={s.id}
+            aria-label={`Explore ${s.word.toLowerCase()} chapter`}
+            aria-pressed={active === i}
+            className={active === i ? "active" : ""}
+            onClick={() => {
+              if (trigger.current) {
+                window.scrollTo({
+                  top:
+                    trigger.current.start +
+                    (trigger.current.end - trigger.current.start) * (i / 3),
+                  behavior: "smooth",
+                });
+              } else {
+                ref.current
+                  ?.querySelectorAll(".fruit-scene")
+                  [i]?.scrollIntoView({
+                    behavior: window.matchMedia(
+                      "(prefers-reduced-motion: reduce)",
+                    ).matches
+                      ? "instant"
+                      : "smooth",
+                  });
+              }
+              setActive(i);
+            }}
+          >
+            <span>0{i + 1}</span>
+            {s.word.toLowerCase()}
+          </button>
+        ))}
+      </div>
       <div className="scene-track">
         {stories.map((s, i) => {
           const p = products.find((p) => p.id === s.id)!;

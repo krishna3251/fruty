@@ -41,6 +41,11 @@ dom.window.matchMedia = (query: string) => ({
 });
 dom.window.scrollTo = () => {};
 dom.window.HTMLElement.prototype.scrollIntoView = () => {};
+Object.defineProperty(globalThis, "IS_REACT_ACT_ENVIRONMENT", {
+  value: true,
+  writable: true,
+  configurable: true,
+});
 const React = await import("react");
 const { render, screen, fireEvent, cleanup, within } =
   await import("@testing-library/react");
@@ -87,10 +92,17 @@ test("shop filters, search, bag, quantity, demo checkout and persistence work to
     within(dialog).getByRole("button", { name: "Continue to demo checkout" }),
   );
   dialog = screen.getByRole("dialog");
-  assert.ok(within(dialog).getByText("Alphonso Mangoes × 2"));
+
+  fireEvent.click(
+    within(dialog).getByRole("button", { name: "Use sample details" }),
+  );
+  fireEvent.click(
+    within(dialog).getByRole("button", { name: "Review your harvest" }),
+  );
   fireEvent.click(
     within(dialog).getByRole("button", { name: "Finish demo checkout" }),
   );
+  await screen.findByText("Demo complete!");
   assert.ok(screen.getByText("Demo complete!"));
   assert.ok(
     screen.getByText(
@@ -159,6 +171,111 @@ test("out-of-season product cannot be purchased, newsletter stays a demo, dialog
   assert.equal(document.activeElement, account);
   cleanup();
 });
+
+test("saved fruit, deep product pages and unknown routes have usable recovery", () => {
+  localStorage.clear();
+  mount();
+  fireEvent.click(
+    screen.getByRole("button", { name: "Save Alphonso Mangoes" }),
+  );
+  assert.deepEqual(JSON.parse(localStorage.getItem("furity-saved-v1")!), [
+    "mango",
+  ]);
+  fireEvent.click(screen.getByRole("button", { name: "Saved fruit, 1 items" }));
+  let dialog = screen.getByRole("dialog");
+  assert.ok(within(dialog).getByText("Alphonso Mangoes"));
+  fireEvent.click(
+    within(dialog).getByRole("link", { name: "Alphonso Mangoes" }),
+  );
+  assert.equal(window.location.pathname, "/products/mango");
+  assert.ok(
+    screen.getByRole("heading", { name: "Alphonso Mangoes", level: 1 }),
+  );
+  fireEvent.click(
+    screen.getByRole("button", { name: "Increase selected packs" }),
+  );
+  assert.equal(screen.getByLabelText("Selected packs").textContent, "2");
+  fireEvent.click(screen.getByRole("button", { name: "Add to your bag" }));
+  assert.ok(screen.getByRole("button", { name: "Open bag, 2 items" }));
+  fireEvent.click(screen.getByRole("tab", { name: "Keep it fresh" }));
+  assert.ok(
+    screen
+      .getByRole("tabpanel")
+      .textContent?.includes("Ripen at room temperature"),
+  );
+  React.act(() => {
+    window.history.pushState({}, "", "/missing-fruit");
+    window.dispatchEvent(new window.PopStateEvent("popstate"));
+  });
+  assert.ok(screen.getByRole("heading", { name: /A little lost/ }));
+  cleanup();
+  window.history.replaceState({}, "", "/");
+});
+test("checkout surfaces field errors, accepts sample details, validates coupons and stores no contact data", async () => {
+  localStorage.clear();
+  mount();
+  fireEvent.click(
+    screen.getByRole("button", { name: "Add Alphonso Mangoes to bag" }),
+  );
+  fireEvent.click(screen.getByRole("button", { name: "Open bag, 1 items" }));
+  fireEvent.click(
+    screen.getByRole("button", { name: "Continue to demo checkout" }),
+  );
+  fireEvent.click(screen.getByRole("button", { name: "Review your harvest" }));
+  assert.equal(screen.getAllByRole("alert").length, 6);
+  assert.ok(screen.getByText("Enter a valid 6-digit Indian PIN code."));
+  fireEvent.click(screen.getByRole("button", { name: "Use sample details" }));
+  fireEvent.click(screen.getByRole("button", { name: "Review your harvest" }));
+  fireEvent.change(screen.getByRole("textbox", { name: "Promo code" }), {
+    target: { value: "INVALID" },
+  });
+  fireEvent.click(screen.getByRole("button", { name: "Apply" }));
+  assert.ok(screen.getByText(/That code isn’t valid/));
+  fireEvent.change(screen.getByRole("textbox", { name: "Promo code" }), {
+    target: { value: "fresh10" },
+  });
+  fireEvent.click(screen.getByRole("button", { name: "Apply" }));
+  assert.ok(screen.getByText("FRESH10 applied: 10% off, up to ₹150."));
+  fireEvent.click(screen.getByRole("button", { name: "Finish demo checkout" }));
+  await screen.findByText("Demo complete!");
+  const receipts = JSON.parse(localStorage.getItem("furity-receipts-v1")!);
+  assert.equal(receipts.length, 1);
+  assert.equal(receipts[0].total, 633);
+  assert.ok(!JSON.stringify(receipts).includes("example.test"));
+  assert.ok(!JSON.stringify(receipts).includes("Sample Garden"));
+  cleanup();
+});
+test("image failures and offline events give useful feedback", () => {
+  localStorage.clear();
+  mount();
+  fireEvent.error(
+    screen.getByAltText("Ripe golden mangoes with a freshly cut mango cheek"),
+  );
+  assert.ok(screen.getAllByText("Fresh image on its way").length > 0);
+  Object.defineProperty(navigator, "onLine", {
+    value: false,
+    configurable: true,
+  });
+  fireEvent(window, new window.Event("offline"));
+  assert.ok(
+    screen.getByText(
+      "You’re offline. Loaded products and your bag still work.",
+    ),
+  );
+  Object.defineProperty(navigator, "onLine", {
+    value: true,
+    configurable: true,
+  });
+  fireEvent(window, new window.Event("online"));
+  assert.equal(
+    screen.queryByText(
+      "You’re offline. Loaded products and your bag still work.",
+    ),
+    null,
+  );
+  cleanup();
+});
+
 test.after(() => {
   cleanup();
   ScrollTrigger.killAll();

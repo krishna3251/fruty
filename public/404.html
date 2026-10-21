@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <meta name="theme-color" content="#f6f4ec" />
+    <title>A little lost · furity</title>
+    <style>
+      @font-face {
+        font-family: Manrope;
+        src: url("/fonts/manrope-variable.woff2") format("woff2");
+        font-display: swap;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: #f0f1e6;
+        color: #30483d;
+        font-family: Manrope, Arial, sans-serif;
+        min-height: 100svh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 35px 22px;
+      }
+      a {
+        color: inherit;
+      }
+      .logo {
+        font-size: 40px;
+        letter-spacing: -3px;
+        font-weight: 800;
+        text-decoration: none;
+        margin-bottom: 30px;
+      }
+      .fruit {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+      }
+      .fruit span {
+        font-size: clamp(100px, 17vw, 180px);
+        color: #9daa8b;
+        font-weight: 650;
+        letter-spacing: -10px;
+      }
+      .fruit img {
+        width: clamp(90px, 16vw, 150px);
+        height: 150px;
+        object-fit: contain;
+        filter: drop-shadow(0 15px 14px #59653425);
+      }
+      .eyebrow {
+        font-size: 9px;
+        letter-spacing: 1.8px;
+        margin: 22px 0;
+      }
+      h1 {
+        font-size: clamp(35px, 4.5vw, 64px);
+        font-weight: 500;
+        letter-spacing: -2px;
+        line-height: 1.1;
+        margin: 0;
+      }
+      em {
+        font-family: Georgia, serif;
+        font-weight: 400;
+        color: #788b68;
+      }
+      p {
+        max-width: 410px;
+        font-size: 13px;
+        line-height: 1.9;
+        color: #61705b;
+        margin: 24px 0;
+      }
+      .button {
+        background: #425b4b;
+        color: #f6f4ec;
+        border-radius: 30px;
+        padding: 16px 25px;
+        text-decoration: none;
+        font-size: 12px;
+      }
+      .home {
+        font-size: 11px;
+        margin-top: 25px;
+        text-underline-offset: 6px;
+      }
+      a:focus-visible {
+        outline: 2px solid #30483d;
+        outline-offset: 6px;
+      }
+    </style>
+  </head>
+  <body>
+    <a href="/" class="logo">furity✳</a>
+    <div class="fruit" aria-label="404">
+      <span aria-hidden="true">4</span
+      ><img src="/images/orange.webp" alt="" /><span aria-hidden="true">4</span>
+    </div>
+    <span class="eyebrow">THIS ONE FELL OFF THE TREE</span>
+    <h1>A little lost.<br /><em>Still in good company.</em></h1>
+    <p>
+      We couldn’t find that page. There’s plenty of goodness waiting back at the
+      shop.
+    </p>
+    <a class="button" href="/shop">Back to fresh picks ↗</a
+    ><a class="home" href="/">Take me home</a>
+  </body>
+</html>

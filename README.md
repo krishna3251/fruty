@@ -63,7 +63,7 @@ Original source URLs:
 - Lemon: https://pngimg.com/uploads/lemon/lemon_PNG25192.png
 - Avocado: https://pngimg.com/uploads/avocado/avocado_PNG15488.png
 
-No font service is required; the design uses system sans-serif and Georgia.
+No external font service is required. Manrope is served locally, with Georgia for editorial accents.
 
 ## Validation status
 
@@ -76,3 +76,14 @@ Canonical source: https://github.com/krishna3251/fruty
 The website brand remains **furity**. The repository is named **fruty**.
 
 Build command: `npm run build`. Output directory: `dist`. No environment variables are required for this demo.
+
+## Fresh market refresh
+
+- Soft oat, sage, dusty rose, butter and powder-blue palette; local Manrope variable font (SIL OFL, see `public/fonts/OFL.txt`).
+- Pointer parallax in the hero, fruit hover response, desktop Lenis wheel smoothing, continuous GSAP chapters, chapter navigation, reading progress and a decorative-motion pause control. Touch devices keep native scrolling; reduced-motion users receive natural-flow scenes.
+- A dedicated `/shop`, six deep-linkable `/products/:id` pages, related products, persistent saved fruit, and product information tabs.
+- Two-step guest checkout demonstration with field-specific validation, sample-detail autofill, transparent delivery estimates, a `FRESH10` demo discount, and local demo receipts. No contact data is persisted and no orders or payments are processed.
+- Error boundary, offline banner, image fallback, app-level missing-page view, static HTTP 404 page, PIN-format checker and FAQs.
+- Cart removal can be undone during the notification window.
+
+Motion references: [GSAP quickTo](<https://gsap.com/docs/v3/GSAP/gsap.quickTo()/>), [Lenis](https://github.com/darkroomengineering/lenis), [reduced motion](https://web.dev/articles/prefers-reduced-motion). Checkout direction: [Baymard's checkout friction audit](https://baymard.com/blog/audit-checkout-flow-hidden-friction).

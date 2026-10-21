@@ -19,6 +19,9 @@ export default function Modal({
     const previous = document.activeElement as HTMLElement;
     const overflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
+    const background = document.getElementById("root");
+    const wasInert = background?.inert;
+    if (background) background.inert = true;
     ref.current?.focus();
     const handle = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
@@ -49,12 +52,14 @@ export default function Modal({
     document.addEventListener("keydown", handle);
     return () => {
       document.body.style.overflow = overflow;
+      if (background) background.inert = wasInert || false;
       document.removeEventListener("keydown", handle);
       previous?.focus();
     };
   }, [onClose]);
   return createPortal(
     <div
+      data-lenis-prevent
       className={`modal-backdrop ${drawer ? "drawer-backdrop" : ""}`}
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();

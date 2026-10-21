@@ -1,11 +1,11 @@
 @import "tailwindcss";
 :root {
   font-family: Arial, Helvetica, sans-serif;
-  color: #293c2b;
-  background: #f8f5e9;
+  color: #30483d;
+  background: #f6f4ec;
   font-synthesis: none;
-  --cream: #f8f5e9;
-  --green: #354c32;
+  --cream: #f6f4ec;
+  --green: #3e5447;
   --line: #344c3229;
 }
 * {
@@ -57,12 +57,12 @@ button:focus-visible,
 a:focus-visible,
 input:focus-visible,
 select:focus-visible {
-  outline: 2px solid #293c2b;
+  outline: 2px solid #30483d;
   outline-offset: 5px;
 }
 ::selection {
   background: #edcb65;
-  color: #293c2b;
+  color: #30483d;
 }
 .sr-only {
   position: absolute;
@@ -295,7 +295,7 @@ select:focus-visible {
   width: 90%;
   aspect-ratio: 1;
   border-radius: 50%;
-  background: #edce74;
+  background: #e8d59d;
   top: 9%;
   right: -6%;
 }
@@ -500,7 +500,7 @@ select:focus-visible {
 }
 .showcase {
   overflow: hidden;
-  background: #f0ce68;
+  background: #e9d397;
 }
 .scene-track {
   display: flex;
@@ -915,7 +915,7 @@ select:focus-visible {
 .seasonal {
   display: grid;
   grid-template-columns: 1fr 1.2fr;
-  background: #ead3d9;
+  background: #e5d4d7;
   min-height: 540px;
   overflow: hidden;
   position: relative;
@@ -1014,7 +1014,7 @@ select:focus-visible {
   font-size: 13px;
 }
 .story {
-  background: #e5ead9;
+  background: #e3e8dc;
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12%;
@@ -1114,7 +1114,7 @@ select:focus-visible {
   opacity: 0.65;
 }
 .newsletter {
-  background: #edce74;
+  background: #e8d59d;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -1235,7 +1235,7 @@ select:focus-visible {
   justify-content: space-between;
   gap: 15px;
   padding-top: 20px;
-  border-top: 1px solid #f8f5e930;
+  border-top: 1px solid #f6f4ec30;
   font-size: 8px;
   color: #d0d6c4;
   line-height: 1.7;
@@ -1479,7 +1479,7 @@ select:focus-visible {
   align-items: flex-start;
   gap: 10px;
   padding: 13px;
-  background: #e5ead9;
+  background: #e3e8dc;
   margin-bottom: 25px;
 }
 .demo-banner svg {

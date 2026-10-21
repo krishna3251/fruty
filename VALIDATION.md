@@ -1,25 +1,28 @@
-# Validation
+# Validation — fresh market refresh
 
-Checked in the task environment on 21 October 2026, using Node.js 24.
+Checked on 21 October 2026 using Node.js 24.
 
-## Passed
+## Verified locally
 
-- `npm run build`: strict TypeScript compilation and Vite production bundle.
-- `npm test`: six tests, including cart restoration validation, immutable quantity updates, quantity limits, accurate catalogue totals, unique products, local image existence, and two React/jsdom integration tests.
-- Integration coverage: category filtering, search with no results, reset filters, adding items, increasing quantity, subtotal review, demo checkout completion, localStorage restoration, item removal, empty cart, unavailable product controls, demo newsletter confirmation, dialog Tab trap, Escape dismissal, and focus restoration.
-- Fruit cutouts visually inspected as a contact sheet; all six photographic WebP assets are present locally with transparent backgrounds.
-- Source formatting checked with Prettier.
+- Production build: TypeScript and Vite.
+- 12 Node/jsdom tests: cart corruption handling and limits; sample total calculations; checkout validation; saved-list and receipt validation; search/filtering; persistent bag; checkout and sample receipt creation; image and offline recovery; deep product navigation and missing-route recovery; keyboard dialog focus and unavailable-product controls.
+- Local self-hosted WebP fruit imagery and Manrope WOFF2 font, with the font's OFL license included.
+- Production JavaScript split into application, React, GSAP, UI motion and smooth-scrolling chunks.
 
-## Run attempted, visual verification blocked
+## Browser verification limitation
 
-`sites-preview start` successfully reported a running supervised Vite preview. The browser could not open the preview and subsequently rejected access under the environment's browser security policy. Loopback HTTP probing from the command sandbox also could not reach the isolated preview service.
+The connected browser timed out while initializing during this refresh. Earlier managed-browser access in the task was blocked by environment policy. No browser screenshots, device lab results, frame-rate measurements, or successful visual QA are claimed.
 
-**No desktop/mobile screenshots or end-to-end real-browser results are claimed.** The jsdom component tests exercise real React controls but do not simulate browser layout, ScrollTrigger geometry, touch input, or frame rate.
+The component tests use the actual React controls with reduced motion. They do not measure browser layout, pointer animation, sticky positioning, ScrollTrigger geometry, real focus traversal by a screen reader, or mobile rendering.
 
-Before production release, open `npm run dev` locally and check:
+## Deployment checks
 
-- 1440px, 1024px, 768px, 390px, and 360px layouts; no horizontal page overflow.
-- Scroll down and back up through the pinned showcase, then skip directly to the shop.
-- Touch scrolling, reduced motion, keyboard-only navigation, focus visibility, and dialog overflow.
-- Mobile performance, slow asset loading, and real browser storage restrictions.
-- Replace or license demo photography for commercial use, and connect validated backend inventory, delivery, payment, account, and newsletter services when ready.
+Vercel configuration serves `/shop` and all six valid product URLs through the SPA. Unknown direct URLs use the custom `404.html` with HTTP 404. The React application also renders a missing-page view for unknown in-app navigation.
+
+After deployment, verify HTTP status codes for the homepage, shop, product routes, missing routes, the local font, and static assets. Vercel's deployment status and build logs establish build success; they do not replace visual QA.
+
+## Demo boundaries
+
+Payments, account authentication, real delivery coverage, fulfillment, inventory and newsletter delivery are not connected. Every checkout is labeled as a demo. Contact/address form values are held in memory only while open; stored demo receipts contain product IDs, quantities, an estimated total, creation time and a demo ID. Sample shipping and discount rules are explicitly labeled.
+
+Before a real store launch, replace or commercially license demo fruit assets, supply approved policies and contact channels, and connect server-validated stock, prices, tax, shipping, authentication and a payment provider.
