@@ -1,0 +1,78 @@
+# furity — Freshness, in full color.
+
+A responsive fruit store concept built with React, Vite, TypeScript, Tailwind CSS, GSAP + ScrollTrigger, Framer Motion, and Lucide React. Inspired by the supplied pastel, floating-fruit campaign video, with an original brand and complete local shopping frontend.
+
+## Run locally
+
+Use Node.js **22.12+** (Node 24 recommended).
+
+```sh
+npm ci
+npm run dev
+```
+
+Open the URL printed by Vite, normally http://localhost:4173.
+
+```sh
+npm test        # cart rules and component integration checks
+npm run build   # strict TypeScript check and production build
+npm run preview # serve the production dist folder
+npm run format:check
+```
+
+## Included
+
+- Cream and forest-green editorial hero with photographic fruit cutouts.
+- Four horizontal, scroll-scrubbed desktop chapters: mango, strawberry, blueberry, citrus. Fruit, oversized type, and satellites move independently; background colors interpolate continuously.
+- GSAP contexts and matchMedia cleanup. Below 768px and with reduced motion, the showcase becomes four natural-flow scenes without pinning. Reduced motion disables idle floating and animated entrances.
+- Search, category filters, price sorting, product details, origin and storage notes.
+- Browser-persisted shopping bag, quantity controls, removal, totals, empty state, and demonstrative checkout.
+- Bestsellers, seasonal berry collection, brand story, fictional demo reviews, and demo newsletter.
+- Focus-trapped dialogs, Escape/backdrop dismissal, focus restoration, skip-to-shop link, labeled icon buttons, keyboard focus indicators, semantic sections, live cart notifications.
+- Local WebP images (approximately 570 KB in total), reserved image areas, eager hero loading, and lazy images below the fold. No runtime third-party image requests, tracking, or video backgrounds.
+
+## Project map
+
+```text
+src/App.tsx                    Store composition and shopping interfaces
+src/components/Showcase.tsx     ScrollTrigger choreography
+src/components/Modal.tsx        Shared accessible dialog/drawer
+src/context/CartContext.tsx     Cart state and local persistence
+src/context/cartModel.ts        Validated cart parsing and quantity rules
+src/data/products.ts            Typed local sample catalogue, INR formatting
+src/styles.css                 Responsive design and motion fallbacks
+public/images/                 Optimized, self-hosted photographic cutouts
+```
+
+## Demo boundaries
+
+**No payment, account, live inventory, fulfillment, newsletter service, or delivery service is connected.** Prices, origins, availability, and reviews are sample content. Checkout displays a review step and a clearly labeled demo completion; it neither requests payment details nor places an order. Newsletter email input is not transmitted or persisted. The cart uses the versioned `furity-cart-v1` localStorage key; invalid stored items are rejected. A sample maximum of 20 packs per item applies.
+
+To connect a backend, replace the typed local product source with a catalogue API, validate stock and prices on the server, add delivery/tax calculation, and create payment sessions server-side with secrets in environment variables. Publish real policies and verified support details before launch.
+
+## Image attribution and launch requirements
+
+Fruit photography cutouts: **pngimg.com**. Images have been resized and converted to WebP; the website footer credits the source. These are demonstration assets: confirm the individual image license and obtain commercial rights or replace with licensed photography before operating a commercial store. Do not assume all image licenses are identical.
+
+Original source URLs:
+
+- Mango: https://pngimg.com/uploads/mango/mango_PNG9168.png
+- Strawberry: https://pngimg.com/uploads/strawberry/strawberry_PNG2637.png
+- Blueberries: https://pngimg.com/uploads/blueberries/blueberries_PNG74.png
+- Orange slice: https://pngimg.com/uploads/orange/orange_PNG813.png
+- Lemon: https://pngimg.com/uploads/lemon/lemon_PNG25192.png
+- Avocado: https://pngimg.com/uploads/avocado/avocado_PNG15488.png
+
+No font service is required; the design uses system sans-serif and Georgia.
+
+## Validation status
+
+See `VALIDATION.md` for actual checks and environment limitations. Visual browser verification must be completed on desktop and mobile before production launch.
+
+## Repository and deployment
+
+Canonical source: https://github.com/krishna3251/fruty
+
+The website brand remains **furity**. The repository is named **fruty**.
+
+Build command: `npm run build`. Output directory: `dist`. No environment variables are required for this demo.
