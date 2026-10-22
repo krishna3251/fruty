@@ -20,9 +20,8 @@ export function useRoute() {
         e.altKey
       )
         return;
-      const anchor = (e.target as Element)?.closest<HTMLAnchorElement>(
-        "a[href]",
-      );
+      if (!(e.target instanceof Element)) return;
+      const anchor = e.target.closest<HTMLAnchorElement>("a[href]");
       if (!anchor || anchor.target || anchor.hasAttribute("download")) return;
       const url = new URL(anchor.href, window.location.href);
       if (url.origin !== window.location.origin) return;
@@ -55,6 +54,11 @@ export function useRoute() {
           .getElementById(hash.slice(1))
           ?.scrollIntoView({ behavior: "instant" });
       } else window.scrollTo({ top: 0, behavior: "instant" });
+      const heading = document.querySelector<HTMLElement>("main h1,main h2");
+      if (heading && window.location.pathname !== "/") {
+        heading.tabIndex = -1;
+        heading.focus({ preventScroll: true });
+      }
     });
     return () => cancelAnimationFrame(frame);
   }, [location]);

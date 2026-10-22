@@ -45,6 +45,12 @@ import { useCart } from "./context/CartContext";
 import { MAX_QUANTITY } from "./context/cartModel";
 import Showcase from "./components/Showcase";
 import Modal from "./components/Modal";
+import PageMetadata from "./components/PageMetadata";
+import InformationPage from "./components/InformationPage";
+import Newsletter from "./components/Newsletter";
+import PrivacyControls from "./components/PrivacyControls";
+import MobileShopCTA from "./components/MobileShopCTA";
+import { trackEvent } from "./lib/analytics";
 import Checkout from "./components/Checkout";
 import ProductPage from "./components/ProductPage";
 import MarketExtras from "./components/MarketExtras";
@@ -182,13 +188,16 @@ function ProductCard({
 }
 export default function App() {
   const cart = useCart();
-  const route = useRoute();
+  const route = useRoute().replace(/\/$/, "") || "/";
   const rootRef = useRef<HTMLDivElement>(null);
   const isShop = route.replace(/\/$/, "") === "/shop";
   const pageProduct = route.startsWith("/products/")
     ? products.find((p) => p.id === route.slice(10).replace(/\/$/, ""))
     : undefined;
-  const isMissing = route !== "/" && !isShop && !pageProduct;
+  const information = ["/privacy", "/terms", "/contact", "/thank-you"].includes(
+    route,
+  );
+  const isMissing = route !== "/" && !isShop && !pageProduct && !information;
   const [motionPaused, setMotionPaused] = useState(false);
   const [wishlist, setWishlist] = useState<string[]>(() => {
     try {
@@ -217,8 +226,6 @@ export default function App() {
   const [undo, setUndo] = useState<{ id: string; quantity: number } | null>(
     null,
   );
-  const [email, setEmail] = useState("");
-  const [subscribed, setSubscribed] = useState(false);
   const [ready, setReady] = useState(false);
   const heroRef = useRef<HTMLElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
@@ -254,10 +261,6 @@ export default function App() {
     setOverlay(null);
     setDetail(null);
     setMobileMenu(false);
-    if (!pageProduct && !isMissing)
-      document.title = isShop
-        ? "The fresh market · furity"
-        : "furity — Freshness, in full color.";
   }, [route]);
   useEffect(() => {
     const outside = (e: KeyboardEvent) => {
@@ -355,6 +358,7 @@ export default function App() {
     }
     const added = Math.min(quantity, MAX_QUANTITY - (cart.items[p.id] || 0));
     cart.change(p.id, added);
+    trackEvent("add_to_cart", p.id);
     setNotice(
       `${p.name} added to your bag${added < quantity ? " · 20-pack limit reached" : ""}`,
     );
@@ -379,6 +383,7 @@ export default function App() {
       ref={rootRef}
       className={`storefront ${isShop ? "shop-page" : ""} ${motionPaused ? "motion-paused" : ""}`}
     >
+      <PageMetadata path={route} />
       <OfflineNotice />
       <div className="reading-progress" aria-hidden="true" />
       <a className="skip-link" href="#shop">
@@ -490,7 +495,9 @@ export default function App() {
         </div>
       </header>
       <main>
-        {pageProduct ? (
+        {information ? (
+          <InformationPage path={route} />
+        ) : pageProduct ? (
           <ProductPage
             product={pageProduct}
             saved={wishlist.includes(pageProduct.id)}
@@ -965,56 +972,14 @@ export default function App() {
                   stuff.
                 </p>
               </div>
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  if (email.trim()) setSubscribed(true);
-                }}
-              >
-                {subscribed ? (
-                  <div className="newsletter-success" role="status">
-                    <Check size={22} />
-                    <span>
-                      You’re on the list — in spirit!
-                      <small>
-                        Demo signup. Your email has not been submitted.
-                      </small>
-                    </span>
-                  </div>
-                ) : (
-                  <>
-                    <label htmlFor="newsletter-email" className="sr-only">
-                      Your email address
-                    </label>
-                    <div className="newsletter-input">
-                      <input
-                        type="email"
-                        id="newsletter-email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder="Your email address"
-                        autoComplete="email"
-                        required
-                        maxLength={254}
-                      />
-                      <button aria-label="Join newsletter">
-                        <ArrowRight size={23} />
-                      </button>
-                    </div>
-                    <small>
-                      Just a taste of what’s to come. Demo signup, no emails
-                      sent.
-                    </small>
-                  </>
-                )}
-              </form>
+              <Newsletter />
             </section>
           </>
         )}
       </main>
       <footer className="footer section-pad">
         <div className="footer-top">
-          <a className="logo" href="#">
+          <a className="logo" href="/">
             furity<span>✳</span>
           </a>
           <p>
@@ -1030,11 +995,16 @@ export default function App() {
           <div>
             <span>HERE TO HELP</span>
             {["Delivery & freshness", "Returns & refunds", "Contact us"].map(
-              (t) => (
-                <button key={t} onClick={() => openInfo(t)}>
-                  {t}
-                </button>
-              ),
+              (t) =>
+                t === "Contact us" ? (
+                  <a key={t} href="/contact">
+                    {t}
+                  </a>
+                ) : (
+                  <button key={t} onClick={() => openInfo(t)}>
+                    {t}
+                  </button>
+                ),
             )}
           </div>
           <div>
@@ -1056,9 +1026,9 @@ export default function App() {
           <a href="https://pngimg.com" target="_blank" rel="noreferrer">
             Fruit images: pngimg.com
           </a>
-          <button onClick={() => openInfo("Privacy policy")}>
-            Privacy policy
-          </button>
+          <a href="/privacy">Privacy policy</a>
+          <a href="/terms">Terms</a>
+          <a href="/contact">Contact</a>
           <a
             href="https://github.com/krishna3251/fruty"
             target="_blank"
@@ -1068,6 +1038,8 @@ export default function App() {
           </a>
         </div>
       </footer>
+      <PrivacyControls path={route} />
+      <MobileShopCTA path={route} blocked={!!overlay || !!detail} />
       <motion.div
         className={`toast ${notice ? "visible" : ""}`}
         role="status"

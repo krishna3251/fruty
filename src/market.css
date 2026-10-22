@@ -2383,3 +2383,237 @@ a {
 .motion-paused .pdp-visual > img {
   transform: none !important;
 }
+.information-page {
+  max-width: 1000px;
+  margin: 0 auto;
+  min-height: 65svh;
+}
+.information-page h1 {
+  font-size: clamp(38px, 5vw, 66px);
+  letter-spacing: -2px;
+  font-weight: 500;
+  line-height: 1.08;
+  margin: 20px 0 30px;
+}
+.information-page h2 {
+  font-size: 24px;
+  letter-spacing: -0.6px;
+  font-weight: 550;
+  margin: 35px 0 13px;
+}
+.information-page p,
+.information-page dd {
+  font-size: 13px;
+  line-height: 1.9;
+  color: #53654e;
+}
+.information-page a:not(.button) {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.contact-details dt {
+  font-weight: 650;
+  font-size: 12px;
+  margin-top: 24px;
+}
+.contact-details dd {
+  margin: 8px 0;
+}
+.policy-intro {
+  max-width: 700px;
+}
+.privacy-settings {
+  display: block;
+  background: #42584a;
+  color: #f6f4ec;
+  width: 100%;
+  text-align: center;
+  padding: 16px;
+  font-size: 11px;
+  text-decoration: underline;
+  text-underline-offset: 5px;
+}
+.consent-banner {
+  position: fixed;
+  bottom: 18px;
+  left: 18px;
+  right: 18px;
+  z-index: 95;
+  background: #f6f4ec;
+  border: 1px solid #c5cfba;
+  border-radius: 9px;
+  padding: 24px;
+  box-shadow: 0 15px 70px #1c322b30;
+  display: flex;
+  gap: 30px;
+  align-items: center;
+}
+.consent-banner h2 {
+  font-size: 19px;
+  margin: 0 0 9px;
+  font-weight: 600;
+}
+.consent-banner p {
+  font-size: 11px;
+  line-height: 1.8;
+  max-width: 650px;
+  margin: 0;
+}
+.consent-banner a {
+  font-size: 10px;
+  text-decoration: underline;
+}
+.consent-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  flex-shrink: 0;
+}
+.consent-actions button {
+  padding: 12px 15px;
+  border: 1px solid #8b9c7e;
+  border-radius: 25px;
+  font-size: 10px;
+  background: #e6eadf;
+}
+.policy-content {
+  padding: 28px;
+  font-size: 13px;
+  line-height: 1.8;
+}
+.policy-content h3 {
+  font-size: 22px;
+}
+.policy-content > .text-link {
+  display: block;
+  width: max-content;
+  margin-top: 22px;
+}
+.consent-choice {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 20px 0;
+}
+.consent-choice input {
+  accent-color: #3e5447;
+  width: 20px;
+  height: 20px;
+}
+.newsletter-privacy {
+  display: block;
+  font-size: 9px;
+  text-decoration: underline;
+  margin-top: 12px;
+}
+.mobile-shop-cta {
+  display: none;
+}
+.small-spinner {
+  width: 19px;
+  height: 19px;
+  border: 2px solid #819372;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+img[data-loading="true"] {
+  background: #e7eadc66;
+}
+img[data-loading="false"] {
+  background: none;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (max-width: 767px) {
+  .consent-banner {
+    display: block;
+    bottom: 10px;
+    left: 10px;
+    right: 10px;
+    padding: 20px;
+  }
+  .consent-actions {
+    margin-top: 18px;
+    gap: 8px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+  .consent-actions button:last-child {
+    grid-column: 1/-1;
+  }
+  .consent-actions button {
+    min-height: 44px;
+  }
+  .mobile-shop-cta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 30px;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #425b4b;
+    color: #f6f4ec;
+    z-index: 44;
+    padding: 17px 24px calc(17px + env(safe-area-inset-bottom));
+    font-size: 12px;
+    box-shadow: 0 -5px 20px #30483d15;
+  }
+  .storefront:has(.mobile-shop-cta) {
+    padding-bottom: calc(58px + env(safe-area-inset-bottom));
+  }
+  .storefront:has(.mobile-shop-cta) .experience-tools {
+    bottom: calc(72px + env(safe-area-inset-bottom));
+  }
+  .pdp-add {
+    bottom: calc(10px + env(safe-area-inset-bottom));
+  }
+  .information-page h2 {
+    font-size: 22px;
+  }
+  .information-page p,
+  .information-page dd {
+    font-size: 12px;
+  }
+  .icon-button {
+    min-width: 40px;
+    min-height: 40px;
+  }
+  .quantity > button {
+    min-width: 30px;
+    min-height: 36px;
+  }
+  .footer a,
+  .footer button {
+    min-height: 28px;
+  }
+  .policy-content {
+    padding: 22px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .small-spinner {
+    animation: none;
+    border-color: #819372;
+  }
+}
+.storefront:has(.consent-banner) .mobile-shop-cta {
+  display: none;
+}
+.footer-bottom a,
+.privacy-settings {
+  min-height: 32px;
+  display: inline-flex;
+  align-items: center;
+}
+.privacy-settings {
+  display: block;
+}
+main:has(.information-page) ~ .experience-tools {
+  display: none;
+}

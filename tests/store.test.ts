@@ -16,6 +16,7 @@ for (const key of [
   "Element",
   "Node",
   "localStorage",
+  "sessionStorage",
   "getComputedStyle",
   "requestAnimationFrame",
   "cancelAnimationFrame",
@@ -47,7 +48,7 @@ Object.defineProperty(globalThis, "IS_REACT_ACT_ENVIRONMENT", {
   configurable: true,
 });
 const React = await import("react");
-const { render, screen, fireEvent, cleanup, within } =
+const { render, screen, fireEvent, cleanup, within, waitFor } =
   await import("@testing-library/react");
 const { default: App } = await import("../src/App.tsx");
 const { CartProvider } = await import("../src/context/CartContext.tsx");
@@ -153,7 +154,9 @@ test("out-of-season product cannot be purchased, newsletter stays a demo, dialog
       .closest("form")!,
   );
   assert.ok(
-    screen.getByText("Demo signup. Your email has not been submitted."),
+    screen.getByText(
+      "Newsletter signup is not available yet. Your email has not been submitted.",
+    ),
   );
   assert.equal(localStorage.getItem("furity-cart-v1"), "{}");
   const account = screen.getByRole("button", { name: "Your account" });
@@ -274,6 +277,168 @@ test("image failures and offline events give useful feedback", () => {
     null,
   );
   cleanup();
+});
+
+test("optional analytics is blocked before consent, deduplicates pages and stops on revocation", async () => {
+  cleanup();
+  localStorage.clear();
+  const { siteConfig } = await import("../src/lib/config.ts");
+  const { default: PrivacyControls } =
+    await import("../src/components/PrivacyControls.tsx");
+  const analytics = await import("../src/lib/analytics.ts");
+  const previous = siteConfig.analyticsId;
+  siteConfig.analyticsId = "G-UNITTEST1";
+  const view = render(React.createElement(PrivacyControls, { path: "/shop" }));
+  assert.equal(document.getElementById("furity-analytics"), null);
+  fireEvent.click(screen.getByRole("button", { name: "Reject optional" }));
+  assert.equal(document.getElementById("furity-analytics"), null);
+  assert.equal(analytics.readConsent()?.analytics, false);
+  cleanup();
+  localStorage.clear();
+  const accepted = render(
+    React.createElement(PrivacyControls, { path: "/shop" }),
+  );
+  fireEvent.click(screen.getByRole("button", { name: "Accept analytics" }));
+  assert.equal(document.querySelectorAll("#furity-analytics").length, 1);
+  const w = window as any;
+  const count = () =>
+    w.dataLayer.filter(
+      (entry: any) => entry[0] === "event" && entry[1] === "page_view",
+    ).length;
+  const before = count();
+  accepted.rerender(React.createElement(PrivacyControls, { path: "/shop" }));
+  assert.equal(count(), before);
+  accepted.rerender(
+    React.createElement(PrivacyControls, { path: "/products/mango" }),
+  );
+  assert.equal(count(), before + 1);
+  assert.equal(document.querySelectorAll("#furity-analytics").length, 1);
+  analytics.stopAnalytics();
+  assert.equal(document.getElementById("furity-analytics"), null);
+  assert.equal(
+    analytics.trackPage("/contact", "https://fruty-fawn.vercel.app"),
+    false,
+  );
+  cleanup();
+  siteConfig.analyticsId = previous;
+  localStorage.clear();
+});
+test("newsletter preserves input on service failure and confirms only a verified response", async () => {
+  cleanup();
+  localStorage.clear();
+  sessionStorage.clear();
+  const { siteConfig } = await import("../src/lib/config.ts");
+  const { default: Newsletter } =
+    await import("../src/components/Newsletter.tsx");
+  const { default: InformationPage } =
+    await import("../src/components/InformationPage.tsx");
+  const endpoint = siteConfig.newsletterEndpoint;
+  const previous = globalThis.fetch;
+  siteConfig.newsletterEndpoint = "https://newsletter.example.test/subscribe";
+  globalThis.fetch = async () =>
+    ({ ok: false, json: async () => ({ subscribed: false }) }) as Response;
+  render(React.createElement(Newsletter));
+  fireEvent.change(
+    screen.getByRole("textbox", { name: "Your email address" }),
+    { target: { value: "buyer@example.test" } },
+  );
+  fireEvent.submit(
+    screen
+      .getByRole("textbox", { name: "Your email address" })
+      .closest("form")!,
+  );
+  await screen.findByText(/We couldn’t confirm your signup/);
+  assert.equal(
+    (
+      screen.getByRole("textbox", {
+        name: "Your email address",
+      }) as HTMLInputElement
+    ).value,
+    "buyer@example.test",
+  );
+  assert.equal(sessionStorage.getItem("furity-newsletter-confirmed"), null);
+  globalThis.fetch = async () =>
+    ({ ok: true, json: async () => ({ subscribed: true }) }) as Response;
+  fireEvent.submit(
+    screen
+      .getByRole("textbox", { name: "Your email address" })
+      .closest("form")!,
+  );
+  await screen.findByText(
+    "Subscribe for seasonal updates. Read our privacy notice before submitting.",
+  );
+  await waitFor(() =>
+    assert.ok(sessionStorage.getItem("furity-newsletter-confirmed")),
+  );
+  cleanup();
+  render(React.createElement(InformationPage, { path: "/thank-you" }));
+  assert.ok(screen.getByRole("heading", { name: "Thanks for subscribing." }));
+  cleanup();
+  sessionStorage.clear();
+  render(React.createElement(InformationPage, { path: "/thank-you" }));
+  assert.ok(screen.getByRole("heading", { name: "No signup to confirm." }));
+  cleanup();
+  globalThis.fetch = previous;
+  siteConfig.newsletterEndpoint = endpoint;
+  window.history.replaceState({}, "", "/");
+});
+
+test("dedicated policy/contact routes exist, confirmation is guarded, and mobile CTA adapts to visibility", async () => {
+  const { default: MobileShopCTA } =
+    await import("../src/components/MobileShopCTA.tsx");
+  localStorage.clear();
+  cleanup();
+  window.history.replaceState({}, "", "/privacy/");
+  mount();
+  assert.ok(screen.getByRole("heading", { name: "Privacy & storage." }));
+  assert.equal(
+    document.head.querySelector('link[rel="canonical"]')?.getAttribute("href"),
+    "https://fruty-fawn.vercel.app/privacy",
+  );
+  cleanup();
+  window.history.replaceState({}, "", "/contact");
+  mount();
+  assert.ok(
+    screen.getByText("Not provided — no business address is published"),
+  );
+  assert.equal(screen.queryByRole("link", { name: /@/ }), null);
+  cleanup();
+  window.history.replaceState({}, "", "/");
+  let callback: any;
+  const mock = class {
+    constructor(cb: any) {
+      callback = cb;
+    }
+    observe() {}
+    disconnect() {}
+  };
+  Object.defineProperty(globalThis, "IntersectionObserver", {
+    value: mock,
+    configurable: true,
+  });
+  const hero = document.createElement("div");
+  hero.className = "hero-copy";
+  hero.innerHTML = '<a class="button" href="#shop">Main CTA</a>';
+  const shop = document.createElement("section");
+  shop.id = "shop";
+  document.body.append(hero, shop);
+  render(React.createElement(MobileShopCTA, { path: "/", blocked: false }));
+  React.act(() =>
+    callback([
+      { target: hero.querySelector("a"), isIntersecting: false },
+      { target: shop, isIntersecting: false },
+    ]),
+  );
+  assert.ok(screen.getByRole("link", { name: "Explore fresh fruits" }));
+  React.act(() => callback([{ target: shop, isIntersecting: true }]));
+  assert.equal(
+    screen.queryByRole("link", { name: "Explore fresh fruits" }),
+    null,
+  );
+  cleanup();
+  hero.remove();
+  shop.remove();
+  delete (globalThis as any).IntersectionObserver;
 });
 
 test.after(() => {

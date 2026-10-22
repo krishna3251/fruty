@@ -14,7 +14,7 @@ npm run dev
 Open the URL printed by Vite, normally http://localhost:4173.
 
 ```sh
-npm test        # cart rules and component integration checks
+npm run verify  # build, 19 tests, and formatting checks
 npm run build   # strict TypeScript check and production build
 npm run preview # serve the production dist folder
 npm run format:check
@@ -67,7 +67,7 @@ No external font service is required. Manrope is served locally, with Georgia fo
 
 ## Validation status
 
-See `VALIDATION.md` for actual checks and environment limitations. Visual browser verification must be completed on desktop and mobile before production launch.
+See `AUDIT.md`, `PRODUCTION_SETUP.md` and `VALIDATION.md` for the 19-requirement audit, owner configuration and actual checks and environment limitations. Visual browser verification must be completed on desktop and mobile before production launch.
 
 ## Repository and deployment
 
@@ -87,3 +87,7 @@ Build command: `npm run build`. Output directory: `dist`. No environment variabl
 - Cart removal can be undone during the notification window.
 
 Motion references: [GSAP quickTo](<https://gsap.com/docs/v3/GSAP/gsap.quickTo()/>), [Lenis](https://github.com/darkroomengineering/lenis), [reduced motion](https://web.dev/articles/prefers-reduced-motion). Checkout direction: [Baymard's checkout friction audit](https://baymard.com/blog/audit-checkout-flow-hidden-friction).
+
+## SEO and configuration
+
+The build generates route-specific HTML heads, robots.txt and sitemap.xml from the verified production origin or `VITE_PUBLIC_SITE_URL`. See `.env.example` and `PRODUCTION_SETUP.md` for business, newsletter and opt-in analytics configuration. Privacy, terms and contact are dedicated routes. No analytics loads or newsletter signup succeeds without the corresponding actual service configuration.

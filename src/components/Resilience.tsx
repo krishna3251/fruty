@@ -55,18 +55,29 @@ export class ErrorBoundary extends Component<
 }
 export function FruitImage(props: ImgHTMLAttributes<HTMLImageElement>) {
   const [failed, setFailed] = useState(false);
-  useEffect(() => setFailed(false), [props.src]);
+  const [loaded, setLoaded] = useState(false);
+  useEffect(() => {
+    setFailed(false);
+    setLoaded(false);
+  }, [props.src]);
   return failed ? (
     <span
       className={`image-fallback ${props.className || ""}`}
       role="img"
+      aria-hidden={props.alt === ""}
       aria-label={props.alt || "Fruit image unavailable"}
     >
       <Leaf size={34} />
       <small>Fresh image on its way</small>
     </span>
   ) : (
-    <img {...props} onError={() => setFailed(true)} decoding="async" />
+    <img
+      {...props}
+      data-loading={!loaded}
+      onLoad={() => setLoaded(true)}
+      onError={() => setFailed(true)}
+      decoding="async"
+    />
   );
 }
 export function OfflineNotice() {
@@ -89,9 +100,6 @@ export function OfflineNotice() {
   ) : null;
 }
 export function NotFound() {
-  useEffect(() => {
-    document.title = "Page not found · furity";
-  }, []);
   return (
     <div className="recovery-page not-found">
       <a href="/" className="logo">

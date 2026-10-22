@@ -26,3 +26,13 @@ After deployment, verify HTTP status codes for the homepage, shop, product route
 Payments, account authentication, real delivery coverage, fulfillment, inventory and newsletter delivery are not connected. Every checkout is labeled as a demo. Contact/address form values are held in memory only while open; stored demo receipts contain product IDs, quantities, an estimated total, creation time and a demo ID. Sample shipping and discount rules are explicitly labeled.
 
 Before a real store launch, replace or commercially license demo fruit assets, supply approved policies and contact channels, and connect server-validated stock, prices, tax, shipping, authentication and a payment provider.
+
+## Production audit follow-up — 22 October 2026
+
+Baseline checks passed before changes: build, format check, 12 tests; npm audit reported no known production vulnerabilities. The full dependency audit also reported zero known vulnerabilities.
+
+Implementation verification: TypeScript/Vite plus static page-head generation; 19 Node/jsdom tests covering existing commerce behavior, per-page title/description uniqueness, canonical/OG/Twitter tags, icon/card existence, sitemap/robots contents, invalid-origin rejection, consent blocking and revocation, duplicate-page-view prevention, newsletter failure/input preservation and verified response gating, policy/contact routing, trailing slashes and mobile CTA visibility. Format check passes. No lint script exists.
+
+Responsive work was inspected in CSS and tested for CTA visibility logic, form focus, reduced-motion code paths and safe-area rules. No browser, console, screenshot, screen-reader or frame-rate verification was possible in this environment. Real analytics collection and newsletter service delivery were not tested because no ID or endpoint was provided. No business identity or contact details were supplied.
+
+The report in AUDIT.md distinguishes implementation, external configuration, and unverified visual behavior. This is deployable as a demonstration, not a live trading store.

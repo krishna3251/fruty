@@ -16,7 +16,8 @@
       "headers": {
         "X-Content-Type-Options": "nosniff",
         "Referrer-Policy": "strict-origin-when-cross-origin",
-        "Permissions-Policy": "camera=(), microphone=(), geolocation=()"
+        "Permissions-Policy": "camera=(), microphone=(), geolocation=()",
+        "X-Frame-Options": "DENY"
       },
       "continue": true
     },
@@ -25,11 +26,15 @@
     },
     {
       "src": "/shop/?",
-      "dest": "/index.html"
+      "dest": "/shop/index.html"
     },
     {
       "src": "/products/(mango|strawberry|blueberry|orange|lemon|avocado)/?",
-      "dest": "/index.html"
+      "dest": "/products/$1/index.html"
+    },
+    {
+      "src": "/(privacy|terms|contact|thank-you)/?",
+      "dest": "/$1/index.html"
     },
     {
       "src": "/.*",

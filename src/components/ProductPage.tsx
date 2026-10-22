@@ -28,7 +28,6 @@ export default function ProductPage({
   useEffect(() => {
     setQuantity(1);
     setTab("The good stuff");
-    document.title = `${p.name} · furity`;
   }, [p.id]);
   return (
     <div className="product-page section-pad">
