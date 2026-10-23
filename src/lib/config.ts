@@ -6,5 +6,6 @@ export const siteConfig = {
   phone: env.VITE_CONTACT_PHONE || "",
   address: env.VITE_CONTACT_ADDRESS || "",
   analyticsId: env.VITE_GA_MEASUREMENT_ID || "",
+  tropicalFeastDmUrl: env.VITE_TROPICAL_FEAST_DM_URL || "",
   newsletterEndpoint: env.VITE_NEWSLETTER_ENDPOINT || "",
 };

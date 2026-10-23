@@ -91,3 +91,9 @@ Motion references: [GSAP quickTo](<https://gsap.com/docs/v3/GSAP/gsap.quickTo()/
 ## SEO and configuration
 
 The build generates route-specific HTML heads, robots.txt and sitemap.xml from the verified production origin or `VITE_PUBLIC_SITE_URL`. See `.env.example` and `PRODUCTION_SETUP.md` for business, newsletter and opt-in analytics configuration. Privacy, terms and contact are dedicated routes. No analytics loads or newsletter signup succeeds without the corresponding actual service configuration.
+
+## The pantry edit: supplied pickle collections
+
+The homepage now introduces **Fermented Pickles** and **Tropical Feast**, while preserving the fruit hero, cinematic showcase, sample catalogue and cart. `/pickles` provides searchable collection filters; two collection routes and four product routes use one structured source, `src/data/pickles.ts`. Unknown prices, jar sizes and ingredients are null, not made-up values. The pale vegetable variety stays explicitly unconfirmed. Hyderabad-only and optional direct-message ordering are scoped to Tropical Feast.
+
+`src/components/Pickles.tsx` reuses existing buttons, image recovery, navigation and editorial typography, with responsive styles in `src/pickles.css`. The local SVG jar/tabletop artwork is labelled as illustrative pending real photography. No reference attachment was available in this session. See [PRODUCTION_SETUP.md](PRODUCTION_SETUP.md#pickle-collections--23-october-2026) for the new public DM URL configuration and content handoff.

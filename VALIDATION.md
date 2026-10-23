@@ -36,3 +36,9 @@ Implementation verification: TypeScript/Vite plus static page-head generation; 1
 Responsive work was inspected in CSS and tested for CTA visibility logic, form focus, reduced-motion code paths and safe-area rules. No browser, console, screenshot, screen-reader or frame-rate verification was possible in this environment. Real analytics collection and newsletter service delivery were not tested because no ID or endpoint was provided. No business identity or contact details were supplied.
 
 The report in AUDIT.md distinguishes implementation, external configuration, and unverified visual behavior. This is deployable as a demonstration, not a live trading store.
+
+## Pickle integration — 23 October 2026
+
+Baseline: build, 19 tests and formatting passed before this change. After integration, TypeScript/Vite and 18 unique indexable page heads build successfully; 24 Node/jsdom tests cover the original fruit shop/cart/checkout plus null pickle commercial fields, collection separation, safe DM configuration, product/collection routes (including trailing slashes), search/filter/empty recovery and Hyderabad scoping. Existing fruit product records and cart model were not changed. Formatting passes; no lint script is configured.
+
+The browser extension is now connected, but cannot reach the container's local Vite server (`ERR_CONNECTION_REFUSED`); the server itself starts with `--host 127.0.0.1`. Live browser verification will be performed against the deployed version where accessible. This paragraph does not claim device layouts or photographs were visually verified. No supplier DM value, actual product photography or verified commercial fields have been supplied. The illustration assets are explicitly placeholders; no health, nutritional, oil/masala or unverified ingredient claims have been added.

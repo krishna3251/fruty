@@ -24,7 +24,9 @@ export default function MobileShopCTA({
     setShow(false);
     if (path !== "/" || blocked || typeof IntersectionObserver === "undefined")
       return;
-    const target = document.querySelector(".hero-copy .button");
+    const target = document.querySelector(
+      ".pickle-hero .button, .hero-copy .button",
+    );
     const shop = document.getElementById("shop");
     if (!target || !shop) return;
     let heroVisible = true,
@@ -44,8 +46,8 @@ export default function MobileShopCTA({
     return () => observer.disconnect();
   }, [path, blocked]);
   return show && !blocked && !editing ? (
-    <a href="/shop" className="mobile-shop-cta">
-      Explore fresh fruits <span aria-hidden="true">↗</span>
+    <a href="/pickles" className="mobile-shop-cta">
+      Explore pickles <span aria-hidden="true">↗</span>
     </a>
   ) : null;
 }

@@ -211,14 +211,14 @@ select:focus-visible {
   position: relative;
   z-index: 3;
 }
-.hero h1 {
+.hero .fruit-hero-title {
   font-size: clamp(68px, 7.7vw, 125px);
   letter-spacing: -0.075em;
   line-height: 0.97;
   font-weight: 750;
   margin: 27px 0 22px;
 }
-.hero h1 > span {
+.hero .fruit-hero-title > span {
   font-family: Georgia, "Times New Roman", serif;
   font-weight: 400;
   font-style: italic;
@@ -1596,7 +1596,7 @@ select:focus-visible {
     font-size: 8px;
     letter-spacing: 1.2px;
   }
-  .hero h1 {
+  .hero .fruit-hero-title {
     font-size: 8.5vw;
   }
   .promise-strip > span:last-child {
@@ -1707,7 +1707,7 @@ select:focus-visible {
     font-size: 7px;
     letter-spacing: 1.1px;
   }
-  .hero h1 {
+  .hero .fruit-hero-title {
     font-size: clamp(62px, 14vw, 100px);
     margin: 19px 0 18px;
     letter-spacing: -0.07em;

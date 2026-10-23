@@ -70,6 +70,16 @@ export default function InformationPage({ path }: { path: string }) {
             contain a sample ID, date, product IDs, quantities and estimated
             total; they contain no contact/address details.
           </p>
+          <h2>Collection enquiries</h2>
+          <p>
+            Tropical Feast has a separately configurable external direct-message
+            channel. Following that link, when available, takes you to the
+            configured provider; this website does not send your message or
+            contact details automatically. The supplier and provider must
+            confirm how they handle enquiries. Fermented Pickles has no verified
+            enquiry channel. Shared ownership of these collections has not been
+            established.
+          </p>
           <h2>Forms and checkout</h2>
           <p>
             Checkout fields stay in memory while the checkout is open; no order,

@@ -46,6 +46,13 @@ import { MAX_QUANTITY } from "./context/cartModel";
 import Showcase from "./components/Showcase";
 import Modal from "./components/Modal";
 import PageMetadata from "./components/PageMetadata";
+import {
+  PickleHero,
+  PickleHome,
+  PickleCatalogue,
+  PickleProductPage,
+} from "./components/Pickles";
+import { pickleCollections, pickleProducts } from "./data/pickles";
 import InformationPage from "./components/InformationPage";
 import Newsletter from "./components/Newsletter";
 import PrivacyControls from "./components/PrivacyControls";
@@ -197,7 +204,21 @@ export default function App() {
   const information = ["/privacy", "/terms", "/contact", "/thank-you"].includes(
     route,
   );
-  const isMissing = route !== "/" && !isShop && !pageProduct && !information;
+  const pickleProduct = pickleProducts.find(
+    (p) => route === `/products/${p.id}`,
+  );
+  const pickleCollection = pickleCollections.find(
+    (c) => route === `/collections/${c.id}`,
+  );
+  const isPickles = route === "/pickles";
+  const isMissing =
+    route !== "/" &&
+    !isShop &&
+    !pageProduct &&
+    !information &&
+    !pickleProduct &&
+    !pickleCollection &&
+    !isPickles;
   const [motionPaused, setMotionPaused] = useState(false);
   const [wishlist, setWishlist] = useState<string[]>(() => {
     try {
@@ -421,6 +442,9 @@ export default function App() {
           >
             Shop fresh <ArrowDownRight size={13} />
           </a>
+          <a href="/pickles" onClick={() => setMobileMenu(false)}>
+            Pickles
+          </a>
           <a
             href="/#collections"
             onClick={(e) => {
@@ -497,6 +521,10 @@ export default function App() {
       <main>
         {information ? (
           <InformationPage path={route} />
+        ) : pickleProduct ? (
+          <PickleProductPage product={pickleProduct} />
+        ) : isPickles || pickleCollection ? (
+          <PickleCatalogue key={route} collection={pickleCollection} />
         ) : pageProduct ? (
           <ProductPage
             product={pageProduct}
@@ -510,17 +538,19 @@ export default function App() {
           <>
             {!isShop && (
               <>
-                <section className="hero" ref={heroRef}>
+                <PickleHero />
+                <PickleHome />
+                <section className="hero fruit-hero" ref={heroRef}>
                   <div className="hero-copy">
                     <span className="eyebrow">
                       <span className="green-dot" /> FRESH FROM NATURE. FULL OF
                       LIFE.
                     </span>
-                    <h1>
+                    <h2 className="fruit-hero-title">
                       Freshness,
                       <br />
                       in full <span>color.</span>
-                    </h1>
+                    </h2>
                     <p>
                       Good days start with great fruit.
                       <br />
@@ -697,6 +727,12 @@ export default function App() {
                   </span>
                 </p>
               </div>
+              <p className="pickle-shop-discovery">
+                A little tang for your table?{" "}
+                <a href="/pickles">
+                  Explore the pickle collections <ArrowUpRight size={16} />
+                </a>
+              </p>
               <div className="shop-toolbar">
                 <div className="filters" aria-label="Fruit category">
                   {categories.map((c) => (
@@ -988,9 +1024,12 @@ export default function App() {
           </p>
           <div>
             <span>EXPLORE</span>
-            <a href="#shop">Shop all fruit</a>
-            <a href="#collections">Seasonal collections</a>
-            <a href="#story">Our story</a>
+            <a href="/shop">Shop all fruit</a>
+            <a href="/pickles">Pickles</a>
+            <a href="/collections/fermented-pickles">Fermented Pickles</a>
+            <a href="/collections/tropical-feast">Tropical Feast</a>
+            <a href="/#collections">Seasonal collections</a>
+            <a href="/#story">Our story</a>
           </div>
           <div>
             <span>HERE TO HELP</span>

@@ -108,14 +108,14 @@ a {
   font-size: 9px;
   letter-spacing: 1.6px;
 }
-.hero h1 {
+.hero .fruit-hero-title {
   font-size: clamp(74px, 7.7vw, 120px);
   font-weight: 650;
   line-height: 1.02;
   letter-spacing: -0.075em;
   margin-top: 27px;
 }
-.hero h1 > span {
+.hero .fruit-hero-title > span {
   color: #71816b;
   font-size: 1.14em;
   line-height: 0.88;
@@ -1531,7 +1531,7 @@ a {
     padding: 0 4%;
     min-height: 650px;
   }
-  .hero h1 {
+  .hero .fruit-hero-title {
     font-size: 8.2vw;
   }
   .hero-copy > .eyebrow {
@@ -1693,13 +1693,13 @@ a {
     font-size: 7px;
     letter-spacing: 1.1px;
   }
-  .hero h1 {
+  .hero .fruit-hero-title {
     font-size: clamp(60px, 14.5vw, 100px);
     line-height: 1.04;
     margin: 21px 0 18px;
     letter-spacing: -0.08em;
   }
-  .hero h1 > span {
+  .hero .fruit-hero-title > span {
     font-size: 1.08em;
   }
   .hero-copy > p {

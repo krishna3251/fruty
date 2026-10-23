@@ -1,0 +1,721 @@
+/* The pantry edit extends the existing Manrope / editorial serif system. */
+.pickle-hero,
+.pickle-home,
+.pickle-page,
+.pickle-product-page {
+  --pickle-forest: #183d25;
+  --pickle-ivory: #f7f0e3;
+  --pickle-sage: #a9b984;
+  color: #272922;
+}
+.pickle-hero h1,
+.pickle-home h2,
+.pickle-page h1,
+.pickle-page h2,
+.pickle-product-page h1,
+.pickle-product-page h2 {
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 400;
+  letter-spacing: -0.045em;
+  line-height: 1.06;
+  color: var(--pickle-forest);
+}
+.pickle-hero em,
+.pickle-home em,
+.pickle-page em {
+  font-weight: 400;
+}
+.pickle-hero .eyebrow,
+.pickle-home .eyebrow,
+.pickle-page .eyebrow,
+.pickle-product-page .eyebrow {
+  letter-spacing: 0.15em;
+  font-size: 10px;
+}
+.pickle-hero .button.primary,
+.pickle-home .button.primary,
+.pickle-page .button.primary,
+.pickle-product-page .button.primary {
+  background: var(--pickle-forest);
+  color: #fff9ee;
+  border: 1px solid var(--pickle-forest);
+}
+.pickle-hero .button.primary:hover,
+.pickle-home .button.primary:hover,
+.pickle-page .button.primary:hover,
+.pickle-product-page .button.primary:hover {
+  background: #315439;
+}
+.pickle-hero {
+  display: grid;
+  grid-template-columns: 1fr 1.1fr;
+  min-height: min(740px, 86svh);
+  background: var(--pickle-ivory);
+}
+.pickle-hero-copy {
+  padding: clamp(40px, 5vw, 88px) 7% 40px 10%;
+  align-self: center;
+}
+.pickle-hero .eyebrow,
+.pickle-ordering .eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.pickle-hero h1 {
+  font-size: clamp(52px, 6vw, 96px);
+  margin: 27px 0 24px;
+}
+.pickle-hero h1 em {
+  color: #60754c;
+}
+.pickle-hero-copy > p {
+  font-size: 14px;
+  line-height: 1.9;
+  max-width: 380px;
+  color: #565a4e;
+}
+.pickle-hero-actions {
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+  gap: 19px;
+  margin-top: 29px;
+}
+.pickle-hero-actions .text-link {
+  font-size: 12px;
+}
+.pickle-hero-note {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 35px;
+  padding-top: 19px;
+  border-top: 1px solid #183d2525;
+  font-size: 11px;
+  color: #62684f;
+}
+.pickle-hero-note > span:first-child {
+  letter-spacing: 0.16em;
+  font-size: 9px;
+  color: #183d25;
+}
+.pickle-hero-visual {
+  position: relative;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 35px 0;
+  background: #dee0c8;
+  overflow: hidden;
+}
+.pickle-art-index {
+  position: absolute;
+  left: 7%;
+  top: 28px;
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  z-index: 1;
+  color: #48513c;
+}
+.pickle-artwork {
+  margin: 0;
+  min-width: 0;
+}
+.pickle-artwork img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 5/4;
+  object-fit: cover;
+}
+.pickle-artwork figcaption,
+.pickle-detail-image figcaption {
+  font-size: 10px;
+  text-align: center;
+  padding: 12px 14px;
+  color: #555e49;
+  line-height: 1.5;
+}
+.pickle-hero-visual .pickle-artwork img {
+  max-height: 610px;
+  object-fit: contain;
+}
+.pickle-art-caption {
+  font-family: Georgia, serif;
+  font-style: italic;
+  font-size: clamp(19px, 2vw, 28px);
+  text-align: center;
+  padding: 15px 24px 0;
+  color: #42563b;
+}
+.pickle-intro {
+  text-align: center;
+  background: #fff9ee;
+}
+.pickle-intro h2 {
+  font-size: clamp(38px, 4.4vw, 64px);
+  margin: 20px 0;
+}
+.pickle-intro p {
+  max-width: 490px;
+  margin: 0 auto;
+  font-size: 12px;
+  line-height: 1.8;
+  color: #616353;
+}
+.pickle-feature {
+  display: grid;
+  grid-template-columns: 0.9fr 1.1fr;
+  background: #e9eddf;
+  border-top: 1px solid #183d251b;
+}
+.pickle-feature.is-tropical {
+  background: #f0e4ca;
+}
+.pickle-feature-copy {
+  padding: clamp(35px, 5vw, 78px) 11%;
+  align-self: center;
+}
+.pickle-feature-copy h2 {
+  font-size: clamp(38px, 4.4vw, 64px);
+  margin: 22px 0;
+}
+.pickle-feature-copy > p {
+  line-height: 1.85;
+  font-size: 13px;
+  color: #535a48;
+  max-width: 440px;
+}
+.pickle-feature-copy .pickle-feature-headline {
+  font-family: Georgia, serif;
+  color: #183d25;
+  font-size: 23px;
+  line-height: 1.4;
+}
+.pickle-feature-tagline {
+  font-style: italic;
+}
+.pickle-feature-copy .button {
+  margin-top: 26px;
+}
+.pickle-feature-jars {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: end;
+  padding: 35px 5% 50px 0;
+  min-width: 0;
+}
+.pickle-feature-jars > a {
+  text-align: center;
+  min-width: 0;
+  padding: 0 5px;
+}
+.pickle-feature-jars img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 480/570;
+  max-height: 440px;
+  transition: transform 0.45s ease;
+}
+.pickle-feature-jars > a:hover img {
+  transform: translateY(-7px) rotate(-2deg);
+}
+.pickle-feature-jars > a > span {
+  display: block;
+  font-size: 12px;
+  max-width: 220px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+.pickle-feature-jars > small {
+  position: absolute;
+  bottom: 18px;
+  width: 100%;
+  font-size: 9px;
+  color: #5d624e;
+  text-align: center;
+}
+.pickle-home > .section-pad {
+  background: #fff9ee;
+}
+.pickle-home .section-heading h2,
+.pickle-page .section-heading h2 {
+  font-size: clamp(29px, 3.4vw, 46px);
+}
+.pickle-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 24px;
+}
+.pickle-card {
+  min-width: 0;
+}
+.pickle-card-image {
+  position: relative;
+  display: block;
+  background: #e8ecdf;
+  border: 1px solid #183d2514;
+  overflow: hidden;
+}
+.pickle-card.tropical-feast .pickle-card-image {
+  background: #f0e6d2;
+}
+.pickle-card-image img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 480/570;
+  padding: 9% 5%;
+  transition: transform 0.5s ease;
+}
+.pickle-card-image:hover img {
+  transform: scale(1.04);
+}
+.pickle-card-image > small {
+  position: absolute;
+  left: 0;
+  bottom: 13px;
+  text-align: center;
+  width: 100%;
+  font-size: 9px;
+  color: #5a614d;
+}
+.pickle-card-arrow {
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border: 1px solid #183d252d;
+  border-radius: 50%;
+}
+.pickle-card-copy {
+  padding: 20px 0 10px;
+}
+.pickle-card-copy .eyebrow {
+  font-size: 9px;
+}
+.pickle-card h3 {
+  font-family: Georgia, serif;
+  font-size: 23px;
+  font-weight: 400;
+  line-height: 1.28;
+  color: #183d25;
+  margin: 11px 0;
+  overflow-wrap: anywhere;
+}
+.pickle-card-pending {
+  font-size: 11px;
+  line-height: 1.7;
+  color: #626556;
+  margin: 12px 0 18px;
+}
+.pickle-card .text-link {
+  font-size: 12px;
+}
+.pickle-descriptors {
+  display: block;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.13em;
+  color: #624a2b;
+  line-height: 1.8;
+}
+.pickle-craft {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8%;
+  align-items: center;
+  background: #f7f0e3 !important;
+}
+.pickle-craft > div {
+  min-width: 0;
+}
+.pickle-craft h2 {
+  font-size: clamp(36px, 4vw, 58px);
+  margin: 24px 0;
+}
+.pickle-craft p {
+  font-size: 13px;
+  line-height: 1.9;
+  max-width: 400px;
+  color: #5b5e50;
+}
+.pickle-craft .text-link {
+  margin-top: 18px;
+  font-size: 12px;
+}
+.pickle-ordering {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  align-items: center;
+  gap: 9%;
+  background: #e3e8d8 !important;
+  border-block: 1px solid #183d2520;
+}
+.pickle-ordering h2 {
+  font-size: clamp(35px, 4vw, 55px);
+  margin: 22px 0;
+}
+.pickle-ordering p {
+  font-size: 12px;
+  line-height: 1.9;
+  color: #535c49;
+  max-width: 500px;
+}
+.pickle-order-action {
+  padding-left: 12%;
+  border-left: 1px solid #183d2530;
+}
+.pickle-unconfigured {
+  font-size: 14px;
+  font-weight: 600;
+  display: block;
+}
+.pickle-order-action .text-link {
+  font-size: 12px;
+}
+.pickle-page {
+  background: #fff9ee;
+}
+.pickle-page-heading {
+  max-width: 1200px;
+}
+.pickle-page-heading h1 {
+  font-size: clamp(46px, 6vw, 82px);
+  max-width: 850px;
+  margin: 22px 0;
+}
+.pickle-page-heading > p {
+  font-size: 14px;
+  line-height: 1.85;
+  max-width: 620px;
+  color: #575d4b;
+}
+.pickle-disclosure {
+  font-size: 11px !important;
+  line-height: 1.9;
+  color: #61614f;
+}
+.pickle-page > .pickle-artwork {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+.pickle-page > .pickle-artwork img {
+  max-height: 520px;
+  object-fit: contain;
+  background: #e2e4ce;
+}
+.pickle-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.pickle-toolbar .filters {
+  flex-wrap: wrap;
+}
+.pickle-search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px solid #183d2555;
+  padding: 8px 4px;
+  min-height: 44px;
+  max-width: 100%;
+}
+.pickle-search input {
+  border: 0;
+  background: transparent;
+  color: #272922;
+  min-width: 0;
+  width: 210px;
+  max-width: 100%;
+  min-height: 28px;
+}
+.pickle-search input::placeholder {
+  color: #69715e;
+}
+.pickle-results {
+  font-size: 11px;
+  color: #606652;
+  line-height: 1.8;
+  margin: 25px 0;
+}
+.pickle-product-page {
+  background: #fff9ee;
+}
+.pickle-product-page > .breadcrumbs {
+  padding-block: 28px 0;
+  flex-wrap: wrap;
+}
+.pickle-detail {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8%;
+  padding-top: 32px;
+  align-items: start;
+}
+.pickle-detail-image {
+  margin: 0;
+  background: #e7eadb;
+}
+.pickle-detail-image img {
+  display: block;
+  width: 100%;
+  max-height: 640px;
+  object-fit: contain;
+}
+.pickle-detail-copy {
+  padding-top: 30px;
+  min-width: 0;
+}
+.pickle-detail h1 {
+  font-size: clamp(36px, 4vw, 58px);
+  margin: 24px 0;
+  overflow-wrap: anywhere;
+}
+.pickle-detail-copy > p {
+  font-size: 13px;
+  line-height: 1.9;
+}
+.pickle-facts {
+  margin: 24px 0;
+  border-top: 1px solid #183d2525;
+}
+.pickle-facts > div {
+  display: grid;
+  grid-template-columns: 1fr 1.3fr;
+  gap: 15px;
+  padding: 13px 0;
+  border-bottom: 1px solid #183d2525;
+  font-size: 11px;
+  line-height: 1.8;
+}
+.pickle-facts dt {
+  font-weight: 600;
+}
+.pickle-facts dd {
+  margin: 0;
+  color: #59614e;
+}
+.pickle-detail-copy .button {
+  margin-top: 20px;
+}
+.pickle-enquiry {
+  background: #e9eddf;
+}
+.pickle-enquiry h2 {
+  font-size: clamp(32px, 4vw, 50px);
+  margin: 20px 0;
+}
+.pickle-enquiry p {
+  max-width: 650px;
+  font-size: 13px;
+  line-height: 1.9;
+}
+.pickle-product-page > section:last-child .pickle-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.pickle-shop-discovery {
+  padding: 14px 0 22px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  align-items: center;
+  font-size: 12px;
+}
+.pickle-shop-discovery a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+@media (min-width: 1600px) {
+  .pickle-hero {
+    min-height: 760px;
+  }
+  .pickle-hero-copy {
+    padding-left: 14%;
+  }
+}
+@media (max-width: 1050px) {
+  .pickle-hero {
+    grid-template-columns: 1fr 1fr;
+    min-height: 0;
+  }
+  .pickle-hero-copy {
+    padding: 42px 8%;
+  }
+  .pickle-hero h1 {
+    font-size: 58px;
+  }
+  .pickle-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .pickle-feature-copy {
+    padding-inline: 9%;
+  }
+  .pickle-feature-jars {
+    padding-right: 3%;
+  }
+  .pickle-feature-jars > a > span {
+    font-size: 11px;
+  }
+}
+@media (max-width: 700px) {
+  .pickle-hero,
+  .pickle-feature,
+  .pickle-craft,
+  .pickle-ordering,
+  .pickle-detail {
+    grid-template-columns: 1fr;
+  }
+  .pickle-hero-copy {
+    padding: 42px 6% 30px;
+  }
+  .pickle-hero h1 {
+    font-size: clamp(50px, 12vw, 72px);
+    margin: 22px 0;
+  }
+  .pickle-hero h1 br:nth-of-type(2) {
+    display: none;
+  }
+  .pickle-hero-actions {
+    gap: 20px;
+  }
+  .pickle-hero-note {
+    margin-top: 26px;
+  }
+  .pickle-hero-visual {
+    padding: 25px 0 23px;
+  }
+  .pickle-hero-visual .pickle-artwork img {
+    max-height: 440px;
+  }
+  .pickle-art-index {
+    top: 18px;
+  }
+  .pickle-feature-copy {
+    padding: 38px 6% 16px;
+  }
+  .pickle-feature-jars {
+    padding: 0 5% 42px;
+  }
+  .pickle-feature-jars img {
+    max-height: 310px;
+  }
+  .pickle-feature-jars > a > span {
+    font-size: 12px;
+  }
+  .pickle-grid {
+    gap: 28px 15px;
+  }
+  .pickle-card h3 {
+    font-size: 21px;
+  }
+  .pickle-card-copy .eyebrow {
+    font-size: 8px;
+    letter-spacing: 0.08em;
+  }
+  .pickle-card-arrow {
+    width: 28px;
+    height: 28px;
+    right: 7px;
+    top: 7px;
+  }
+  .pickle-card-image img {
+    padding: 6% 1% 13%;
+  }
+  .pickle-card-image > small {
+    font-size: 8px;
+    bottom: 9px;
+  }
+  .pickle-craft {
+    gap: 26px;
+  }
+  .pickle-craft > div {
+    padding-top: 14px;
+  }
+  .pickle-ordering {
+    gap: 20px;
+  }
+  .pickle-order-action {
+    border-left: 0;
+    border-top: 1px solid #183d2525;
+    padding: 25px 0 0;
+  }
+  .pickle-toolbar {
+    align-items: stretch;
+    gap: 20px;
+  }
+  .pickle-toolbar .filters {
+    width: 100%;
+    gap: 5px;
+  }
+  .pickle-toolbar .filters button {
+    padding: 12px 14px;
+    min-height: 44px;
+    font-size: 11px;
+    white-space: normal;
+  }
+  .pickle-search {
+    width: 100%;
+  }
+  .pickle-search input {
+    width: 100%;
+  }
+  .pickle-page-heading h1 {
+    font-size: 46px;
+  }
+  .pickle-detail {
+    gap: 22px;
+  }
+  .pickle-detail-copy {
+    padding-top: 0;
+  }
+  .pickle-product-page > section:last-child .pickle-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .pickle-home .section-heading,
+  .pickle-page .section-heading,
+  .pickle-product-page .section-heading {
+    align-items: start;
+    gap: 18px;
+    flex-direction: column;
+  }
+}
+@media (max-width: 360px) {
+  .pickle-grid {
+    grid-template-columns: 1fr;
+  }
+  .pickle-product-page > section:last-child .pickle-grid {
+    grid-template-columns: 1fr;
+  }
+  .pickle-hero h1 {
+    font-size: 47px;
+  }
+  .pickle-hero .button {
+    width: 100%;
+    justify-content: center;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pickle-card-image img,
+  .pickle-feature-jars img {
+    transition: none;
+    transform: none !important;
+  }
+}
+.motion-paused .pickle-card-image img,
+.motion-paused .pickle-feature-jars img {
+  transition: none;
+  transform: none !important;
+}

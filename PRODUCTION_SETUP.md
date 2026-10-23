@@ -23,3 +23,23 @@ The privacy page describes actual browser storage, demo checkout fields, optiona
 Still required for real commerce: server-side catalogue/price/stock validation; orders and durable records; secure payment-provider integration and verified webhooks; delivery/serviceability/tax calculations; returns/cancellation/refund procedures; production monitoring and incident/contact processes. Replace or license the demo fruit imagery for commercial use.
 
 Verification: `npm ci && npm run verify`. Build-generated metadata tests require a current build. No lint configuration exists; format checks are not lint. Check 320/360/390/768/1024/1440px views, keyboard and screen-reader navigation, motion preference changes, sticky CTA/form overlaps and console errors in real browsers before commercial launch.
+
+## Pickle collections — 23 October 2026
+
+`src/data/pickles.ts` is the single source of truth for four supplied promotional product entries. The existing sample fruit catalogue/cart is unchanged. Pickle price, size, ingredient list and stock status remain `null`/unconfirmed; no unpriced pickle can enter the fruit checkout. The two cucumber products have distinct IDs and collection metadata. Seller relationships/shared ownership are not established.
+
+Routes: `/pickles`, `/collections/fermented-pickles`, `/collections/tropical-feast`, and `/products/{fermented-cucumber-pickle,fermented-pale-vegetable-pickle,tropical-pineapple-pickle,tropical-cucumber-pickle}`. Build-generated metadata and sitemap include all seven new pages.
+
+Set **`VITE_TROPICAL_FEAST_DM_URL`** to the supplier's verified public HTTPS direct-message URL, then rebuild/redeploy. This public value is only used for Tropical Feast. Blank, non-HTTPS or credential-bearing values leave the DM action unavailable with a clear explanation. No message is sent automatically; visitors follow the external link to enquire. Website contact details are not silently reused as a supplier's identity. Confirm the destination and seller authority before configuring it. External DM provider privacy/retention practices must be disclosed if this channel is enabled.
+
+Fermented Pickles has no confirmed ordering method or service area; its detail pages explain the missing supplier contact. Hyderabad-only applies **only** to Tropical Feast. No DM, phone number, address, live stock or price has been invented.
+
+### Owner content still required
+
+- Actual separate product photographs and permission to publish them; no attachment was available in the coding session. Six self-contained SVG jar/tabletop illustrations are explicitly marked as illustrations/photos pending. They are visual placeholders, not evidence of packaging, ingredients or actual product appearance. Replace each `image`/`imageAlt` in the data source once verified photography arrives; replace scene SVGs in `Pickles.tsx` with approved scene images.
+- Exact identity of the pale vegetable pickle; do not rename it until verified.
+- Verified prices in INR, jar sizes, ingredients/allergens, stock, storage/shelf life, supplier identity and commercial terms for each collection.
+- Tropical Feast's verified DM URL, and a separately verified Fermented Pickles order/contact method.
+- “ZERO OIL / ZERO MASALA” and health/antioxidant/gut-related promotional claims are intentionally not published as product facts. Confirm substantiation and applicable requirements before adding these to production copy.
+
+Supplying a price alone does not enable pickle checkout. A real ordering/payment integration needs supplier-specific fulfilment, prices, stock and server-side validation; preserve the explicit enquiry-only boundary until implemented and verified.

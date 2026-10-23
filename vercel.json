@@ -37,6 +37,18 @@
       "dest": "/$1/index.html"
     },
     {
+      "src": "/pickles/?",
+      "dest": "/pickles/index.html"
+    },
+    {
+      "src": "/collections/(fermented-pickles|tropical-feast)/?",
+      "dest": "/collections/$1/index.html"
+    },
+    {
+      "src": "/products/(fermented-cucumber-pickle|fermented-pale-vegetable-pickle|tropical-pineapple-pickle|tropical-cucumber-pickle)/?",
+      "dest": "/products/$1/index.html"
+    },
+    {
       "src": "/.*",
       "dest": "/404.html",
       "status": 404

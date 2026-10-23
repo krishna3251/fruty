@@ -1,0 +1,66 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import { existsSync, readFileSync } from "node:fs";
+import {
+  pickleProducts,
+  pickleCollections,
+  filterPickles,
+  safeEnquiryUrl,
+} from "../src/data/pickles.ts";
+import { products } from "../src/data/products.ts";
+import { restoreCart } from "../src/context/cartModel.ts";
+test("supplied pickle records remain distinct, unpriced, local and outside the fruit checkout", () => {
+  assert.equal(pickleProducts.length, 4);
+  assert.equal(
+    new Set([...products, ...pickleProducts].map((p) => p.id)).size,
+    products.length + 4,
+  );
+  assert.equal(pickleCollections.length, 2);
+  for (const p of pickleProducts) {
+    assert.equal(p.price, null);
+    assert.equal(p.jarSize, null);
+    assert.equal(p.ingredients, null);
+    assert.equal(p.currency, "INR");
+    assert.equal(p.availability, "unconfirmed");
+    assert.ok(existsSync(`public${p.image}`));
+    assert.ok(p.imageAlt.includes("Illustrative"));
+    assert.equal(
+      p.serviceArea,
+      p.collectionId === "tropical-feast" ? "Hyderabad only" : null,
+    );
+    assert.equal(
+      p.orderMethod,
+      p.collectionId === "tropical-feast" ? "direct-message" : null,
+    );
+    assert.ok(readFileSync(`public${p.image}`, "utf8").includes("<svg"));
+    assert.deepEqual(
+      restoreCart(
+        JSON.stringify({ [p.id]: 1 }),
+        products.map((p) => p.id),
+      ),
+      {},
+    );
+  }
+  assert.equal(filterPickles("all", "cucumber").length, 2);
+  assert.equal(filterPickles("fermented-pickles", "").length, 2);
+  assert.equal(filterPickles("tropical-feast", "spicy").length, 2);
+  assert.match(
+    pickleProducts.find((p) => p.id.includes("pale"))!.name,
+    /unconfirmed/,
+  );
+});
+test("enquiry URLs reject unsafe schemes and embedded credentials", () => {
+  for (const url of [
+    "",
+    "javascript:alert(1)",
+    "http://dm.example.test",
+    "https://user:password@dm.example.test",
+    "/contact",
+    "mailto:a@example.test",
+  ])
+    assert.equal(safeEnquiryUrl(url), null);
+  assert.equal(
+    safeEnquiryUrl("https://dm.example.test/supplier"),
+    "https://dm.example.test/supplier",
+  );
+});

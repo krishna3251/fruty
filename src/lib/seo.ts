@@ -1,13 +1,42 @@
 import { products } from "../data/products";
+import {
+  pickleCollections,
+  pickleProducts,
+  collectionFor,
+} from "../data/pickles";
 export const publicPaths = [
   "/",
   "/shop",
+  "/pickles",
+  ...pickleCollections.map((c) => `/collections/${c.id}`),
+  ...pickleProducts.map((p) => `/products/${p.id}`),
   ...products.map((p) => `/products/${p.id}`),
   "/privacy",
   "/terms",
   "/contact",
 ];
 export function pageMeta(path: string) {
+  const pickle = pickleProducts.find((p) => path === `/products/${p.id}`);
+  if (pickle)
+    return {
+      title:
+        pickle.id === "fermented-pale-vegetable-pickle"
+          ? "Pale Vegetable Pickle (Unconfirmed) | Fermented Pickles | furity"
+          : `${pickle.name} | ${collectionFor(pickle).name} | furity`,
+      description: `${pickle.description} Price, jar size and availability awaiting confirmation.`,
+      type: "website",
+      index: true,
+    };
+  const collection = pickleCollections.find(
+    (c) => path === `/collections/${c.id}`,
+  );
+  if (collection)
+    return {
+      title: `${collection.name} | Pickle Collection | furity`,
+      description: collection.description,
+      type: "website",
+      index: true,
+    };
   const product = products.find((p) => path === `/products/${p.id}`);
   if (product)
     return {
@@ -17,10 +46,15 @@ export function pageMeta(path: string) {
       index: true,
     };
   const pages: Record<string, { title: string; description: string }> = {
-    "/": {
-      title: "furity | Seasonal Fruit, Freshness in Full Color",
+    "/pickles": {
+      title: "Pickles | Fermented Pickles & Tropical Feast | furity",
       description:
-        "Explore furity’s colorful seasonal fruit collection, from golden mangoes to fresh berries. Discover origins, storage tips and a thoughtful fruit-shopping demo.",
+        "Discover four pickle entries across Fermented Pickles and Tropical Feast. Explore cucumber, pineapple and an unconfirmed pale vegetable variety, with clear enquiry details.",
+    },
+    "/": {
+      title: "furity | Fresh Fruit & Distinctive Pickle Collections",
+      description:
+        "Discover Fermented Pickles and Tropical Feast alongside furity’s seasonal fruit collection. Explore pickle details, collection-specific enquiries and a sample fruit shop.",
     },
     "/shop": {
       title: "Shop Seasonal Fruit | Mangoes, Berries & Citrus | furity",

@@ -429,16 +429,107 @@ test("dedicated policy/contact routes exist, confirmation is guarded, and mobile
       { target: shop, isIntersecting: false },
     ]),
   );
-  assert.ok(screen.getByRole("link", { name: "Explore fresh fruits" }));
+  assert.ok(screen.getByRole("link", { name: "Explore pickles" }));
   React.act(() => callback([{ target: shop, isIntersecting: true }]));
-  assert.equal(
-    screen.queryByRole("link", { name: "Explore fresh fruits" }),
-    null,
-  );
+  assert.equal(screen.queryByRole("link", { name: "Explore pickles" }), null);
   cleanup();
   hero.remove();
   shop.remove();
   delete (globalThis as any).IntersectionObserver;
+});
+
+test("pickle catalogue filters by collection, searches both cucumber entries and recovers from empty results", async () => {
+  window.history.replaceState({}, "", "/pickles");
+  localStorage.clear();
+  mount();
+  const main = within(screen.getByRole("main"));
+  assert.equal(main.getAllByRole("article").length, 4);
+  fireEvent.change(main.getByRole("searchbox", { name: "Search pickles" }), {
+    target: { value: "cucumber" },
+  });
+  assert.equal(main.getAllByRole("article").length, 2);
+  fireEvent.click(
+    main.getByRole("button", { name: "Tropical Feast", exact: true }),
+  );
+  assert.equal(main.getAllByRole("article").length, 1);
+  assert.match(
+    main.getAllByRole("article")[0].textContent || "",
+    /Tropical Feast/,
+  );
+  fireEvent.change(main.getByRole("searchbox", { name: "Search pickles" }), {
+    target: { value: "not-a-pickle" },
+  });
+  assert.ok(main.getByText("No pickles found."));
+  fireEvent.click(main.getByRole("button", { name: "Reset search" }));
+  assert.equal(main.getAllByRole("article").length, 4);
+  fireEvent.click(
+    main.getByRole("link", { name: "View Pineapple Pickle — Tropical Feast" }),
+  );
+  await waitFor(() =>
+    assert.ok(
+      main.getByRole("heading", { level: 1, name: "Pineapple Pickle" }),
+    ),
+  );
+  assert.equal(window.location.pathname, "/products/tropical-pineapple-pickle");
+  assert.ok(main.getByText("Hyderabad only"));
+  assert.equal(main.queryByRole("button", { name: /add.*bag/i }), null);
+  assert.ok(main.getByText("Ordering channel awaiting confirmation"));
+  assert.equal(main.queryByRole("link", { name: "DM Tropical Feast" }), null);
+  cleanup();
+  window.history.replaceState({}, "", "/");
+});
+test("all pickle routes render, preserve null commercial fields and scope Hyderabad to Tropical Feast", async () => {
+  const { pickleProducts, pickleCollections } =
+    await import("../src/data/pickles.ts");
+  for (const p of pickleProducts) {
+    window.history.replaceState({}, "", `/products/${p.id}/`);
+    mount();
+    const main = within(screen.getByRole("main"));
+    assert.ok(main.getByRole("heading", { level: 1, name: p.name }));
+    assert.ok(main.getByText("Not supplied — confirm before ordering"));
+    assert.equal(
+      main.queryByText("Hyderabad only") !== null,
+      p.collectionId === "tropical-feast",
+    );
+    assert.equal(main.queryByRole("button", { name: /add.*bag/i }), null);
+    cleanup();
+  }
+  for (const c of pickleCollections) {
+    window.history.replaceState({}, "", `/collections/${c.id}`);
+    mount();
+    const main = within(screen.getByRole("main"));
+    assert.ok(main.getByRole("heading", { level: 1, name: c.name }));
+    assert.equal(main.getAllByRole("article").length, 2);
+    assert.equal(
+      main.queryByRole("heading", { name: "Available in Hyderabad." }) !== null,
+      c.id === "tropical-feast",
+    );
+    cleanup();
+  }
+  window.history.replaceState({}, "", "/");
+});
+test("Tropical Feast DM is only enabled for its explicit safe configuration", async () => {
+  const { siteConfig } = await import("../src/lib/config.ts");
+  const { TropicalOrdering } = await import("../src/components/Pickles.tsx");
+  const old = siteConfig.tropicalFeastDmUrl;
+  try {
+    siteConfig.tropicalFeastDmUrl = "javascript:alert(1)";
+    render(React.createElement(TropicalOrdering));
+    assert.equal(
+      screen.queryByRole("link", { name: "DM Tropical Feast" }),
+      null,
+    );
+    cleanup();
+    siteConfig.tropicalFeastDmUrl = "https://dm.example.test/verified-supplier";
+    render(React.createElement(TropicalOrdering));
+    const link = screen.getByRole("link", { name: "DM Tropical Feast" });
+    assert.equal(link.getAttribute("href"), siteConfig.tropicalFeastDmUrl);
+    assert.equal(link.getAttribute("target"), "_blank");
+    assert.match(link.getAttribute("rel") || "", /noopener/);
+    cleanup();
+  } finally {
+    siteConfig.tropicalFeastDmUrl = old;
+  }
 });
 
 test.after(() => {
