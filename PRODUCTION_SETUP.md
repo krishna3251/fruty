@@ -43,3 +43,7 @@ Fermented Pickles has no confirmed ordering method or service area; its detail p
 - Fermented Pickles’ “ZERO OIL / ZERO MASALA” wording is attributed to the supplied promotion and accompanied by an ingredient-confirmation notice. It is not a verified ingredient list. Health/antioxidant/gut-related claims are not published. Confirm supporting documentation and applicable requirements before expanding these claims.
 
 Supplying a price alone does not enable pickle checkout. A real ordering/payment integration needs supplier-specific fulfilment, prices, stock and server-side validation; preserve the explicit enquiry-only boundary until implemented and verified.
+
+## Pickle-first reconstruction
+
+See `RECONSTRUCTION.md` for the current primary architecture. `/shop` now means pickles. The old fruit demo is retained at `/fruit-demo`, `/fruit-story` and its existing six product URLs, all noindex and excluded from the sitemap. The primary enquiry list stores only known pickle IDs under `fruity-pickle-selection-v1`; it does not place orders. The copy action writes only a product enquiry template to the visitor's clipboard after an explicit click. The public catalogue still needs supplier prices, ingredients, stock, real photos and contacts before real commerce can be enabled.

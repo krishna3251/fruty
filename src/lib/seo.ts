@@ -10,19 +10,35 @@ export const publicPaths = [
   "/pickles",
   ...pickleCollections.map((c) => `/collections/${c.id}`),
   ...pickleProducts.map((p) => `/products/${p.id}`),
-  ...products.map((p) => `/products/${p.id}`),
+  "/ordering",
   "/privacy",
   "/terms",
   "/contact",
 ];
+export const archivePaths = [
+  "/fruit-demo",
+  "/fruit-story",
+  ...products.map((p) => `/products/${p.id}`),
+];
 export function pageMeta(path: string) {
+  if (["/fruit-demo", "/fruit-story"].includes(path))
+    return {
+      title:
+        path === "/fruit-story"
+          ? "Archived Fruit Story | Fruity"
+          : "Archived Fruit Shop Demo | Fruity",
+      description:
+        "The retained fruit-store demonstration is archived separately from Fruity’s primary pickle catalogue. No real orders or payments are processed.",
+      type: "website",
+      index: false,
+    };
   const pickle = pickleProducts.find((p) => path === `/products/${p.id}`);
   if (pickle)
     return {
       title:
         pickle.id === "fermented-pale-vegetable-pickle"
-          ? "Pale Vegetable Pickle (Unconfirmed) | Fermented Pickles | furity"
-          : `${pickle.name} | ${collectionFor(pickle).name} | furity`,
+          ? "Pale Vegetable Pickle (Unconfirmed) | Fermented Pickles | Fruity"
+          : `${pickle.name} | ${collectionFor(pickle).name} | Fruity`,
       description: `${pickle.description} Price, jar size and availability awaiting confirmation.`,
       type: "website",
       index: true,
@@ -32,7 +48,7 @@ export function pageMeta(path: string) {
   );
   if (collection)
     return {
-      title: `${collection.name} | Pickle Collection | furity`,
+      title: `${collection.name} | Pickle Collection | Fruity`,
       description: collection.description,
       type: "website",
       index: true,
@@ -40,53 +56,58 @@ export function pageMeta(path: string) {
   const product = products.find((p) => path === `/products/${p.id}`);
   if (product)
     return {
-      title: `${product.name} | Seasonal Fruit Selection | furity`,
+      title: `${product.name} | Archived Fruit Demo | Fruity`,
       description: `Explore ${product.name.toLowerCase()}, ${product.weight}, from ${product.origin}. Read storage tips and browse the furity sample fruit collection.`,
       type: "website",
-      index: true,
+      index: false,
     };
   const pages: Record<string, { title: string; description: string }> = {
     "/pickles": {
-      title: "Pickles | Fermented Pickles & Tropical Feast | furity",
+      title: "Pickles | Fermented Pickles & Tropical Feast | Fruity",
       description:
         "Discover four pickle entries across Fermented Pickles and Tropical Feast. Explore cucumber, pineapple and an unconfirmed pale vegetable variety, with clear enquiry details.",
     },
     "/": {
-      title: "furity | Fresh Fruit & Distinctive Pickle Collections",
+      title: "Fruity | Distinctive Pickles & Pantry Collections",
       description:
-        "Discover Fermented Pickles and Tropical Feast alongside furity’s seasonal fruit collection. Explore pickle details, collection-specific enquiries and a sample fruit shop.",
+        "Discover Fermented Pickles and Tropical Feast at Fruity. Explore cucumber and pineapple pickle varieties, save your favourites and find collection-specific enquiry details.",
     },
     "/shop": {
-      title: "Shop Seasonal Fruit | Mangoes, Berries & Citrus | furity",
+      title: "Shop Pickles | The Fruity Pantry",
       description:
-        "Browse mangoes, strawberries, blueberries and citrus. Compare sample INR prices, explore fruit details and save your favorites in the furity market.",
+        "Browse all four pickle entries from Fermented Pickles and Tropical Feast. Filter by collection, compare product details and save a list for supplier enquiries.",
+    },
+    "/ordering": {
+      title: "How to Order & Enquire | Fruity Pickles",
+      description:
+        "Learn how to save a pickle enquiry list, check supplier channel availability and confirm prices, ingredients and delivery. Hyderabad-only applies to Tropical Feast.",
     },
     "/privacy": {
-      title: "Privacy & Browser Storage | furity",
+      title: "Privacy & Browser Storage | Fruity",
       description:
-        "Learn what the furity demo stores on your device, how optional analytics consent works, and how newsletter and checkout information is handled.",
+        "Learn what the Fruity catalogue stores on your device, how optional analytics consent works, and how newsletter and checkout information is handled.",
     },
     "/terms": {
-      title: "Website Terms & Demo Shopping Conditions | furity",
+      title: "Website Terms & Enquiry Conditions | Fruity",
       description:
-        "Read the conditions for using the furity demonstration storefront, including sample products, checkout limitations and owner details required before launch.",
+        "Read the conditions for using the Fruity pickle enquiry catalogue, including unconfirmed product details, enquiry limitations and owner details required before launch.",
     },
     "/contact": {
-      title: "Contact & Business Information | furity",
+      title: "Contact & Business Information | Fruity",
       description:
-        "Find configured furity business contact details and the status of customer support, delivery and commercial launch information.",
+        "Find configured Fruity business contact details and the status of customer support, delivery and commercial launch information.",
     },
   };
   if (pages[path]) return { ...pages[path], type: "website", index: true };
   return {
     title:
       path === "/thank-you"
-        ? "Newsletter Confirmation | furity"
-        : "Page Not Found | furity",
+        ? "Newsletter Confirmation | Fruity"
+        : "Page Not Found | Fruity",
     description:
       path === "/thank-you"
         ? "Check the status of your newsletter submission."
-        : "That page could not be found. Return to the furity fruit collection.",
+        : "That page could not be found. Return to the Fruity pickle collection.",
     type: "website",
     index: false,
   };

@@ -1,7 +1,12 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, existsSync } from "node:fs";
-import { pageMeta, publicPaths, safeOrigin } from "../src/lib/seo.ts";
+import {
+  pageMeta,
+  publicPaths,
+  archivePaths,
+  safeOrigin,
+} from "../src/lib/seo.ts";
 test("all public pages have unique titles, descriptions and build-time sharing/canonical metadata", () => {
   const titles = new Set<string>(),
     descriptions = new Set<string>();
@@ -69,4 +74,20 @@ test("origin validation rejects credentials and accidental deployment paths", ()
     "https://example.com/?secret=x",
   ])
     assert.throws(() => safeOrigin(value));
+});
+
+test("pickle shop is indexable while archived fruit routes remain available and noindex", () => {
+  assert.match(pageMeta("/shop").title, /Pickles/);
+  assert.ok(publicPaths.includes("/ordering"));
+  for (const path of archivePaths) {
+    assert.ok(!publicPaths.includes(path));
+    assert.equal(pageMeta(path).index, false);
+    assert.match(
+      readFileSync(`dist${path}/index.html`, "utf8"),
+      /noindex,follow/,
+    );
+  }
+  assert.ok(
+    !readFileSync("dist/sitemap.xml", "utf8").includes("/products/mango"),
+  );
 });

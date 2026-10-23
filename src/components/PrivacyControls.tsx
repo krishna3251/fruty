@@ -38,7 +38,8 @@ export default function PrivacyControls({ path }: { path: string }) {
       const a = e.target.closest("a");
       if (
         a?.getAttribute("href") === "/shop" ||
-        a?.getAttribute("href") === "#shop"
+        a?.getAttribute("href") === "#shop" ||
+        a?.getAttribute("href") === "/pickles"
       )
         trackEvent("shop_cta");
     };
@@ -97,8 +98,9 @@ export default function PrivacyControls({ path }: { path: string }) {
           <div className="policy-content">
             <h3>Shopping storage</h3>
             <p>
-              Your bag, saved fruit and demo receipts are kept on this device.
-              No tracking is needed to shop.
+              Your pickle enquiry list is kept on this device. The archived
+              fruit demo also stores its bag, saved fruit and demo receipts
+              here. No tracking is needed to shop.
             </p>
             {configured ? (
               <label className="consent-choice">

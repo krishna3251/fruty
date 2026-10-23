@@ -1,5 +1,13 @@
 import { useState } from "react";
-import { ArrowUpRight, ArrowRight, MapPin, Search, Leaf } from "lucide-react";
+import {
+  ArrowUpRight,
+  ArrowRight,
+  MapPin,
+  Search,
+  Leaf,
+  Bookmark,
+  Check,
+} from "lucide-react";
 import {
   pickleCollections,
   pickleProducts,
@@ -12,15 +20,18 @@ import {
 import { money } from "../data/products";
 import { siteConfig } from "../lib/config";
 import { FruitImage } from "./Resilience";
+import { usePickleSelection } from "../context/PickleSelection";
 
 function Artwork({
   src,
   alt,
   hero = false,
+  concept = false,
 }: {
   src: string;
   alt: string;
   hero?: boolean;
+  concept?: boolean;
 }) {
   return (
     <figure className="pickle-artwork">
@@ -33,7 +44,9 @@ function Artwork({
         fetchPriority={hero ? "high" : "auto"}
       />
       <figcaption>
-        Illustrative composition · product photography pending
+        {concept
+          ? "AI-created concept imagery · actual product photography pending"
+          : "Illustrative composition · product photography pending"}
       </figcaption>
     </figure>
   );
@@ -43,14 +56,14 @@ export function PickleHero() {
     <section className="pickle-hero" aria-labelledby="pickle-hero-title">
       <div className="pickle-hero-copy">
         <span className="eyebrow">
-          <Leaf size={15} /> SOMETHING TANGY HAS ARRIVED
+          <Leaf size={15} /> FRUITY / THE PICKLE EDIT
         </span>
         <h1 id="pickle-hero-title">
-          Fresh, tangy.
+          A little tang.
           <br />
-          <em>Naturally</em>
+          <em>A lot of</em>
           <br />
-          delicious.
+          character.
         </h1>
         <p>
           Discover a new side of the pantry. Two distinct pickle collections,
@@ -75,8 +88,9 @@ export function PickleHero() {
         </span>
         <Artwork
           hero
-          src="/images/pickles/fermented-scene.svg"
-          alt="Illustrative tabletop composition of two Fermented Pickles jars, cucumber and an unconfirmed pale vegetable variety"
+          concept
+          src="/images/pickles/pantry-editorial-concept.webp"
+          alt="AI-created concept scene of golden-lidded cucumber and pale vegetable pickle jars on a naturally lit tabletop; actual products unverified"
         />
         <span className="pickle-art-caption">
           A little tang goes a long way.
@@ -86,6 +100,7 @@ export function PickleHero() {
   );
 }
 function PickleCard({ product: p }: { product: PickleProduct }) {
+  const selection = usePickleSelection();
   const collection = collectionFor(p);
   return (
     <article className={`pickle-card ${p.collectionId}`}>
@@ -106,6 +121,20 @@ function PickleCard({ product: p }: { product: PickleProduct }) {
         </span>
         <small>Jar illustration · photo pending</small>
       </a>
+      {selection && (
+        <button
+          className="pickle-save"
+          aria-label={`${selection.ids.includes(p.id) ? "Unsave" : "Save"} ${p.name} — ${collection.name}`}
+          aria-pressed={selection.ids.includes(p.id)}
+          onClick={() => selection.toggle(p.id)}
+        >
+          {selection.ids.includes(p.id) ? (
+            <Check size={17} />
+          ) : (
+            <Bookmark size={17} />
+          )}
+        </button>
+      )}
       <div className="pickle-card-copy">
         <a href={`/collections/${collection.id}`} className="eyebrow">
           {collection.name}
@@ -270,7 +299,7 @@ export function TropicalOrdering() {
 }
 export function PickleHome() {
   return (
-    <div className="pickle-home" id="pickles">
+    <div className="pickle-home" id="collections">
       <div className="pickle-intro section-pad">
         <span className="eyebrow">THE PANTRY COLLECTIONS</span>
         <h2>
@@ -286,7 +315,7 @@ export function PickleHome() {
       {pickleCollections.map((c) => (
         <CollectionFeature collection={c} key={c.id} />
       ))}
-      <section className="section-pad">
+      <section className="section-pad" id="pickle-grid">
         <div className="section-heading">
           <h2>Meet the pantry picks.</h2>
           <a href="/pickles" className="text-link">
@@ -306,8 +335,10 @@ export function PickleHome() {
 }
 export function PickleCatalogue({
   collection,
+  cataloguePath = "/pickles",
 }: {
   collection?: PickleCollection;
+  cataloguePath?: string;
 }) {
   const [selected, setSelected] = useState("all");
   const [query, setQuery] = useState("");
@@ -329,7 +360,12 @@ export function PickleCatalogue({
         <span className="eyebrow">
           {collection ? "THE PANTRY COLLECTION" : "A NEW SIDE OF THE PANTRY"}
         </span>
-        <h1>{collection?.name || "Meet your next little obsession."}</h1>
+        <h1>
+          {collection?.name ||
+            (cataloguePath === "/shop"
+              ? "The pickle pantry."
+              : "Meet your next little obsession.")}
+        </h1>
         <p>
           {collection?.description ||
             "Explore Fermented Pickles and Tropical Feast. Four entries, two distinct collections — with product details kept clear, and unknowns left honest."}
@@ -372,8 +408,8 @@ export function PickleCatalogue({
           <h2 id="pickle-grid-title">
             {collection ? "Inside the collection." : "Find your flavour."}
           </h2>
-          <a className="text-link" href="/shop">
-            Looking for fruit? <ArrowUpRight size={16} />
+          <a className="text-link" href="/ordering">
+            How to order <ArrowUpRight size={16} />
           </a>
         </div>
         <div className="pickle-toolbar">
@@ -436,6 +472,7 @@ export function PickleCatalogue({
 }
 export function PickleProductPage({ product: p }: { product: PickleProduct }) {
   const c = collectionFor(p);
+  const selection = usePickleSelection();
   const tropical = c.id === "tropical-feast";
   return (
     <div className="pickle-product-page">
@@ -506,12 +543,24 @@ export function PickleProductPage({ product: p }: { product: PickleProduct }) {
             </div>
           </dl>
           <p className="pickle-disclosure">
-            This product cannot be added to the fruit checkout while price and
-            ordering details are unverified. No order or payment is processed
-            here.
+            Price and ordering details are awaiting confirmation. Save this
+            pickle to your enquiry list, then confirm the details with its
+            supplier. No order or payment is processed here.
           </p>
+          {selection && (
+            <button
+              className="button primary pickle-save-detail"
+              aria-pressed={selection.ids.includes(p.id)}
+              onClick={() => selection.toggle(p.id)}
+            >
+              {selection.ids.includes(p.id)
+                ? "Saved to enquiry list"
+                : "Save to enquiry list"}
+              <Bookmark size={17} />
+            </button>
+          )}
           <a
-            className="button primary"
+            className="text-link pickle-detail-enquiry"
             href={tropical ? "#tropical-ordering" : "#pickle-enquiry"}
           >
             {tropical ? "Tropical Feast enquiry" : "Check enquiry details"}{" "}

@@ -1,3 +1,5 @@
+> **Current public site:** Fruity is now a pickle-first enquiry catalogue. `/shop` means pickles. Read [RECONSTRUCTION.md](RECONSTRUCTION.md) for the current architecture, tests and remaining supplier configuration. The fruit-store features described below are preserved in the separate, noindex archive at `/fruit-demo` and original fruit product routes.
+
 # furity — Freshness, in full color.
 
 A responsive fruit store concept built with React, Vite, TypeScript, Tailwind CSS, GSAP + ScrollTrigger, Framer Motion, and Lucide React. Inspired by the supplied pastel, floating-fruit campaign video, with an original brand and complete local shopping frontend.

@@ -1,0 +1,615 @@
+/* Primary pickle storefront. Legacy fruit styling stays isolated by its wrapper. */
+.pantry-store {
+  --cream: #fff9ee;
+  --green: #183d25;
+  color: #272922;
+  background: #fff9ee;
+}
+.pantry-store .button.primary {
+  background: #183d25;
+  color: #fff9ee;
+  border: 1px solid #183d25;
+}
+.pantry-store .button.primary:hover {
+  background: #315439;
+}
+.pantry-announcement {
+  background: #183d25;
+  color: #fff9ee;
+  padding: 11px 5%;
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+  font-size: 9px;
+  letter-spacing: 0.13em;
+}
+.pantry-header {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 18px 5%;
+  background: #fff9eef5;
+  border-bottom: 1px solid #183d2520;
+}
+.pantry-logo {
+  display: inline-block;
+  color: #183d25;
+  font-size: 36px;
+  line-height: 0.95;
+  font-weight: 800;
+  letter-spacing: -2.5px;
+  white-space: nowrap;
+}
+.pantry-logo > span {
+  font-weight: 400;
+  font-size: 32px;
+  margin-left: 3px;
+}
+.pantry-logo small {
+  display: block;
+  font-size: 8px;
+  letter-spacing: 0.19em;
+  line-height: 1;
+  margin-top: 9px;
+  font-weight: 500;
+}
+.pantry-navigation {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  font-size: 11px;
+}
+.pantry-navigation a {
+  padding: 12px 0;
+  text-underline-offset: 7px;
+}
+.pantry-navigation a:hover,
+.pantry-navigation a[aria-current] {
+  text-decoration: underline;
+}
+.pantry-tools {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.pantry-list-button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 11px;
+  border: 1px solid #183d2540;
+  min-height: 44px;
+  padding: 8px 14px;
+  border-radius: 3px;
+}
+.pantry-list-button b {
+  background: #183d25;
+  color: #fff9ee;
+  font-size: 10px;
+  min-width: 20px;
+  height: 20px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+}
+.pantry-menu {
+  display: none;
+}
+.pantry-store .pickle-hero {
+  min-height: 0;
+  grid-template-columns: 0.92fr 1.08fr;
+}
+.pantry-store .pickle-hero-copy {
+  padding: clamp(40px, 5vw, 76px) 8% 40px 10%;
+}
+.pantry-store .pickle-hero h1 {
+  font-size: clamp(52px, 6.4vw, 94px);
+}
+.pantry-store .pickle-hero-visual {
+  padding: 0;
+  background: #e6dfcf;
+  justify-content: flex-start;
+}
+.pantry-store .pickle-hero .pickle-artwork {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.pantry-store .pickle-hero .pickle-artwork img {
+  flex: 1;
+  min-height: 0;
+  max-height: none;
+  object-fit: cover;
+  aspect-ratio: 5/4;
+}
+.pantry-store .pickle-hero .pickle-artwork figcaption {
+  background: #e6dfcf;
+  font-size: 9px;
+}
+.pantry-store .pickle-art-index {
+  color: #183d25;
+  background: #fff9eecf;
+  padding: 8px 11px;
+  top: 25px;
+}
+.pantry-store .pickle-art-caption {
+  display: none;
+}
+.pantry-editorial-strip {
+  padding: 25px 5%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  border-bottom: 1px solid #183d2525;
+  color: #536543;
+  font-size: 11px;
+}
+.pantry-editorial-strip > span {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.pantry-editorial-strip i {
+  font-style: normal;
+}
+.pantry-store .pickle-intro {
+  padding-block: 70px;
+}
+.pantry-store .pickle-feature {
+  min-height: 580px;
+  overflow: clip;
+}
+.pantry-store .pickle-card {
+  position: relative;
+}
+.pickle-save {
+  position: absolute;
+  left: 11px;
+  top: 11px;
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border: 1px solid #183d2530;
+  border-radius: 50%;
+  background: #fff9eef2;
+  color: #183d25;
+}
+.pickle-save[aria-pressed="true"] {
+  background: #183d25;
+  color: #fff9ee;
+}
+.pantry-store .pickle-feature-jars img {
+  transform-origin: 50% 90%;
+}
+.pantry-store .pickle-feature-jars > a:hover img {
+  transform: none;
+}
+.pantry-story {
+  background: #183d25;
+  color: #fff9ee;
+  position: relative;
+}
+.pantry-story h2 {
+  font:
+    400 clamp(40px, 5vw, 72px)/1.08 Georgia,
+    serif;
+  letter-spacing: -0.04em;
+  margin: 24px 0;
+}
+.pantry-story h2 em {
+  color: #c7d0aa;
+}
+.pantry-story p {
+  max-width: 610px;
+  font-size: 13px;
+  line-height: 1.9;
+  color: #e2e5d2;
+}
+.pantry-story .text-link {
+  margin-top: 20px;
+  color: #fff9ee;
+}
+.pantry-story a:focus-visible {
+  outline-color: #fff9ee;
+}
+.pantry-faq {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 10%;
+}
+.pantry-faq h2,
+.pantry-order-intro h1,
+.pantry-order-intro h2 {
+  font:
+    400 clamp(36px, 4.2vw, 60px)/1.08 Georgia,
+    serif;
+  color: #183d25;
+  letter-spacing: -0.04em;
+  margin: 20px 0;
+}
+.pantry-faq details {
+  padding: 19px 0;
+  border-bottom: 1px solid #183d2530;
+}
+.pantry-faq summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  list-style: none;
+  cursor: pointer;
+  font-size: 13px;
+  min-height: 30px;
+}
+.pantry-faq summary::-webkit-details-marker {
+  display: none;
+}
+.pantry-faq summary:focus-visible {
+  outline: 2px solid #183d25;
+  outline-offset: 5px;
+}
+.pantry-faq summary span {
+  font-size: 23px;
+  font-weight: 300;
+}
+.pantry-faq details[open] summary span {
+  transform: rotate(45deg);
+}
+.pantry-faq p {
+  font-size: 12px;
+  line-height: 1.9;
+  max-width: 650px;
+  color: #5a614e;
+}
+.pantry-newsletter {
+  background: #eee7d7;
+}
+.pantry-newsletter h2 {
+  font:
+    400 clamp(36px, 4vw, 56px)/1.1 Georgia,
+    serif;
+  letter-spacing: -0.04em;
+}
+.pantry-newsletter p {
+  max-width: 370px;
+  font-size: 12px;
+}
+.pantry-footer {
+  border-top: 1px solid #183d2525;
+  background: #f3eddf;
+  padding-bottom: 30px;
+}
+.pantry-footer-top {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr 1fr 1fr;
+  gap: 6%;
+}
+.pantry-footer-top > div {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  gap: 13px;
+}
+.pantry-footer p {
+  font-size: 12px;
+  line-height: 1.9;
+  color: #58644d;
+  margin: 5px 0;
+}
+.pantry-footer a:not(.pantry-logo),
+.pantry-footer button {
+  font-size: 11px;
+}
+.pantry-footer .eyebrow {
+  font-size: 9px;
+  margin-bottom: 10px;
+}
+.pantry-footer-bottom {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  font-size: 9px;
+  color: #5f6654;
+  margin-top: 60px;
+  border-top: 1px solid #183d2525;
+  padding-top: 24px;
+}
+.pantry-motion {
+  position: fixed;
+  z-index: 45;
+  bottom: 18px;
+  right: 18px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #fff9eef5;
+  border: 1px solid #183d2535;
+  border-radius: 30px;
+  padding: 10px 15px;
+  font-size: 10px;
+}
+.pantry-store .privacy-settings {
+  position: static;
+  display: block;
+  margin: 0;
+  padding: 18px 5%;
+  background: #f3eddf;
+  font-size: 10px;
+  color: #45533d;
+  width: 100%;
+  text-align: left;
+  border: 0;
+  border-radius: 0;
+}
+.pantry-store .pickle-detail-enquiry {
+  display: flex;
+  margin-top: 20px;
+  font-size: 12px;
+}
+.pantry-order-intro > p {
+  max-width: 640px;
+  font-size: 14px;
+  line-height: 1.9;
+  color: #525e46;
+}
+.pantry-order-intro ol {
+  padding-left: 20px;
+  margin: 30px 0;
+}
+.pantry-order-intro li {
+  padding: 9px 0;
+  font-size: 13px;
+  line-height: 1.8;
+}
+.pantry-not-found {
+  min-height: 65vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 20px;
+}
+.pantry-not-found h1 {
+  font:
+    400 clamp(35px, 5vw, 65px)/1.1 Georgia,
+    serif;
+  margin: 0;
+  color: #183d25;
+}
+.pantry-404 {
+  display: flex;
+  align-items: center;
+  font:
+    400 120px/1 Georgia,
+    serif;
+  color: #84966a;
+}
+.pantry-404 img {
+  height: 180px;
+  width: 150px;
+}
+.pantry-not-found p {
+  font-size: 13px;
+  max-width: 430px;
+  line-height: 1.8;
+}
+.enquiry-list {
+  padding: 8px 24px 28px;
+}
+.enquiry-list p {
+  font-size: 12px;
+  line-height: 1.85;
+  color: #53614b;
+}
+.enquiry-empty {
+  padding: 40px 0;
+  text-align: center;
+}
+.enquiry-empty > span {
+  font-size: 50px;
+  color: #819262;
+}
+.enquiry-empty h3 {
+  font:
+    400 32px/1.1 Georgia,
+    serif;
+}
+.enquiry-empty .button {
+  margin-top: 20px;
+}
+.enquiry-group {
+  border-block: 1px solid #183d2525;
+  padding: 18px 0;
+  margin-top: 20px;
+}
+.enquiry-group h3 {
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin: 0 0 18px;
+}
+.enquiry-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  margin: 15px 0;
+}
+.enquiry-item > div {
+  min-width: 0;
+}
+.enquiry-item a {
+  font:
+    400 21px/1.3 Georgia,
+    serif;
+  overflow-wrap: anywhere;
+}
+.enquiry-item small {
+  display: block;
+  font-size: 10px;
+  color: #606953;
+  margin-top: 8px;
+}
+.enquiry-group .text-link {
+  font-size: 12px;
+}
+.enquiry-message {
+  display: block;
+  font-size: 12px;
+  margin: 24px 0 15px;
+}
+.enquiry-message textarea {
+  display: block;
+  resize: vertical;
+  width: 100%;
+  padding: 13px;
+  margin-top: 10px;
+  border: 1px solid #183d2540;
+  background: #fff9ee;
+  font:
+    11px/1.8 Manrope,
+    Arial,
+    sans-serif;
+  color: #183d25;
+}
+.enquiry-message textarea:focus-visible {
+  outline: 2px solid #183d25;
+  outline-offset: 3px;
+}
+@media (max-width: 1050px) {
+  .pantry-header {
+    gap: 15px;
+  }
+  .pantry-navigation {
+    gap: 17px;
+    font-size: 10px;
+  }
+  .pantry-logo {
+    font-size: 31px;
+  }
+  .pantry-list-button > span {
+    display: none;
+  }
+  .pantry-store .pickle-hero h1 {
+    font-size: clamp(49px, 6.4vw, 68px);
+  }
+  .pantry-store .pickle-feature {
+    min-height: 0;
+  }
+}
+@media (max-width: 767px) {
+  .pantry-announcement {
+    font-size: 8px;
+    padding: 10px 5%;
+  }
+  .pantry-announcement > span:last-child {
+    letter-spacing: 0;
+    font-size: 8px;
+  }
+  .pantry-header {
+    padding: 16px 5%;
+  }
+  .pantry-menu {
+    display: grid;
+  }
+  .pantry-navigation {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #fff9ee;
+    border-bottom: 1px solid #183d2530;
+    padding: 18px 6%;
+    box-shadow: 0 14px 24px #183d2510;
+  }
+  .pantry-navigation.is-open {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
+  }
+  .pantry-navigation a {
+    font-size: 14px;
+    padding: 14px 0;
+  }
+  .pantry-store .pickle-hero {
+    grid-template-columns: 1fr;
+  }
+  .pantry-store .pickle-hero-copy {
+    padding: 38px 6%;
+  }
+  .pantry-store .pickle-hero h1 {
+    font-size: clamp(49px, 12vw, 68px);
+  }
+  .pantry-store .pickle-hero .pickle-artwork img {
+    flex: none;
+    width: 100%;
+    max-height: none;
+  }
+  .pantry-editorial-strip {
+    padding: 20px 6%;
+    justify-content: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    font-size: 10px;
+  }
+  .pantry-editorial-strip > span:first-child {
+    width: 100%;
+    justify-content: center;
+  }
+  .pantry-editorial-strip > i:first-of-type {
+    display: none;
+  }
+  .pantry-store .pickle-intro {
+    padding-block: 45px;
+  }
+  .pantry-faq {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .pantry-footer-top {
+    grid-template-columns: 1fr 1fr;
+    gap: 35px 22px;
+  }
+  .pantry-footer-top > div:first-child {
+    grid-column: 1/-1;
+  }
+  .pantry-footer-bottom {
+    flex-direction: column;
+    padding-bottom: 30px;
+  }
+  .pantry-motion {
+    bottom: calc(77px + env(safe-area-inset-bottom));
+    padding: 9px;
+    right: 12px;
+  }
+  .pantry-motion > span {
+    display: none;
+  }
+  .pantry-store .mobile-shop-cta {
+    background: #183d25;
+  }
+  .pantry-faq summary {
+    font-size: 12px;
+  }
+  .pantry-footer-top > div {
+    min-width: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pantry-store *,
+  .pantry-store *::before,
+  .pantry-store *::after {
+    scroll-behavior: auto !important;
+    animation: none !important;
+    transition: none !important;
+  }
+}

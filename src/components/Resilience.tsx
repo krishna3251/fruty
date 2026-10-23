@@ -35,7 +35,7 @@ export class ErrorBoundary extends Component<
           <em>fresh start.</em>
         </h1>
         <p>
-          Something didn’t load correctly. Your saved bag is still on this
+          Something didn’t load correctly. Your saved lists are still on this
           device.
         </p>
         <button
@@ -94,7 +94,9 @@ export function OfflineNotice() {
   return !online ? (
     <div className="offline-notice" role="status">
       <WifiOff size={16} />
-      <span>You’re offline. Loaded products and your bag still work.</span>
+      <span>
+        You’re offline. Loaded products and your saved lists still work.
+      </span>
       <button onClick={() => window.location.reload()}>Retry</button>
     </div>
   ) : null;

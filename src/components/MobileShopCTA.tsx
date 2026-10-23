@@ -27,7 +27,8 @@ export default function MobileShopCTA({
     const target = document.querySelector(
       ".pickle-hero .button, .hero-copy .button",
     );
-    const shop = document.getElementById("shop");
+    const shop =
+      document.getElementById("pickle-grid") || document.getElementById("shop");
     if (!target || !shop) return;
     let heroVisible = true,
       shopVisible = false;
@@ -46,7 +47,7 @@ export default function MobileShopCTA({
     return () => observer.disconnect();
   }, [path, blocked]);
   return show && !blocked && !editing ? (
-    <a href="/pickles" className="mobile-shop-cta">
+    <a href="/shop" className="mobile-shop-cta">
       Explore pickles <span aria-hidden="true">↗</span>
     </a>
   ) : null;

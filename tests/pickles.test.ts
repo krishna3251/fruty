@@ -7,6 +7,7 @@ import {
   filterPickles,
   safeEnquiryUrl,
 } from "../src/data/pickles.ts";
+import { restoreSelection } from "../src/context/PickleSelection.tsx";
 import { products } from "../src/data/products.ts";
 import { restoreCart } from "../src/context/cartModel.ts";
 test("supplied pickle records remain distinct, unpriced, local and outside the fruit checkout", () => {
@@ -67,5 +68,21 @@ test("enquiry URLs reject unsafe schemes and embedded credentials", () => {
   assert.equal(
     safeEnquiryUrl("https://dm.example.test/supplier"),
     "https://dm.example.test/supplier",
+  );
+});
+
+test("pickle enquiry restoration accepts only unique known product IDs", () => {
+  assert.deepEqual(restoreSelection("invalid JSON"), []);
+  assert.deepEqual(
+    restoreSelection(
+      JSON.stringify([
+        "mango",
+        "tropical-pineapple-pickle",
+        "tropical-pineapple-pickle",
+        1,
+        "unknown",
+      ]),
+    ),
+    ["tropical-pineapple-pickle"],
   );
 });

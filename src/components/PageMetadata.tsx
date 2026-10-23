@@ -25,6 +25,7 @@ export default function PageMetadata({ path }: { path: string }) {
     };
     meta("description", m.description);
     meta("robots", m.index ? "index,follow" : "noindex,follow");
+    meta("og:site_name", "Fruity", true);
     meta("og:title", m.title, true);
     meta("og:description", m.description, true);
     meta("og:url", origin + path, true);

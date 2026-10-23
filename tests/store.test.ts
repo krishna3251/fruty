@@ -50,7 +50,8 @@ Object.defineProperty(globalThis, "IS_REACT_ACT_ENVIRONMENT", {
 const React = await import("react");
 const { render, screen, fireEvent, cleanup, within, waitFor } =
   await import("@testing-library/react");
-const { default: App } = await import("../src/App.tsx");
+const { default: App } = await import("../src/LegacyFruitStore.tsx");
+const { default: PantryApp } = await import("../src/App.tsx");
 const { CartProvider } = await import("../src/context/CartContext.tsx");
 const { default: gsap } = await import("gsap");
 const { ScrollTrigger } = await import("gsap/ScrollTrigger");
@@ -262,7 +263,7 @@ test("image failures and offline events give useful feedback", () => {
   fireEvent(window, new window.Event("offline"));
   assert.ok(
     screen.getByText(
-      "You’re offline. Loaded products and your bag still work.",
+      "You’re offline. Loaded products and your saved lists still work.",
     ),
   );
   Object.defineProperty(navigator, "onLine", {
@@ -272,7 +273,7 @@ test("image failures and offline events give useful feedback", () => {
   fireEvent(window, new window.Event("online"));
   assert.equal(
     screen.queryByText(
-      "You’re offline. Loaded products and your bag still work.",
+      "You’re offline. Loaded products and your saved lists still work.",
     ),
     null,
   );
@@ -530,6 +531,174 @@ test("Tropical Feast DM is only enabled for its explicit safe configuration", as
   } finally {
     siteConfig.tropicalFeastDmUrl = old;
   }
+});
+
+function mountPantry() {
+  return render(
+    React.createElement(CartProvider, null, React.createElement(PantryApp)),
+  );
+}
+test("primary homepage and shop are pickle-only, with enquiry controls and persistent supplier-separated selection", async () => {
+  window.history.replaceState({}, "", "/");
+  localStorage.clear();
+  mountPantry();
+  const main = within(screen.getByRole("main"));
+  assert.equal(document.querySelectorAll(".product-card").length, 0);
+  assert.equal(main.queryByText("Freshness,", { exact: false }), null);
+  assert.ok(screen.getByRole("link", { name: "Shop pickles", exact: true }));
+  assert.equal(screen.queryByRole("button", { name: "Search fruit" }), null);
+  fireEvent.click(
+    screen.getByRole("link", { name: "Shop pickles", exact: true }),
+  );
+  await waitFor(() =>
+    assert.ok(
+      screen.getByRole("heading", { name: "The pickle pantry.", exact: true }),
+    ),
+  );
+  assert.equal(window.location.pathname, "/shop");
+  assert.equal(
+    within(screen.getByRole("main")).getAllByRole("article").length,
+    4,
+  );
+  fireEvent.click(
+    screen.getByRole("button", {
+      name: "Save Cucumber Pickle — Fermented Pickles",
+      exact: true,
+    }),
+  );
+  fireEvent.click(
+    screen.getByRole("button", {
+      name: "Save Pineapple Pickle — Tropical Feast",
+      exact: true,
+    }),
+  );
+  assert.deepEqual(
+    JSON.parse(localStorage.getItem("fruity-pickle-selection-v1")!),
+    ["fermented-cucumber-pickle", "tropical-pineapple-pickle"],
+  );
+  fireEvent.click(
+    screen.getByRole("button", {
+      name: "Open enquiry list, 2 items",
+      exact: true,
+    }),
+  );
+  const dialog = within(screen.getByRole("dialog"));
+  assert.ok(
+    dialog.getByRole("heading", { name: "Fermented Pickles", exact: true }),
+  );
+  assert.ok(
+    dialog.getByRole("heading", { name: "Tropical Feast", exact: true }),
+  );
+  assert.match(
+    dialog.getByRole("textbox", { name: "Your enquiry draft" }).textContent ||
+      "",
+    /Pineapple Pickle — Tropical Feast/,
+  );
+  assert.equal(dialog.queryByRole("button", { name: /checkout/i }), null);
+  const previousClipboard = Object.getOwnPropertyDescriptor(
+    navigator,
+    "clipboard",
+  );
+  try {
+    Object.defineProperty(navigator, "clipboard", {
+      configurable: true,
+      value: undefined,
+    });
+    fireEvent.click(dialog.getByRole("button", { name: "Copy enquiry draft" }));
+    await waitFor(() => assert.ok(dialog.getByText(/Copy is unavailable/)));
+    let copied = "";
+    Object.defineProperty(navigator, "clipboard", {
+      configurable: true,
+      value: {
+        writeText: async (value: string) => {
+          copied = value;
+        },
+      },
+    });
+    fireEvent.click(dialog.getByRole("button", { name: "Copy enquiry draft" }));
+    await waitFor(() => assert.ok(dialog.getByText(/Enquiry draft copied/)));
+    assert.match(copied, /confirm prices, jar sizes, ingredients/);
+  } finally {
+    if (previousClipboard)
+      Object.defineProperty(navigator, "clipboard", previousClipboard);
+    else Reflect.deleteProperty(navigator, "clipboard");
+  }
+  fireEvent.click(
+    dialog.getByRole("button", {
+      name: "Remove Cucumber Pickle — Fermented Pickles from enquiry list",
+    }),
+  );
+  assert.deepEqual(
+    JSON.parse(localStorage.getItem("fruity-pickle-selection-v1")!),
+    ["tropical-pineapple-pickle"],
+  );
+  fireEvent.keyDown(document, { key: "Escape" });
+  cleanup();
+  mountPantry();
+  assert.ok(
+    screen.getByRole("button", {
+      name: "Open enquiry list, 1 items",
+      exact: true,
+    }),
+  );
+  cleanup();
+  window.history.replaceState({}, "", "/");
+});
+test("primary ordering and missing routes offer useful recovery without fruit navigation or fake checkout", async () => {
+  window.history.replaceState({}, "", "/ordering");
+  mountPantry();
+  assert.ok(
+    screen.getByRole("heading", {
+      name: /Find your jar.*Ask the right questions/,
+      exact: false,
+    }),
+  );
+  fireEvent.click(screen.getByRole("button", { name: "Review enquiry list" }));
+  assert.ok(screen.getByRole("dialog"));
+  cleanup();
+  window.history.replaceState({}, "", "/does-not-exist");
+  mountPantry();
+  assert.ok(screen.getByRole("heading", { name: "This shelf is empty." }));
+  assert.ok(screen.getByRole("link", { name: "Explore pickles", exact: true }));
+  assert.equal(
+    document.querySelector('meta[name="robots"]')?.getAttribute("content"),
+    "noindex,follow",
+  );
+  cleanup();
+  window.history.replaceState({}, "", "/");
+});
+test("primary product details save unpriced pickles while archived fruit cart remains separately usable", async () => {
+  localStorage.clear();
+  window.history.replaceState({}, "", "/products/tropical-pineapple-pickle");
+  mountPantry();
+  fireEvent.click(
+    screen.getByRole("button", { name: "Save to enquiry list", exact: true }),
+  );
+  assert.ok(
+    screen.getByRole("button", { name: "Saved to enquiry list", exact: true }),
+  );
+  assert.equal(screen.queryByRole("button", { name: /add.*bag/i }), null);
+  assert.ok(screen.getByText("Hyderabad only"));
+  cleanup();
+  window.history.replaceState({}, "", "/fruit-demo");
+  mountPantry();
+  await screen.findByRole("button", {
+    name: "Add Alphonso Mangoes to bag",
+    exact: true,
+  });
+  fireEvent.click(
+    screen.getByRole("button", {
+      name: "Add Alphonso Mangoes to bag",
+      exact: true,
+    }),
+  );
+  assert.equal(JSON.parse(localStorage.getItem("furity-cart-v1")!).mango, 1);
+  assert.equal(
+    JSON.parse(localStorage.getItem("fruity-pickle-selection-v1")!).length,
+    1,
+  );
+  cleanup();
+  window.history.replaceState({}, "", "/");
 });
 
 test.after(() => {
