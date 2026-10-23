@@ -16,6 +16,11 @@ test("supplied pickle records remain distinct, unpriced, local and outside the f
     products.length + 4,
   );
   assert.equal(pickleCollections.length, 2);
+  assert.deepEqual(pickleCollections[0].promotionalMessages, [
+    "ZERO OIL",
+    "ZERO MASALA",
+  ]);
+  assert.deepEqual(pickleCollections[1].promotionalMessages, []);
   for (const p of pickleProducts) {
     assert.equal(p.price, null);
     assert.equal(p.jarSize, null);

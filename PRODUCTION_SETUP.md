@@ -40,6 +40,6 @@ Fermented Pickles has no confirmed ordering method or service area; its detail p
 - Exact identity of the pale vegetable pickle; do not rename it until verified.
 - Verified prices in INR, jar sizes, ingredients/allergens, stock, storage/shelf life, supplier identity and commercial terms for each collection.
 - Tropical Feast's verified DM URL, and a separately verified Fermented Pickles order/contact method.
-- “ZERO OIL / ZERO MASALA” and health/antioxidant/gut-related promotional claims are intentionally not published as product facts. Confirm substantiation and applicable requirements before adding these to production copy.
+- Fermented Pickles’ “ZERO OIL / ZERO MASALA” wording is attributed to the supplied promotion and accompanied by an ingredient-confirmation notice. It is not a verified ingredient list. Health/antioxidant/gut-related claims are not published. Confirm supporting documentation and applicable requirements before expanding these claims.
 
 Supplying a price alone does not enable pickle checkout. A real ordering/payment integration needs supplier-specific fulfilment, prices, stock and server-side validation; preserve the explicit enquiry-only boundary until implemented and verified.

@@ -716,3 +716,21 @@
   transition: none;
   transform: none !important;
 }
+
+.pickle-poster-copy {
+  padding-block: 12px;
+  border-block: 1px solid #183d2525;
+}
+.pickle-poster-copy > span {
+  display: block;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  color: #183d25;
+}
+.pickle-poster-copy > small {
+  display: block;
+  font-size: 9px;
+  line-height: 1.7;
+  margin-top: 5px;
+  color: #616353;
+}

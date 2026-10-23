@@ -148,6 +148,15 @@ function CollectionFeature({
         <p className="pickle-feature-headline">{c.headline}</p>
         <p>{c.description}</p>
         <p className="pickle-feature-tagline">{c.tagline}</p>
+        {c.promotionalMessages.length > 0 && (
+          <p className="pickle-poster-copy">
+            <span>{c.promotionalMessages.join(" · ")}</span>
+            <small>
+              Supplied promotional wording · ingredient list awaiting
+              confirmation
+            </small>
+          </p>
+        )}
         {c.descriptors.length > 0 && (
           <span className="pickle-descriptors">
             {c.descriptors.join(" · ")}
@@ -327,6 +336,15 @@ export function PickleCatalogue({
         </p>
         {collection && (
           <p className="pickle-feature-tagline">{collection.tagline}</p>
+        )}
+        {collection && collection.promotionalMessages.length > 0 && (
+          <p className="pickle-poster-copy">
+            <span>{collection.promotionalMessages.join(" · ")}</span>
+            <small>
+              Supplied promotional wording · ingredient list awaiting
+              confirmation
+            </small>
+          </p>
         )}
         {!collection && (
           <p className="pickle-disclosure">

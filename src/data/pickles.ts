@@ -7,6 +7,7 @@ export interface PickleCollection {
   description: string;
   tagline: string;
   descriptors: string[];
+  promotionalMessages: string[];
   serviceArea: string | null;
   orderMethod: "direct-message" | null;
 }
@@ -36,6 +37,7 @@ export const pickleCollections: PickleCollection[] = [
       "Two pickle varieties, presented in golden-lidded glass jars. Meet Cucumber Pickle and a pale vegetable variety whose exact identity is still awaiting confirmation.",
     tagline: "Made for your mindful food moments.",
     descriptors: [],
+    promotionalMessages: ["ZERO OIL", "ZERO MASALA"],
     serviceArea: null,
     orderMethod: null,
   },
@@ -47,6 +49,7 @@ export const pickleCollections: PickleCollection[] = [
       "Pineapple and cucumber, each with its own character. Discover two distinct pickle varieties from the Tropical Feast promotional collection.",
     tagline: "Premium Quality. Distinctive Flavours.",
     descriptors: ["Crisp", "Spicy", "Tangy"],
+    promotionalMessages: [],
     serviceArea: "Hyderabad only",
     orderMethod: "direct-message",
   },
