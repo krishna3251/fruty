@@ -36,7 +36,7 @@ export default function InformationPage({ path }: { path: string }) {
         <span>/</span>
         <span>{path.slice(1)}</span>
       </nav>
-      <span className="eyebrow">FRUITY / CLEAR AND SIMPLE</span>
+      <span className="eyebrow">TROPICAL FEAST / CLEAR AND SIMPLE</span>
       <h1>
         {path === "/privacy"
           ? "Privacy & storage."
@@ -79,9 +79,7 @@ export default function InformationPage({ path }: { path: string }) {
             channel. Following that link, when available, takes you to the
             configured provider; this website does not send your message or
             contact details automatically. The supplier and provider must
-            confirm how they handle enquiries. Fermented Pickles has no verified
-            enquiry channel. Shared ownership of these collections has not been
-            established.
+            confirm how they handle enquiries.
           </p>
           <h2>Forms and checkout</h2>
           <p>
@@ -161,13 +159,12 @@ export default function InformationPage({ path }: { path: string }) {
           </div>
           <h2>Using this catalogue</h2>
           <p>
-            Fruity is a pickle discovery and enquiry catalogue. Fermented
-            Pickles and Tropical Feast are separate collections based on
-            supplied promotional information; shared ownership is not
-            established. Prices, jar sizes, ingredients/allergens and stock
-            remain unconfirmed. No offer to supply goods or contract is created
-            by saving a product or copying an enquiry draft. A separately
-            archived fruit demonstration retains its sample prices and checkout.
+            Tropical Feast is a pickle discovery and enquiry catalogue for two
+            owner-confirmed flavours: pineapple and cucumber. Prices, jar sizes,
+            ingredients/allergens and stock remain unconfirmed. No offer to
+            supply goods or contract is created by saving a product or copying
+            an enquiry draft. A separately archived fruit demonstration retains
+            its sample prices and checkout.
           </p>
           <h2>Orders, payments and accounts</h2>
           <p>
@@ -238,9 +235,8 @@ export default function InformationPage({ path }: { path: string }) {
           <p>
             This website provides pickle discovery and enquiry preparation.
             Tropical Feast’s Hyderabad-only enquiry channel is separately
-            configurable; Fermented Pickles’ contact and service area remain
-            unconfirmed. Online payment, fulfilment and order processing are not
-            connected. No response-time promise or company registration is
+            configurable. Online payment, fulfilment and order processing are
+            not connected. No response-time promise or company registration is
             implied.
           </p>
           <h2>Owner completion checklist</h2>

@@ -19,7 +19,12 @@ import {
 import { useReducedMotion } from "framer-motion";
 import { useRoute } from "./hooks/useRoute";
 import { usePantryMotion } from "./hooks/usePantryMotion";
-import { pickleCollections, pickleProducts } from "./data/pickles";
+import {
+  pickleCollections,
+  pickleProducts,
+  brandAssets,
+  retiredPickleRoutes,
+} from "./data/pickles";
 import { products as archivedFruit } from "./data/products";
 import {
   PickleSelectionProvider,
@@ -56,23 +61,23 @@ function PantryQuestions() {
         {[
           [
             "How do I order?",
-            "Start with a product’s details and save your favourites to an enquiry list. Tropical Feast uses a separately configured direct-message channel for Hyderabad enquiries. Its verified DM URL has not yet been supplied. Fermented Pickles’ ordering channel is also awaiting confirmation. Nothing is sent or ordered automatically.",
+            "Start with a product’s details and save your favourites to an enquiry list. Tropical Feast uses a separately configured direct-message channel for Hyderabad enquiries. Its verified DM URL has not yet been supplied. Nothing is sent or ordered automatically.",
           ],
           [
-            "Are both collections available in Hyderabad?",
-            "Hyderabad-only availability is supplied for Tropical Feast. Fermented Pickles’ service area is not confirmed; the restriction does not apply to that collection.",
+            "Where are the pickles available?",
+            "Tropical Feast enquiries are for Hyderabad only. Confirm delivery details and availability before ordering.",
           ],
           [
             "Where are the prices and jar sizes?",
             "They have not been supplied. Confirm the total price in INR, jar size, availability, ingredients/allergens and delivery directly with the relevant supplier before ordering.",
           ],
           [
-            "What is the pale vegetable variety?",
-            "Its exact identity is still unconfirmed. It is labelled that way throughout this website, without assuming a vegetable, ingredient list or nutritional benefit.",
+            "Which flavours do you offer?",
+            "There are exactly two flavours: Pineapple Pickle and Cucumber Pickle. Both are Tropical Feast products.",
           ],
           [
-            "Are these actual product photos?",
-            "The hero uses AI-created concept imagery. Product cards use jar illustrations. Actual packaging, ingredients and appearance must be confirmed with the supplier; approved product photography is still needed.",
+            "What images are shown?",
+            "The homepage, logo and both product images were supplied by the owner. Product images do not replace an ingredient list; confirm ingredients, allergens, jar size and availability before ordering.",
           ],
         ].map(([title, text]) => (
           <details key={title}>
@@ -126,12 +131,19 @@ function PantryShell({ path }: { path: string }) {
       </a>
       <div className="pantry-announcement">
         <span>THE PICKLE PANTRY</span>
-        <span>Two distinct collections. A world of tang.</span>
+        <span>Two flavours. Pineapple & cucumber.</span>
       </div>
       <header className="pantry-header">
-        <a href="/" className="pantry-logo" aria-label="Fruity home">
-          fruity<span aria-hidden="true">✳</span>
-          <small>THE PICKLE EDIT</small>
+        <a href="/" className="pantry-logo" aria-label="Tropical Feast home">
+          <img
+            src={brandAssets.logo}
+            alt="Tropical Feast logo"
+            width="80"
+            height="80"
+          />
+          <span className="brand-wordmark">
+            Tropical Feast<small>RICH FLAVOURS, BEAUTIFULLY PRESERVED.</small>
+          </span>
         </a>
         <nav
           id="pantry-navigation"
@@ -146,10 +158,10 @@ function PantryShell({ path }: { path: string }) {
             Shop pickles
           </a>
           <a href="/#collections" onClick={() => setMenu(false)}>
-            Our collections
+            Our flavours
           </a>
           <a href="/#pantry-story" onClick={() => setMenu(false)}>
-            The pantry edit
+            Our story
           </a>
           <a
             href="/ordering"
@@ -189,26 +201,26 @@ function PantryShell({ path }: { path: string }) {
                 <Leaf size={17} /> A fresh perspective on pickles
               </span>
               <i aria-hidden="true">✳</i>
-              <span>Fermented Pickles</span>
+              <span>Pineapple Pickle</span>
               <i aria-hidden="true">✳</i>
-              <span>Tropical Feast</span>
+              <span>Cucumber Pickle</span>
             </div>
             <PickleHome />
             <section className="pantry-story section-pad" id="pantry-story">
-              <span className="eyebrow">THE FRUITY PANTRY EDIT</span>
+              <span className="eyebrow">THE TROPICAL FEAST STORY</span>
               <h2>
                 Good food.
                 <br />
                 <em>A little more character.</em>
               </h2>
               <p>
-                A place to discover pickle varieties, compare collections, and
-                find the details that matter before choosing your jar.
+                Two pickle flavours, thoughtfully presented: golden pineapple
+                and green cucumber. Explore the pair and choose your next jar.
               </p>
               <p>
-                Fermented Pickles and Tropical Feast are presented as separate
-                collections. Each has its own product information and ordering
-                arrangements; shared ownership has not been established.
+                Tropical Feast brings both flavours together with the supplied
+                crisp, spicy and tangy descriptors. Confirm the product details
+                before ordering.
               </p>
               <a href="/shop" className="text-link">
                 Explore the pantry <ArrowUpRight size={17} />
@@ -224,7 +236,7 @@ function PantryShell({ path }: { path: string }) {
                   <em>in your inbox.</em>
                 </h2>
                 <p>
-                  Collection notes and updates, when newsletter signup is
+                  Flavour notes and updates, when newsletter signup is
                   connected.
                 </p>
               </div>
@@ -249,13 +261,12 @@ function PantryShell({ path }: { path: string }) {
                 <em>Ask the right questions.</em>
               </h1>
               <p>
-                Ordering arrangements belong to each collection. Choose your
-                pickles, save a list, and confirm the details with the relevant
-                supplier before ordering.
+                Choose pineapple, cucumber or both. Save an enquiry list, then
+                confirm the details with Tropical Feast before ordering.
               </p>
               <ol>
                 <li>
-                  <strong>Explore.</strong> Read the collection and product
+                  <strong>Explore.</strong> Read the flavour and product
                   details.
                 </li>
                 <li>
@@ -274,18 +285,6 @@ function PantryShell({ path }: { path: string }) {
               </button>
             </section>
             <TropicalOrdering />
-            <section className="pickle-enquiry section-pad">
-              <span className="eyebrow">FERMENTED PICKLES</span>
-              <h2>Ordering details are on their way.</h2>
-              <p>
-                No verified supplier contact, ordering method or service area
-                has been supplied for this collection. Enquiries cannot
-                currently be sent through this website.
-              </p>
-              <a href="/collections/fermented-pickles" className="text-link">
-                Explore Fermented Pickles <ArrowUpRight size={17} />
-              </a>
-            </section>
             <PantryQuestions />
           </>
         ) : info ? (
@@ -295,7 +294,7 @@ function PantryShell({ path }: { path: string }) {
             <span className="pantry-404" aria-hidden="true">
               4
               <img
-                src="/images/pickles/fermented-cucumber.svg"
+                src={pickleProducts[1].image}
                 alt=""
                 width="150"
                 height="180"
@@ -321,7 +320,12 @@ function PantryShell({ path }: { path: string }) {
         <div className="pantry-footer-top">
           <div>
             <a className="pantry-logo" href="/">
-              fruity<span aria-hidden="true">✳</span>
+              <img
+                src={brandAssets.logo}
+                alt="Tropical Feast logo"
+                width="112"
+                height="112"
+              />
             </a>
             <p>
               A little tang.
@@ -331,8 +335,8 @@ function PantryShell({ path }: { path: string }) {
           <div>
             <span className="eyebrow">EXPLORE</span>
             <a href="/shop">All pickles</a>
-            <a href="/collections/fermented-pickles">Fermented Pickles</a>
-            <a href="/collections/tropical-feast">Tropical Feast</a>
+            <a href="/products/tropical-pineapple-pickle">Pineapple Pickle</a>
+            <a href="/products/tropical-cucumber-pickle">Cucumber Pickle</a>
           </div>
           <div>
             <span className="eyebrow">CLEAR & SIMPLE</span>
@@ -349,16 +353,18 @@ function PantryShell({ path }: { path: string }) {
             <p>
               Confirm commercial details
               <br />
-              with each collection’s supplier.
+              with Tropical Feast.
             </p>
           </div>
         </div>
         <div className="pantry-footer-bottom">
-          <span>© {new Date().getFullYear()} Fruity · The pickle edit</span>
+          <span>
+            © {new Date().getFullYear()} Tropical Feast · Pineapple & cucumber
+          </span>
           <span>
             Enquiry catalogue · no online payments or confirmed orders
           </span>
-          <span>Concept imagery & illustrations · actual photos pending</span>
+          <span>Product and brand images supplied by the owner</span>
         </div>
       </footer>
       <PrivacyControls path={path} />
@@ -383,7 +389,12 @@ function PantryShell({ path }: { path: string }) {
   );
 }
 export default function App() {
-  const path = useRoute().replace(/\/$/, "") || "/";
+  const rawPath = useRoute().replace(/\/$/, "") || "/";
+  const path = retiredPickleRoutes[rawPath] || rawPath;
+  useEffect(() => {
+    if (retiredPickleRoutes[rawPath])
+      window.history.replaceState({}, "", retiredPickleRoutes[rawPath]);
+  }, [rawPath]);
   const archived =
     ["/fruit-demo", "/fruit-story"].includes(path) ||
     archivedFruit.some((p) => path === `/products/${p.id}`);

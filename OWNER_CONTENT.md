@@ -1,0 +1,34 @@
+# Tropical Feast: owner-confirmed content
+
+The latest owner clarification supersedes the earlier four-product brief. The active catalogue contains exactly two flavours, both branded Tropical Feast: Pineapple Pickle and Cucumber Pickle. Fermented Pickles and the unconfirmed pale vegetable are no longer active collections/products.
+
+## Supplied imagery
+
+- `public/images/pickles/owner-hero.webp`: supplied first image, two jars, homepage.
+- `public/images/pickles/owner-logo.webp`: supplied second image, brand logo in header/footer.
+- `public/images/pickles/pineapple-pickle.webp`: supplied third image, pineapple product.
+- `public/images/pickles/cucumber-pickle.webp`: supplied fourth image, cucumber product.
+
+Images were resized and compressed to WebP without altering their pictured labels or contents. Original uploads were not modified. Favicons use the supplied logo; the social preview combines the supplied logo and hero. Captions identify owner-supplied imagery. Image contents do not establish ingredients or other commercial details.
+
+## Implementation
+
+`src/data/pickles.ts` is the source of truth for the two products, one collection and brand assets. Homepage, shop, product pages, search, flavour filters, saved enquiry drawer and metadata consume those records. Unknown prices, sizes and ingredients remain null; stock is unconfirmed. Both flavours retain the supplied Hyderabad-only/direct-message information. No payment or order confirmation is simulated.
+
+Old fermented cucumber saved selections migrate to the sole cucumber product and are deduplicated. Removed pale vegetable selections are dropped. Vercel redirects the former fermented collection to the shop and former duplicate cucumber to the current cucumber product; the removed pale vegetable URL returns 410 with recovery links. The fruit demonstration remains archived separately and excluded from search indexing.
+
+## Verification for this update
+
+Executed `npm run verify`: TypeScript/Vite production build, all 29 automated tests and Prettier checks passed. Build generates unique metadata for 10 indexable pages. Tests cover two confirmed records and real local image assets, missing commercial fields, persisted selection migration, search/filter/detail navigation, safe enquiry configuration, privacy/consent/error handling and retained fruit demo checkout.
+
+Live browser and HTTP checks are reported separately after deployment; automated DOM tests do not establish visual layout or real fulfilment.
+
+## Owner configuration still required
+
+- Verified Tropical Feast direct-message URL (`VITE_TROPICAL_FEAST_DM_URL`). Until configured, the site explains ordering is unavailable and lets visitors prepare/copy an enquiry only.
+- Prices, jar sizes, full ingredients/allergens, current availability, delivery charges/times, handling/storage and commercial terms.
+- Legal business identity, support/privacy contact and physical address. Product brand imagery is not a verified legal identity.
+- Optional newsletter endpoint and analytics ID only if wanted; both remain disabled without configuration.
+- Rights to supplied imagery and final legal review before live commercial sales.
+
+The site can serve as a product/enquiry catalogue; commercial checkout remains unconnected.

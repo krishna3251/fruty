@@ -22,6 +22,25 @@
       "continue": true
     },
     {
+      "src": "/collections/fermented-pickles/?",
+      "headers": {
+        "Location": "/shop"
+      },
+      "status": 301
+    },
+    {
+      "src": "/products/fermented-cucumber-pickle/?",
+      "headers": {
+        "Location": "/products/tropical-cucumber-pickle"
+      },
+      "status": 301
+    },
+    {
+      "src": "/products/fermented-pale-vegetable-pickle/?",
+      "dest": "/404.html",
+      "status": 410
+    },
+    {
       "handle": "filesystem"
     },
     {
@@ -41,11 +60,11 @@
       "dest": "/pickles/index.html"
     },
     {
-      "src": "/collections/(fermented-pickles|tropical-feast)/?",
+      "src": "/collections/(tropical-feast)/?",
       "dest": "/collections/$1/index.html"
     },
     {
-      "src": "/products/(fermented-cucumber-pickle|fermented-pale-vegetable-pickle|tropical-pineapple-pickle|tropical-cucumber-pickle)/?",
+      "src": "/products/(tropical-pineapple-pickle|tropical-cucumber-pickle)/?",
       "dest": "/products/$1/index.html"
     },
     {

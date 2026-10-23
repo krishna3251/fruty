@@ -1,5 +1,6 @@
-// Supplied poster content. Unknown commercial fields intentionally remain null.
-export type PickleCollectionId = "fermented-pickles" | "tropical-feast";
+// Owner confirmed two flavours and supplied the homepage, logo and product images.
+// Prices, jar sizes, ingredient lists and stock have not been provided.
+export type PickleCollectionId = "tropical-feast";
 export interface PickleCollection {
   id: PickleCollectionId;
   name: string;
@@ -18,7 +19,7 @@ export interface PickleProduct {
   description: string;
   image: string;
   imageAlt: string;
-  imageType: "illustration";
+  imageType: "owner-supplied";
   price: number | null;
   currency: "INR";
   jarSize: string | null;
@@ -28,26 +29,18 @@ export interface PickleProduct {
   orderMethod: "direct-message" | null;
   serviceArea: string | null;
 }
+export const brandAssets = {
+  hero: "/images/pickles/owner-hero.webp",
+  logo: "/images/pickles/owner-logo.webp",
+};
 export const pickleCollections: PickleCollection[] = [
-  {
-    id: "fermented-pickles",
-    name: "Fermented Pickles",
-    headline: "A naturally tangy point of view.",
-    description:
-      "Two pickle varieties, presented in golden-lidded glass jars. Meet Cucumber Pickle and a pale vegetable variety whose exact identity is still awaiting confirmation.",
-    tagline: "Made for your mindful food moments.",
-    descriptors: [],
-    promotionalMessages: ["ZERO OIL", "ZERO MASALA"],
-    serviceArea: null,
-    orderMethod: null,
-  },
   {
     id: "tropical-feast",
     name: "Tropical Feast",
     headline: "An American-inspired pickle experience.",
     description:
-      "Pineapple and cucumber, each with its own character. Discover two distinct pickle varieties from the Tropical Feast promotional collection.",
-    tagline: "Premium Quality. Distinctive Flavours.",
+      "Two flavours. One Tropical Feast: golden Pineapple Pickle and green Cucumber Pickle, presented in the owner’s supplied product images.",
+    tagline: "Rich Flavours, Beautifully Preserved.",
     descriptors: ["Crisp", "Spicy", "Tangy"],
     promotionalMessages: [],
     serviceArea: "Hyderabad only",
@@ -60,64 +53,34 @@ const pending = {
   jarSize: null,
   ingredients: null,
   availability: "unconfirmed",
-  imageType: "illustration",
+  imageType: "owner-supplied",
+  collectionId: "tropical-feast",
+  flavourDescriptors: ["Crisp", "Spicy", "Tangy"],
+  serviceArea: "Hyderabad only",
+  orderMethod: "direct-message",
 } as const;
 export const pickleProducts: PickleProduct[] = [
   {
     ...pending,
-    id: "fermented-cucumber-pickle",
-    name: "Cucumber Pickle",
-    collectionId: "fermented-pickles",
-    description:
-      "The confirmed cucumber entry in the Fermented Pickles collection. Ingredient list, jar size and commercial details are awaiting the supplier’s confirmation.",
-    image: "/images/pickles/fermented-cucumber.svg",
-    imageAlt:
-      "Illustrative glass jar with cucumber slices and a golden lid; product photograph pending",
-    flavourDescriptors: [],
-    serviceArea: null,
-    orderMethod: null,
-  },
-  {
-    ...pending,
-    id: "fermented-pale-vegetable-pickle",
-    name: "Pale Vegetable Pickle — variety unconfirmed",
-    collectionId: "fermented-pickles",
-    description:
-      "A second pale vegetable pickle appears in the supplied promotional information. Its exact vegetable variety has not been verified; no ingredient or nutritional details are assumed.",
-    image: "/images/pickles/fermented-pale-vegetable.svg",
-    imageAlt:
-      "Illustrative golden-lidded jar with pale vegetable pieces of unconfirmed variety; product photograph pending",
-    flavourDescriptors: [],
-    serviceArea: null,
-    orderMethod: null,
-  },
-  {
-    ...pending,
+    flavourDescriptors: [...pending.flavourDescriptors],
     id: "tropical-pineapple-pickle",
     name: "Pineapple Pickle",
-    collectionId: "tropical-feast",
     description:
-      "The golden pineapple entry from Tropical Feast. The collection’s supplied flavour descriptors are crisp, spicy and tangy. Enquiries are for Hyderabad only.",
-    image: "/images/pickles/tropical-pineapple.svg",
+      "Golden pineapple chunks in a Tropical Feast jar with a golden lid and cream botanical label. Crisp, spicy and tangy — the flavour descriptors supplied for this pickle range.",
+    image: "/images/pickles/pineapple-pickle.webp",
     imageAlt:
-      "Illustrative pineapple pickle jar with golden chunks, a cream label and a golden lid; product photograph pending",
-    flavourDescriptors: ["Crisp", "Spicy", "Tangy"],
-    serviceArea: "Hyderabad only",
-    orderMethod: "direct-message",
+      "Tropical Feast Pineapple Pickle jar with golden pineapple chunks, a golden lid and cream pineapple label",
   },
   {
     ...pending,
+    flavourDescriptors: [...pending.flavourDescriptors],
     id: "tropical-cucumber-pickle",
     name: "Cucumber Pickle",
-    collectionId: "tropical-feast",
     description:
-      "The green cucumber entry from Tropical Feast, distinct from Fermented Pickles’ cucumber product. The collection’s supplied flavour descriptors are crisp, spicy and tangy. Enquiries are for Hyderabad only.",
-    image: "/images/pickles/tropical-cucumber.svg",
+      "Green cucumber slices in a Tropical Feast jar with a golden lid and cream botanical label. Crisp, spicy and tangy — the flavour descriptors supplied for this pickle range.",
+    image: "/images/pickles/cucumber-pickle.webp",
     imageAlt:
-      "Illustrative Tropical Feast cucumber pickle jar with green slices, a cream label and a golden lid; product photograph pending",
-    flavourDescriptors: ["Crisp", "Spicy", "Tangy"],
-    serviceArea: "Hyderabad only",
-    orderMethod: "direct-message",
+      "Tropical Feast Cucumber Pickle jar with green cucumber slices, a golden lid and cream cucumber label",
   },
 ];
 export const collectionFor = (product: PickleProduct) =>
@@ -132,8 +95,6 @@ export function filterPickles(collection: string, query: string) {
         .includes(term),
   );
 }
-// Only explicit HTTPS DM URLs are allowed. Website-wide contact settings are
-// not silently treated as either collection's seller or ordering account.
 export function safeEnquiryUrl(value: string) {
   try {
     const url = new URL(value);
@@ -144,3 +105,9 @@ export function safeEnquiryUrl(value: string) {
     return null;
   }
 }
+// Preserve a saved cucumber preference from the earlier duplicate entry.
+// The removed, unconfirmed vegetable is never converted to a different flavour.
+export const retiredPickleRoutes: Record<string, string> = {
+  "/collections/fermented-pickles": "/shop",
+  "/products/fermented-cucumber-pickle": "/products/tropical-cucumber-pickle",
+};

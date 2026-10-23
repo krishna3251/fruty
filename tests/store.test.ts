@@ -439,18 +439,18 @@ test("dedicated policy/contact routes exist, confirmation is guarded, and mobile
   delete (globalThis as any).IntersectionObserver;
 });
 
-test("pickle catalogue filters by collection, searches both cucumber entries and recovers from empty results", async () => {
+test("pickle catalogue filters by collection, searches both flavours and recovers from empty results", async () => {
   window.history.replaceState({}, "", "/pickles");
   localStorage.clear();
   mount();
   const main = within(screen.getByRole("main"));
-  assert.equal(main.getAllByRole("article").length, 4);
+  assert.equal(main.getAllByRole("article").length, 2);
   fireEvent.change(main.getByRole("searchbox", { name: "Search pickles" }), {
     target: { value: "cucumber" },
   });
-  assert.equal(main.getAllByRole("article").length, 2);
+  assert.equal(main.getAllByRole("article").length, 1);
   fireEvent.click(
-    main.getByRole("button", { name: "Tropical Feast", exact: true }),
+    main.getByRole("button", { name: "Cucumber Pickle", exact: true }),
   );
   assert.equal(main.getAllByRole("article").length, 1);
   assert.match(
@@ -462,7 +462,7 @@ test("pickle catalogue filters by collection, searches both cucumber entries and
   });
   assert.ok(main.getByText("No pickles found."));
   fireEvent.click(main.getByRole("button", { name: "Reset search" }));
-  assert.equal(main.getAllByRole("article").length, 4);
+  assert.equal(main.getAllByRole("article").length, 2);
   fireEvent.click(
     main.getByRole("link", { name: "View Pineapple Pickle — Tropical Feast" }),
   );
@@ -499,7 +499,9 @@ test("all pickle routes render, preserve null commercial fields and scope Hydera
     window.history.replaceState({}, "", `/collections/${c.id}`);
     mount();
     const main = within(screen.getByRole("main"));
-    assert.ok(main.getByRole("heading", { level: 1, name: c.name }));
+    assert.ok(
+      main.getByRole("heading", { level: 1, name: "The Tropical Feast pair." }),
+    );
     assert.equal(main.getAllByRole("article").length, 2);
     assert.equal(
       main.queryByRole("heading", { name: "Available in Hyderabad." }) !== null,
@@ -538,7 +540,7 @@ function mountPantry() {
     React.createElement(CartProvider, null, React.createElement(PantryApp)),
   );
 }
-test("primary homepage and shop are pickle-only, with enquiry controls and persistent supplier-separated selection", async () => {
+test("primary homepage and shop are pickle-only, with enquiry controls and persistent two-flavour selection", async () => {
   window.history.replaceState({}, "", "/");
   localStorage.clear();
   mountPantry();
@@ -558,11 +560,11 @@ test("primary homepage and shop are pickle-only, with enquiry controls and persi
   assert.equal(window.location.pathname, "/shop");
   assert.equal(
     within(screen.getByRole("main")).getAllByRole("article").length,
-    4,
+    2,
   );
   fireEvent.click(
     screen.getByRole("button", {
-      name: "Save Cucumber Pickle — Fermented Pickles",
+      name: "Save Cucumber Pickle — Tropical Feast",
       exact: true,
     }),
   );
@@ -574,7 +576,7 @@ test("primary homepage and shop are pickle-only, with enquiry controls and persi
   );
   assert.deepEqual(
     JSON.parse(localStorage.getItem("fruity-pickle-selection-v1")!),
-    ["fermented-cucumber-pickle", "tropical-pineapple-pickle"],
+    ["tropical-cucumber-pickle", "tropical-pineapple-pickle"],
   );
   fireEvent.click(
     screen.getByRole("button", {
@@ -583,9 +585,6 @@ test("primary homepage and shop are pickle-only, with enquiry controls and persi
     }),
   );
   const dialog = within(screen.getByRole("dialog"));
-  assert.ok(
-    dialog.getByRole("heading", { name: "Fermented Pickles", exact: true }),
-  );
   assert.ok(
     dialog.getByRole("heading", { name: "Tropical Feast", exact: true }),
   );
@@ -625,7 +624,7 @@ test("primary homepage and shop are pickle-only, with enquiry controls and persi
   }
   fireEvent.click(
     dialog.getByRole("button", {
-      name: "Remove Cucumber Pickle — Fermented Pickles from enquiry list",
+      name: "Remove Cucumber Pickle — Tropical Feast from enquiry list",
     }),
   );
   assert.deepEqual(

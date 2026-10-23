@@ -25,20 +25,17 @@ export function pageMeta(path: string) {
     return {
       title:
         path === "/fruit-story"
-          ? "Archived Fruit Story | Fruity"
-          : "Archived Fruit Shop Demo | Fruity",
+          ? "Archived Fruit Story | Tropical Feast"
+          : "Archived Fruit Shop Demo | Tropical Feast",
       description:
-        "The retained fruit-store demonstration is archived separately from Fruity’s primary pickle catalogue. No real orders or payments are processed.",
+        "The retained fruit-store demonstration is archived separately from Tropical Feast’s primary pickle catalogue. No real orders or payments are processed.",
       type: "website",
       index: false,
     };
   const pickle = pickleProducts.find((p) => path === `/products/${p.id}`);
   if (pickle)
     return {
-      title:
-        pickle.id === "fermented-pale-vegetable-pickle"
-          ? "Pale Vegetable Pickle (Unconfirmed) | Fermented Pickles | Fruity"
-          : `${pickle.name} | ${collectionFor(pickle).name} | Fruity`,
+      title: `${pickle.name} | Tropical Feast`,
       description: `${pickle.description} Price, jar size and availability awaiting confirmation.`,
       type: "website",
       index: true,
@@ -48,7 +45,7 @@ export function pageMeta(path: string) {
   );
   if (collection)
     return {
-      title: `${collection.name} | Pickle Collection | Fruity`,
+      title: `${collection.name} | Pickle Collection`,
       description: collection.description,
       type: "website",
       index: true,
@@ -56,58 +53,58 @@ export function pageMeta(path: string) {
   const product = products.find((p) => path === `/products/${p.id}`);
   if (product)
     return {
-      title: `${product.name} | Archived Fruit Demo | Fruity`,
+      title: `${product.name} | Archived Fruit Demo | Tropical Feast`,
       description: `Explore ${product.name.toLowerCase()}, ${product.weight}, from ${product.origin}. Read storage tips and browse the furity sample fruit collection.`,
       type: "website",
       index: false,
     };
   const pages: Record<string, { title: string; description: string }> = {
     "/pickles": {
-      title: "Pickles | Fermented Pickles & Tropical Feast | Fruity",
+      title: "Two Pickle Flavours | Tropical Feast",
       description:
-        "Discover four pickle entries across Fermented Pickles and Tropical Feast. Explore cucumber, pineapple and an unconfirmed pale vegetable variety, with clear enquiry details.",
+        "Explore pineapple and cucumber pickles from Tropical Feast, with owner-supplied product images and clear enquiry details.",
     },
     "/": {
-      title: "Fruity | Distinctive Pickles & Pantry Collections",
+      title: "Tropical Feast | Pineapple & Cucumber Pickles",
       description:
-        "Discover Fermented Pickles and Tropical Feast at Fruity. Explore cucumber and pineapple pickle varieties, save your favourites and find collection-specific enquiry details.",
+        "Rich flavours, beautifully preserved. Discover Tropical Feast pineapple and cucumber pickles, save your favourites and check Hyderabad enquiry availability.",
     },
     "/shop": {
-      title: "Shop Pickles | The Fruity Pantry",
+      title: "Shop Pineapple & Cucumber Pickles | Tropical Feast",
       description:
-        "Browse all four pickle entries from Fermented Pickles and Tropical Feast. Filter by collection, compare product details and save a list for supplier enquiries.",
+        "Browse both Tropical Feast pickle flavours: pineapple and cucumber. Compare product details and save a list for enquiries.",
     },
     "/ordering": {
-      title: "How to Order & Enquire | Fruity Pickles",
+      title: "How to Order & Enquire | Tropical Feast",
       description:
         "Learn how to save a pickle enquiry list, check supplier channel availability and confirm prices, ingredients and delivery. Hyderabad-only applies to Tropical Feast.",
     },
     "/privacy": {
-      title: "Privacy & Browser Storage | Fruity",
+      title: "Privacy & Browser Storage | Tropical Feast",
       description:
-        "Learn what the Fruity catalogue stores on your device, how optional analytics consent works, and how newsletter and checkout information is handled.",
+        "Learn what the Tropical Feast catalogue stores on your device, how optional analytics consent works, and how newsletter and checkout information is handled.",
     },
     "/terms": {
-      title: "Website Terms & Enquiry Conditions | Fruity",
+      title: "Website Terms & Enquiry Conditions | Tropical Feast",
       description:
-        "Read the conditions for using the Fruity pickle enquiry catalogue, including unconfirmed product details, enquiry limitations and owner details required before launch.",
+        "Read the conditions for using the Tropical Feast pickle enquiry catalogue, including unconfirmed product details, enquiry limitations and owner details required before launch.",
     },
     "/contact": {
-      title: "Contact & Business Information | Fruity",
+      title: "Contact & Business Information | Tropical Feast",
       description:
-        "Find configured Fruity business contact details and the status of customer support, delivery and commercial launch information.",
+        "Find configured Tropical Feast business contact details and the status of customer support, delivery and commercial launch information.",
     },
   };
   if (pages[path]) return { ...pages[path], type: "website", index: true };
   return {
     title:
       path === "/thank-you"
-        ? "Newsletter Confirmation | Fruity"
-        : "Page Not Found | Fruity",
+        ? "Newsletter Confirmation | Tropical Feast"
+        : "Page Not Found | Tropical Feast",
     description:
       path === "/thank-you"
         ? "Check the status of your newsletter submission."
-        : "That page could not be found. Return to the Fruity pickle collection.",
+        : "That page could not be found. Return to the Tropical Feast pickle collection.",
     type: "website",
     index: false,
   };

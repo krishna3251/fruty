@@ -614,3 +614,144 @@
     transition: none !important;
   }
 }
+/* Owner-supplied Tropical Feast identity and two-flavour imagery. */
+.pantry-store .pantry-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  letter-spacing: 0;
+}
+.pantry-store .pantry-logo > img {
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+.pantry-store .pantry-logo .brand-wordmark {
+  font:
+    400 27px/1.05 Georgia,
+    serif;
+  color: #45271f;
+  margin: 0;
+}
+.pantry-store .pantry-logo .brand-wordmark small {
+  font:
+    500 7px/1.5 Manrope,
+    Arial,
+    sans-serif;
+  letter-spacing: 0.08em;
+  margin-top: 8px;
+  max-width: 185px;
+  white-space: normal;
+}
+.pantry-store .pantry-header {
+  padding-block: 9px;
+}
+.pantry-store .pickle-hero-visual {
+  background: #e8d4b8;
+}
+.pantry-store .pickle-hero .pickle-artwork img {
+  object-fit: contain;
+  object-position: center;
+  aspect-ratio: 1;
+}
+.pantry-store .pickle-hero .pickle-artwork figcaption {
+  background: #eadbc4;
+}
+.pantry-store .pickle-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 35px;
+}
+.pantry-store .pickle-card-image img {
+  aspect-ratio: 3/2;
+  padding: 0;
+  object-fit: contain;
+}
+.pantry-store .flavour-feature-image {
+  display: block;
+  padding: 35px 4%;
+  align-self: center;
+}
+.pantry-store .flavour-feature-image img {
+  max-height: none;
+  aspect-ratio: 3/2;
+  width: 100%;
+  object-fit: contain;
+}
+.pantry-store .flavour-feature.is-pineapple {
+  background: #f0e1c5;
+}
+.pantry-store .flavour-feature.is-cucumber {
+  background: #e5e9d9;
+}
+.pantry-store .pickle-detail-image img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 3/2;
+  max-height: none;
+  object-fit: contain;
+}
+.pantry-store .pantry-footer .pantry-logo > img {
+  width: 130px;
+  height: 130px;
+}
+.pantry-store .pickle-product-page > section:last-child .pickle-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+@media (max-width: 1050px) {
+  .pantry-store .pantry-logo .brand-wordmark {
+    font-size: 22px;
+  }
+  .pantry-store .pantry-logo .brand-wordmark small {
+    max-width: 140px;
+  }
+  .pantry-store .pantry-logo > img {
+    width: 58px;
+    height: 58px;
+  }
+  .pantry-store .pantry-navigation {
+    gap: 16px;
+  }
+}
+@media (max-width: 767px) {
+  .pantry-store .pantry-logo {
+    gap: 7px;
+  }
+  .pantry-store .pantry-logo .brand-wordmark {
+    font-size: 20px;
+  }
+  .pantry-store .pantry-logo .brand-wordmark small {
+    display: none;
+  }
+  .pantry-store .pantry-logo > img {
+    width: 50px;
+    height: 50px;
+  }
+  .pantry-store .pickle-grid {
+    gap: 24px 15px;
+  }
+  .pantry-store .flavour-feature-image {
+    padding: 12px 6% 30px;
+  }
+  .pantry-store .pickle-hero-visual {
+    padding: 0;
+  }
+  .pantry-store .pickle-card h3 {
+    font-size: 23px;
+  }
+}
+@media (max-width: 480px) {
+  .pantry-store .pickle-grid,
+  .pantry-store .pickle-product-page > section:last-child .pickle-grid {
+    grid-template-columns: 1fr;
+  }
+  .pantry-store .pantry-logo .brand-wordmark {
+    max-width: 100px;
+    white-space: normal;
+    font-size: 20px;
+  }
+  .pantry-store .pantry-logo > img {
+    width: 46px;
+    height: 46px;
+  }
+}

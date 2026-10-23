@@ -117,7 +117,7 @@ export default function EnquiryList() {
                 if (!navigator.clipboard?.writeText) throw Error("unavailable");
                 await navigator.clipboard.writeText(message);
                 setStatus(
-                  "Enquiry draft copied. Nothing has been sent; contact each collection separately.",
+                  "Enquiry draft copied. Nothing has been sent; contact Tropical Feast when its verified ordering channel is available.",
                 );
               } catch {
                 setStatus(

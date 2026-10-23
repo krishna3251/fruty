@@ -11,17 +11,13 @@ import { restoreSelection } from "../src/context/PickleSelection.tsx";
 import { products } from "../src/data/products.ts";
 import { restoreCart } from "../src/context/cartModel.ts";
 test("supplied pickle records remain distinct, unpriced, local and outside the fruit checkout", () => {
-  assert.equal(pickleProducts.length, 4);
+  assert.equal(pickleProducts.length, 2);
   assert.equal(
     new Set([...products, ...pickleProducts].map((p) => p.id)).size,
-    products.length + 4,
+    products.length + 2,
   );
-  assert.equal(pickleCollections.length, 2);
-  assert.deepEqual(pickleCollections[0].promotionalMessages, [
-    "ZERO OIL",
-    "ZERO MASALA",
-  ]);
-  assert.deepEqual(pickleCollections[1].promotionalMessages, []);
+  assert.equal(pickleCollections.length, 1);
+  assert.equal(pickleCollections[0].id, "tropical-feast");
   for (const p of pickleProducts) {
     assert.equal(p.price, null);
     assert.equal(p.jarSize, null);
@@ -29,7 +25,7 @@ test("supplied pickle records remain distinct, unpriced, local and outside the f
     assert.equal(p.currency, "INR");
     assert.equal(p.availability, "unconfirmed");
     assert.ok(existsSync(`public${p.image}`));
-    assert.ok(p.imageAlt.includes("Illustrative"));
+    assert.equal(p.imageType, "owner-supplied");
     assert.equal(
       p.serviceArea,
       p.collectionId === "tropical-feast" ? "Hyderabad only" : null,
@@ -38,7 +34,10 @@ test("supplied pickle records remain distinct, unpriced, local and outside the f
       p.orderMethod,
       p.collectionId === "tropical-feast" ? "direct-message" : null,
     );
-    assert.ok(readFileSync(`public${p.image}`, "utf8").includes("<svg"));
+    assert.equal(
+      readFileSync(`public${p.image}`).subarray(0, 4).toString(),
+      "RIFF",
+    );
     assert.deepEqual(
       restoreCart(
         JSON.stringify({ [p.id]: 1 }),
@@ -47,12 +46,17 @@ test("supplied pickle records remain distinct, unpriced, local and outside the f
       {},
     );
   }
-  assert.equal(filterPickles("all", "cucumber").length, 2);
-  assert.equal(filterPickles("fermented-pickles", "").length, 2);
+  assert.equal(filterPickles("all", "cucumber").length, 1);
   assert.equal(filterPickles("tropical-feast", "spicy").length, 2);
-  assert.match(
-    pickleProducts.find((p) => p.id.includes("pale"))!.name,
-    /unconfirmed/,
+  assert.deepEqual(
+    restoreSelection(
+      JSON.stringify([
+        "fermented-cucumber-pickle",
+        "tropical-cucumber-pickle",
+        "fermented-pale-vegetable-pickle",
+      ]),
+    ),
+    ["tropical-cucumber-pickle"],
   );
 });
 test("enquiry URLs reject unsafe schemes and embedded credentials", () => {

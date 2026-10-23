@@ -13,11 +13,17 @@ export function restoreSelection(raw: string | null): string[] {
     return Array.isArray(value)
       ? [
           ...new Set(
-            value.filter(
-              (id): id is string =>
-                typeof id === "string" &&
-                pickleProducts.some((p) => p.id === id),
-            ),
+            value
+              .map((id) =>
+                id === "fermented-cucumber-pickle"
+                  ? "tropical-cucumber-pickle"
+                  : id,
+              )
+              .filter(
+                (id): id is string =>
+                  typeof id === "string" &&
+                  pickleProducts.some((p) => p.id === id),
+              ),
           ),
         ]
       : [];
