@@ -32,3 +32,11 @@ Live browser and HTTP checks are reported separately after deployment; automated
 - Rights to supplied imagery and final legal review before live commercial sales.
 
 The site can serve as a product/enquiry catalogue; commercial checkout remains unconnected.
+
+## Live verification
+
+Production deployment `2267e72` reached READY on `https://fruty-fawn.vercel.app`. Live HTTP checks returned 200 for all 10 indexable pages, four supplied image assets, robots and sitemap. Unknown URLs returned 404; removed pale vegetable URL returned 410; retired collection/duplicate cucumber URLs returned 301 to the shop/current cucumber. Sitemap contains 10 URLs and no retired fermented entries.
+
+Chrome visual checks: homepage at 390 and 1680 pixels, product details at 320 and 768 pixels, and scroll sections at 1280 pixels. Document scroll width did not exceed viewport client width at 320, 390, 768, 1280 or 1680. The mobile menu opened and navigated; the cucumber filter, save action, enquiry drawer and product detail link worked at 320 pixels. Drawer settled inside the viewport. No loaded image failures or console errors were observed in this browser session. Desktop product transforms changed with scrolling; mobile motion remains simplified. Default browser viewport was restored. These were browser viewport checks, not tests on physical devices or a network/performance benchmark.
+
+Screenshot: [Desktop homepage](docs/tropical-feast-home.jpg). A final copy-only polish followed these visual checks; `npm run verify` passed again (29 tests, production build and formatting).

@@ -39,7 +39,7 @@ export const pickleCollections: PickleCollection[] = [
     name: "Tropical Feast",
     headline: "An American-inspired pickle experience.",
     description:
-      "Two flavours. One Tropical Feast: golden Pineapple Pickle and green Cucumber Pickle, presented in the owner’s supplied product images.",
+      "Two flavours. One Tropical Feast: discover golden Pineapple Pickle and green Cucumber Pickle. Crisp, spicy and tangy.",
     tagline: "Rich Flavours, Beautifully Preserved.",
     descriptors: ["Crisp", "Spicy", "Tangy"],
     promotionalMessages: [],
@@ -66,7 +66,7 @@ export const pickleProducts: PickleProduct[] = [
     id: "tropical-pineapple-pickle",
     name: "Pineapple Pickle",
     description:
-      "Golden pineapple chunks in a Tropical Feast jar with a golden lid and cream botanical label. Crisp, spicy and tangy — the flavour descriptors supplied for this pickle range.",
+      "Meet the golden side of Tropical Feast. Pineapple Pickle brings its own character to the table: crisp, spicy and tangy.",
     image: "/images/pickles/pineapple-pickle.webp",
     imageAlt:
       "Tropical Feast Pineapple Pickle jar with golden pineapple chunks, a golden lid and cream pineapple label",
@@ -77,7 +77,7 @@ export const pickleProducts: PickleProduct[] = [
     id: "tropical-cucumber-pickle",
     name: "Cucumber Pickle",
     description:
-      "Green cucumber slices in a Tropical Feast jar with a golden lid and cream botanical label. Crisp, spicy and tangy — the flavour descriptors supplied for this pickle range.",
+      "Meet the green side of Tropical Feast. Cucumber Pickle brings its own character to the table: crisp, spicy and tangy.",
     image: "/images/pickles/cucumber-pickle.webp",
     imageAlt:
       "Tropical Feast Cucumber Pickle jar with green cucumber slices, a golden lid and cream cucumber label",

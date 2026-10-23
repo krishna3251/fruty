@@ -326,8 +326,8 @@ export function PickleCatalogue({
               : "Two flavours. Your pick."}
         </h1>
         <p>
-          Explore Pineapple Pickle and Cucumber Pickle. Crisp, spicy and tangy —
-          with your supplied Tropical Feast product images.
+          Explore Pineapple Pickle and Cucumber Pickle. Two distinctive
+          flavours, one Tropical Feast: crisp, spicy and tangy.
         </p>
       </div>
       <section
