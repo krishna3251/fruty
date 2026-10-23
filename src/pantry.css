@@ -124,6 +124,7 @@
   min-height: 0;
   max-height: none;
   object-fit: cover;
+  object-position: right center;
   aspect-ratio: 5/4;
 }
 .pantry-store .pickle-hero .pickle-artwork figcaption {
