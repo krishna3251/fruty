@@ -585,9 +585,6 @@
     font-size: clamp(50px, 12vw, 72px);
     margin: 22px 0;
   }
-  .pickle-hero h1 br:nth-of-type(2) {
-    display: none;
-  }
   .pickle-hero-actions {
     gap: 20px;
   }
