@@ -1,10 +1,12 @@
+import { useCatalogue } from "../context/Catalogue";
 import { useEffect } from "react";
 import { pageMeta, safeOrigin } from "../lib/seo";
 import { structuredData, serializeStructuredData } from "../lib/structuredData";
 import { siteConfig } from "../lib/config";
 export default function PageMetadata({ path }: { path: string }) {
+  const { products } = useCatalogue();
   useEffect(() => {
-    const m = pageMeta(path);
+    const m = pageMeta(path, products);
     let origin: string;
     try {
       origin = safeOrigin(siteConfig.siteUrl);
@@ -46,7 +48,7 @@ export default function PageMetadata({ path }: { path: string }) {
     }
     canonical.href = origin + path;
     document.getElementById("page-structured-data")?.remove();
-    const data = structuredData(path, origin);
+    const data = structuredData(path, origin, products);
     if (data) {
       const script = document.createElement("script");
       script.id = "page-structured-data";
@@ -54,6 +56,6 @@ export default function PageMetadata({ path }: { path: string }) {
       script.textContent = serializeStructuredData(data);
       document.head.append(script);
     }
-  }, [path]);
+  }, [path, products]);
   return null;
 }

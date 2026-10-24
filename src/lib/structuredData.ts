@@ -2,14 +2,16 @@ import {
   pickleProducts,
   pickleCollections,
   collectionFor,
+  type PickleProduct,
 } from "../data/pickles";
 import { pageMeta } from "./seo";
 export function structuredData(
   path: string,
   origin: string,
+  catalogue: PickleProduct[] = pickleProducts,
 ): Record<string, unknown> | null {
-  if (!pageMeta(path).index) return null;
-  const product = pickleProducts.find((p) => path === `/products/${p.id}`);
+  if (!pageMeta(path, catalogue).index) return null;
+  const product = catalogue.find((p) => path === `/products/${p.id}`);
   const collection = pickleCollections.find(
     (c) => path === `/collections/${c.id}`,
   );

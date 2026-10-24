@@ -8,6 +8,7 @@ import {
   useUser,
 } from "@clerk/react";
 import { clerkPublishableKey } from "../lib/authConfig";
+import AdminPanel from "./AdminPanel";
 import type { AccountMode } from "./AccountPage";
 function AccountContents({
   mode,
@@ -47,10 +48,14 @@ function AccountContents({
           </button>
         </div>
         <p role="alert">{error}</p>
-        <UserProfile
-          routing="hash"
-          fallback={<p role="status">Loading profile controls…</p>}
-        />
+        {mode === "admin" ? (
+          <AdminPanel />
+        ) : (
+          <UserProfile
+            routing="hash"
+            fallback={<p role="status">Loading profile controls…</p>}
+          />
+        )}
         <p className="account-scope">
           Your enquiry basket stays on this device. Online orders, address
           storage and payment history are not connected.
@@ -69,8 +74,8 @@ function AccountContents({
     <SignIn
       routing="hash"
       signUpUrl="/sign-up"
-      forceRedirectUrl="/account"
-      signUpForceRedirectUrl="/account"
+      forceRedirectUrl={mode === "admin" ? "/admin" : "/account"}
+      signUpForceRedirectUrl={mode === "admin" ? "/admin" : "/account"}
       oauthFlow="redirect"
       fallback={<p role="status">Loading sign-in…</p>}
     />

@@ -567,13 +567,13 @@ test("primary homepage and shop are pickle-only, with enquiry controls and persi
   );
   fireEvent.click(
     screen.getByRole("button", {
-      name: "Save Cucumber Pickle — Tropical Feast",
+      name: "Add to cart: Cucumber Pickle",
       exact: true,
     }),
   );
   fireEvent.click(
     screen.getByRole("button", {
-      name: "Save Pineapple Pickle — Tropical Feast",
+      name: "Add to cart: Pineapple Pickle",
       exact: true,
     }),
   );
@@ -583,7 +583,7 @@ test("primary homepage and shop are pickle-only, with enquiry controls and persi
   );
   fireEvent.click(
     screen.getByRole("button", {
-      name: "Open enquiry list, 2 items",
+      name: "Open cart, 2 items",
       exact: true,
     }),
   );
@@ -640,7 +640,7 @@ test("primary homepage and shop are pickle-only, with enquiry controls and persi
   mountPantry();
   assert.ok(
     screen.getByRole("button", {
-      name: "Open enquiry list, 1 items",
+      name: "Open cart, 1 items",
       exact: true,
     }),
   );
@@ -656,7 +656,7 @@ test("primary ordering and missing routes offer useful recovery without fruit na
       exact: false,
     }),
   );
-  fireEvent.click(screen.getByRole("button", { name: "Review enquiry list" }));
+  fireEvent.click(screen.getByRole("button", { name: "Review cart" }));
   assert.ok(screen.getByRole("dialog"));
   cleanup();
   window.history.replaceState({}, "", "/does-not-exist");
@@ -675,10 +675,16 @@ test("primary product details save priced pickles while archived fruit cart rema
   window.history.replaceState({}, "", "/products/tropical-pineapple-pickle");
   mountPantry();
   fireEvent.click(
-    screen.getByRole("button", { name: "Save to enquiry list", exact: true }),
+    screen.getByRole("button", {
+      name: "Add to cart: Pineapple Pickle",
+      exact: true,
+    }),
   );
   assert.ok(
-    screen.getByRole("button", { name: "Saved to enquiry list", exact: true }),
+    screen.getByRole("button", {
+      name: "View cart for Pineapple Pickle",
+      exact: true,
+    }),
   );
   assert.equal(screen.queryByRole("button", { name: /add.*bag/i }), null);
   assert.ok(screen.getByText("Hyderabad only"));
@@ -917,13 +923,13 @@ test("enquiry basket quantities, subtotal and both email routes persist and stay
   mountPantry();
   fireEvent.click(
     screen.getByRole("button", {
-      name: "Save Pineapple Pickle — Tropical Feast",
+      name: "Add to cart: Pineapple Pickle",
       exact: true,
     }),
   );
   fireEvent.click(
     screen.getByRole("button", {
-      name: "Open enquiry list, 1 items",
+      name: "Open cart, 1 items",
       exact: true,
     }),
   );
@@ -943,6 +949,9 @@ test("enquiry basket quantities, subtotal and both email routes persist and stay
   assert.equal(web.origin, "https://mail.google.com");
   assert.match(web.searchParams.get("body")!, /2 × Pineapple Pickle/);
   assert.match(web.searchParams.get("body")!, /Products subtotal: ₹400/);
+  assert.match(web.searchParams.get("body")!, /Delivery: ₹150/);
+  assert.match(web.searchParams.get("body")!, /Total: ₹550/);
+  assert.ok(dialog.getByText("₹550"));
   assert.equal(gmail.getAttribute("target"), "_blank");
   fireEvent.click(dialog.getByText("Preview or copy your enquiry"));
   assert.match(
@@ -961,7 +970,7 @@ test("enquiry basket quantities, subtotal and both email routes persist and stay
   mountPantry();
   fireEvent.click(
     screen.getByRole("button", {
-      name: "Open enquiry list, 2 items",
+      name: "Open cart, 2 items",
       exact: true,
     }),
   );
@@ -1024,7 +1033,7 @@ test("empty enquiry basket offers both pictured products and closes when browsin
   mountPantry();
   fireEvent.click(
     screen.getByRole("button", {
-      name: "Open enquiry list, 0 items",
+      name: "Open cart, 0 items",
       exact: true,
     }),
   );
@@ -1037,14 +1046,14 @@ test("empty enquiry basket offers both pictured products and closes when browsin
   );
   fireEvent.click(
     screen.getByRole("button", {
-      name: "Open enquiry list, 0 items",
+      name: "Open cart, 0 items",
       exact: true,
     }),
   );
   dialog = within(screen.getByRole("dialog"));
   fireEvent.click(
     dialog.getByRole("button", {
-      name: "Add Pineapple Pickle to enquiry list",
+      name: "Add to cart: Pineapple Pickle",
     }),
   );
   assert.ok(dialog.getByRole("link", { name: "Email", exact: true }));
@@ -1159,4 +1168,149 @@ test("optional analytics preference keeps keyboard focus and rejecting analytics
   cleanup();
   localStorage.clear();
   siteConfig.analyticsId = previous;
+});
+
+test("header login opens an accessible dialog and returns to the shop without forcing sign-in", async () => {
+  localStorage.clear();
+  window.history.replaceState({}, "", "/shop");
+  mountPantry();
+  fireEvent.click(
+    screen.getByRole("button", { name: "Log in or manage your account" }),
+  );
+  const dialog = within(screen.getByRole("dialog"));
+  await waitFor(() =>
+    assert.ok(dialog.getByText("Accounts aren’t available here yet.")),
+  );
+  assert.equal(window.location.pathname, "/shop");
+  assert.ok(document.getElementById("root")?.inert !== false);
+  fireEvent.click(
+    dialog.getByRole("button", { name: "Continue browsing as a guest" }),
+  );
+  assert.ok(screen.queryByRole("dialog") === null);
+  cleanup();
+});
+test("live products, edited prices and saved dynamic carts are shared across catalogue and product detail views", async () => {
+  const previous = globalThis.fetch;
+  const { pickleProducts } = await import("../src/data/pickles.ts");
+  const product = {
+    ...pickleProducts[0],
+    id: "owner-added-pickle",
+    name: "Owner Added Pickle",
+    price: 275,
+  };
+  globalThis.fetch = async () =>
+    Response.json({ products: [...pickleProducts, product], revision: "unit" });
+  try {
+    localStorage.clear();
+    localStorage.setItem(
+      "fruity-pickle-selection-v1",
+      JSON.stringify([product.id]),
+    );
+    localStorage.setItem(
+      "fruity-pickle-quantities-v1",
+      JSON.stringify({ [product.id]: 2 }),
+    );
+    window.history.replaceState({}, "", `/products/${product.id}`);
+    mountPantry();
+    await waitFor(() =>
+      assert.ok(
+        screen.getByRole("heading", { name: product.name, exact: true }),
+      ),
+    );
+    assert.ok(screen.getByText("₹275"));
+    assert.match(document.title, /Owner Added Pickle/);
+    fireEvent.click(screen.getByRole("button", { name: "Open cart, 2 items" }));
+    const dialog = within(screen.getByRole("dialog"));
+    assert.ok(dialog.getByText("₹700"));
+    assert.match(
+      new URL(
+        dialog
+          .getByRole("link", { name: "Email", exact: true })
+          .getAttribute("href")!,
+      ).searchParams.get("body")!,
+      /Total: ₹700/,
+    );
+    cleanup();
+  } finally {
+    globalThis.fetch = previous;
+    cleanup();
+    window.history.replaceState({}, "", "/");
+  }
+});
+test("owner product editor handles refused access, preserves a failed edit, and confirms only a saved response", async () => {
+  const previous = globalThis.fetch;
+  const { pickleProducts } = await import("../src/data/pickles.ts");
+  const { ProductManager } = await import("../src/components/AdminPanel.tsx");
+  let unlockAllowed = false,
+    saveAllowed = false;
+  let savedBody: any;
+  globalThis.fetch = async (_url, options) => {
+    const body = JSON.parse(options?.body as string);
+    if (body.action === "unlock")
+      return Response.json(
+        unlockAllowed
+          ? { products: pickleProducts, revision: "unit" }
+          : { error: "This account does not have owner access." },
+        { status: unlockAllowed ? 200 : 403 },
+      );
+    savedBody = body;
+    return Response.json(
+      saveAllowed
+        ? { products: [body.product, pickleProducts[1]], revision: "saved" }
+        : { error: "Try again. Changes were not saved." },
+      { status: saveAllowed ? 200 : 503 },
+    );
+  };
+  try {
+    render(
+      React.createElement(ProductManager, {
+        getToken: async () => "unit-fixture-token",
+      }),
+    );
+    fireEvent.change(screen.getByLabelText("Panel password"), {
+      target: { value: "unit-fixture-password" },
+    });
+    fireEvent.click(
+      screen.getByRole("button", { name: "Unlock product panel" }),
+    );
+    await waitFor(() =>
+      assert.ok(screen.getByText("This account does not have owner access.")),
+    );
+    unlockAllowed = true;
+    fireEvent.click(
+      screen.getByRole("button", { name: "Unlock product panel" }),
+    );
+    await waitFor(() =>
+      assert.ok(screen.getByRole("heading", { name: "The pantry manager." })),
+    );
+    fireEvent.click(
+      screen.getByRole("button", { name: /Pineapple Pickle.*₹200/ }),
+    );
+    fireEvent.change(screen.getByLabelText("Price (₹)"), {
+      target: { value: "240" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Save changes" }));
+    await waitFor(() =>
+      assert.ok(screen.getByText("Try again. Changes were not saved.")),
+    );
+    assert.equal(
+      (screen.getByLabelText("Price (₹)") as HTMLInputElement).value,
+      "240",
+    );
+    saveAllowed = true;
+    fireEvent.click(screen.getByRole("button", { name: "Save changes" }));
+    await waitFor(() =>
+      assert.ok(
+        screen.getByText("Pineapple Pickle saved to the live catalogue."),
+      ),
+    );
+    assert.equal(savedBody.product.price, 240);
+    assert.equal(savedBody.product.jarSize, null);
+    assert.equal(savedBody.revision, "unit");
+    fireEvent.click(screen.getByRole("button", { name: /Lock panel/ }));
+    assert.ok(screen.getByRole("button", { name: "Unlock product panel" }));
+  } finally {
+    globalThis.fetch = previous;
+    cleanup();
+  }
 });

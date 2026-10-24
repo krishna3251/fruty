@@ -9,7 +9,7 @@ import {
 import {
   ArrowRight,
   ArrowUpRight,
-  Bookmark,
+  ShoppingBag,
   Leaf,
   Menu,
   Pause,
@@ -22,11 +22,11 @@ import { useRoute } from "./hooks/useRoute";
 import { usePantryMotion } from "./hooks/usePantryMotion";
 import {
   pickleCollections,
-  pickleProducts,
   brandAssets,
   retiredPickleRoutes,
 } from "./data/pickles";
 import { products as archivedFruit } from "./data/products";
+import { CatalogueProvider, useCatalogue } from "./context/Catalogue";
 import {
   PickleSelectionProvider,
   usePickleSelection,
@@ -50,6 +50,7 @@ import { OfflineNotice } from "./components/Resilience";
 const AccountPage = lazy(() => import("./components/AccountPage"));
 const LegacyFruitStore = lazy(() => import("./LegacyFruitStore"));
 function PantryQuestions() {
+  const { products } = useCatalogue();
   return (
     <section className="pantry-faq section-pad" id="questions">
       <div>
@@ -64,7 +65,7 @@ function PantryQuestions() {
         {[
           [
             "How do I order?",
-            "Save your favourites to an enquiry list, then open WhatsApp or email to send your questions. Enquiries are for Hyderabad. Nothing is sent or ordered automatically.",
+            "Add your favourites to the cart, then open WhatsApp or email to send your questions. Enquiries are for Hyderabad. Nothing is sent or ordered automatically.",
           ],
           [
             "Where are the pickles available?",
@@ -72,11 +73,11 @@ function PantryQuestions() {
           ],
           [
             "What are the prices and jar sizes?",
-            "Pineapple Pickle and Cucumber Pickle are ₹200 each. Confirm jar size, availability, ingredients/allergens, delivery charges and the final total before ordering.",
+            `Current prices: ${products.map((p) => `${p.name}: ₹${p.price ?? "on enquiry"}`).join("; ")}. Delivery is ₹150 per enquiry. Confirm jar size, availability, ingredients/allergens and the final total before ordering.`,
           ],
           [
             "Which flavours do you offer?",
-            "There are exactly two flavours: Pineapple Pickle and Cucumber Pickle. Both are Tropical Feast products.",
+            `Explore ${products.map((p) => p.name).join(", ")}. These are Tropical Feast products.`,
           ],
           [
             "What images are shown?",
@@ -98,7 +99,19 @@ function PantryQuestions() {
 function PantryShell({ path }: { path: string }) {
   const root = useRef<HTMLDivElement>(null);
   const [menu, setMenu] = useState(false);
+  const { products: pickleProducts, loading: catalogueLoading } =
+    useCatalogue();
   const [listOpen, setListOpen] = useState(false);
+  const [accountOpen, setAccountOpen] = useState(false);
+  const closeAccount = useCallback(() => setAccountOpen(false), []);
+  useEffect(() => {
+    const open = () => {
+      setListOpen(true);
+      setAccountOpen(false);
+    };
+    window.addEventListener("pantry:open-cart", open);
+    return () => window.removeEventListener("pantry:open-cart", open);
+  }, []);
   const [paused, setPaused] = useState(false);
   const reduced = useReducedMotion();
   const selection = usePickleSelection()!;
@@ -107,6 +120,7 @@ function PantryShell({ path }: { path: string }) {
   useEffect(() => {
     setMenu(false);
     setListOpen(false);
+    setAccountOpen(false);
   }, [path]);
   useEffect(() => {
     const escape = (e: KeyboardEvent) => {
@@ -135,7 +149,7 @@ function PantryShell({ path }: { path: string }) {
       {!home && (
         <div className="pantry-announcement">
           <span>THE PICKLE PANTRY</span>
-          <span>Two flavours. Pineapple & cucumber.</span>
+          <span>Pick your next jar. Tropical Feast.</span>
         </div>
       )}
       <header className="pantry-header">
@@ -177,10 +191,16 @@ function PantryShell({ path }: { path: string }) {
           </a>
         </nav>
         <div className="pantry-tools">
-          <a
+          <button
             className="pantry-account-link"
-            href="/account"
-            aria-label="Your account"
+            onClick={() => {
+              setAccountOpen(true);
+              setListOpen(false);
+              setMenu(false);
+            }}
+            aria-label="Log in or manage your account"
+            aria-haspopup="dialog"
+            aria-expanded={accountOpen}
             aria-current={
               ["/account", "/sign-in", "/sign-up"].includes(path)
                 ? "page"
@@ -188,15 +208,18 @@ function PantryShell({ path }: { path: string }) {
             }
           >
             <UserRound size={18} />
-            <span>Account</span>
-          </a>
+            <span>Log in</span>
+          </button>
           <button
             className="pantry-list-button"
-            aria-label={`Open enquiry list, ${selection.itemCount} items`}
-            onClick={() => setListOpen(true)}
+            aria-label={`Open cart, ${selection.itemCount} items`}
+            onClick={() => {
+              setListOpen(true);
+              setAccountOpen(false);
+            }}
           >
-            <Bookmark size={18} />
-            <span>Enquiry list</span>
+            <ShoppingBag size={18} />
+            <span>Cart</span>
             <b>{selection.itemCount}</b>
           </button>
           <button
@@ -261,7 +284,7 @@ function PantryShell({ path }: { path: string }) {
               <Newsletter />
             </section>
           </>
-        ) : ["/account", "/sign-in", "/sign-up"].includes(path) ? (
+        ) : ["/account", "/sign-in", "/sign-up", "/admin"].includes(path) ? (
           <Suspense
             fallback={
               <section className="section-pad" role="status">
@@ -271,14 +294,20 @@ function PantryShell({ path }: { path: string }) {
           >
             <AccountPage
               mode={
-                path === "/sign-up"
-                  ? "sign-up"
-                  : path === "/sign-in"
-                    ? "sign-in"
-                    : "account"
+                path === "/admin"
+                  ? "admin"
+                  : path === "/sign-up"
+                    ? "sign-up"
+                    : path === "/sign-in"
+                      ? "sign-in"
+                      : "account"
               }
             />
           </Suspense>
+        ) : catalogueLoading && path.startsWith("/products/") && !product ? (
+          <section className="section-pad" role="status">
+            Loading product…
+          </section>
         ) : product ? (
           <PickleProductPage product={product} />
         ) : catalogue || collection ? (
@@ -302,7 +331,7 @@ function PantryShell({ path }: { path: string }) {
                 <em>Ask the right questions.</em>
               </h1>
               <p>
-                Choose pineapple, cucumber or both. Save an enquiry list, then
+                Choose pineapple, cucumber or both. Build your cart, then
                 confirm the details with Tropical Feast before ordering.
               </p>
               <ol>
@@ -332,7 +361,7 @@ function PantryShell({ path }: { path: string }) {
                     />
                     <span>
                       {p.name}
-                      <small>₹200 · Tropical Feast</small>
+                      <small>₹{p.price} · Tropical Feast</small>
                     </span>
                     <ArrowUpRight size={18} />
                   </a>
@@ -340,9 +369,12 @@ function PantryShell({ path }: { path: string }) {
               </div>
               <button
                 className="button primary"
-                onClick={() => setListOpen(true)}
+                onClick={() => {
+                  setListOpen(true);
+                  setAccountOpen(false);
+                }}
               >
-                Review enquiry list <ArrowRight size={17} />
+                Review cart <ArrowRight size={17} />
               </button>
             </section>
             <TropicalOrdering />
@@ -427,8 +459,10 @@ function PantryShell({ path }: { path: string }) {
           <div>
             <span className="eyebrow">YOUR NEXT JAR</span>
             <button className="text-link" onClick={() => setListOpen(true)}>
-              Your enquiry list <ArrowUpRight size={15} />
+              Your cart <ArrowUpRight size={15} />
             </button>
+            <a href="/account">Your account</a>
+            <a href="/admin">Owner panel</a>
             <p>
               Confirm commercial details
               <br />
@@ -447,8 +481,11 @@ function PantryShell({ path }: { path: string }) {
           <span>Product and brand images supplied by the owner</span>
         </div>
       </footer>
-      <PrivacyControls path={path} blocked={listOpen || menu} />
-      <MobileShopCTA path={path} blocked={listOpen} />
+      <PrivacyControls path={path} blocked={listOpen || accountOpen || menu} />
+      <MobileShopCTA
+        path={path}
+        blocked={listOpen || accountOpen || path === "/admin"}
+      />
       {!reduced && (
         <button
           className="pantry-motion"
@@ -460,8 +497,23 @@ function PantryShell({ path }: { path: string }) {
           <span>{paused ? "Motion paused" : "Motion on"}</span>
         </button>
       )}
+      {accountOpen && (
+        <Modal title="Your account" onClose={closeAccount}>
+          <div className="login-dialog">
+            <Suspense fallback={<p role="status">Loading sign-in…</p>}>
+              <AccountPage mode="account" />
+            </Suspense>
+            <a className="text-link" href="/sign-up">
+              New here? Create an account ↗
+            </a>
+            <button className="text-link" onClick={closeAccount}>
+              Continue browsing as a guest
+            </button>
+          </div>
+        </Modal>
+      )}
       {listOpen && (
-        <Modal title="Your pickle enquiry list" onClose={closeList} drawer>
+        <Modal title="Your cart" onClose={closeList} drawer>
           <EnquiryList onNavigate={closeList} />
         </Modal>
       )}
@@ -491,8 +543,10 @@ export default function App() {
       </Suspense>
     );
   return (
-    <PickleSelectionProvider>
-      <PantryShell path={path} />
-    </PickleSelectionProvider>
+    <CatalogueProvider>
+      <PickleSelectionProvider>
+        <PantryShell path={path} />
+      </PickleSelectionProvider>
+    </CatalogueProvider>
   );
 }

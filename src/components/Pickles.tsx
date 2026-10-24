@@ -1,3 +1,5 @@
+import { useCatalogue } from "../context/Catalogue";
+import { DELIVERY_CHARGE } from "../lib/catalogue";
 import { useState } from "react";
 import {
   ArrowUpRight,
@@ -5,15 +7,13 @@ import {
   MapPin,
   Search,
   Leaf,
-  Bookmark,
+  ShoppingBag,
   Check,
 } from "lucide-react";
 import {
   pickleCollections,
-  pickleProducts,
   brandAssets,
   collectionFor,
-  filterPickles,
   type PickleProduct,
   type PickleCollection,
 } from "../data/pickles";
@@ -78,26 +78,27 @@ function SavePickle({
   const selection = usePickleSelection();
   if (!selection) return null;
   const saved = selection.ids.includes(p.id);
+  const unavailable = p.availability === "unavailable" || p.price === null;
   return (
     <button
-      className={detail ? "button primary pickle-save-detail" : "pickle-save"}
-      aria-label={
-        detail
-          ? undefined
-          : `${saved ? "Unsave" : "Save"} ${p.name} — Tropical Feast`
-      }
-      aria-pressed={saved}
-      onClick={() => selection.toggle(p.id)}
+      className={`button primary product-add ${detail ? "pickle-save-detail" : ""}`}
+      disabled={unavailable}
+      onClick={() => {
+        if (saved) window.dispatchEvent(new Event("pantry:open-cart"));
+        else selection.add(p.id);
+      }}
+      aria-label={`${unavailable ? "Unavailable" : saved ? "View cart for" : "Add to cart:"} ${p.name}`}
     >
-      {detail
-        ? saved
-          ? "Saved to enquiry list"
-          : "Save to enquiry list"
-        : null}
-      {saved ? <Check size={17} /> : <Bookmark size={17} />}
+      {saved ? <Check size={17} /> : <ShoppingBag size={17} />}
+      {unavailable
+        ? "Currently unavailable"
+        : saved
+          ? "Added · View cart"
+          : "Add to cart"}
     </button>
   );
 }
+
 function PickleCard({ product: p }: { product: PickleProduct }) {
   return (
     <article className={`pickle-card ${p.collectionId}`}>
@@ -117,7 +118,6 @@ function PickleCard({ product: p }: { product: PickleProduct }) {
           <ArrowUpRight size={20} />
         </span>
       </a>
-      <SavePickle product={p} />
       <div className="pickle-card-copy">
         <span className="eyebrow">Tropical Feast</span>
         <h3>
@@ -128,8 +128,9 @@ function PickleCard({ product: p }: { product: PickleProduct }) {
           {p.price === null ? "Price awaiting confirmation" : money(p.price)} ·{" "}
           {p.jarSize || "Jar size awaiting confirmation"}
         </p>
+        <SavePickle product={p} />
         <a className="text-link" href={`/products/${p.id}`}>
-          Details & enquiry <ArrowUpRight size={16} />
+          Product details <ArrowUpRight size={16} />
         </a>
       </div>
     </article>
@@ -230,7 +231,7 @@ export function TropicalOrdering({
         <p>
           Pineapple and cucumber pickle enquiries are by direct message. Confirm
           availability, price, jar size, ingredients and delivery before
-          ordering.
+          ordering. Delivery is ₹150 per enquiry.
         </p>
       </div>
       <div className="pickle-order-action">
@@ -278,6 +279,7 @@ export function TropicalOrdering({
   );
 }
 export function PickleHome() {
+  const { products: pickleProducts } = useCatalogue();
   return (
     <div className="pickle-home" id="collections">
       <div className="pickle-intro section-pad">
@@ -319,10 +321,16 @@ export function PickleCatalogue({
   collection?: PickleCollection;
   cataloguePath?: string;
 }) {
+  const { products: pickleProducts, loading, error, refresh } = useCatalogue();
   const [selected, setSelected] = useState("all");
   const [query, setQuery] = useState("");
-  const results = filterPickles(collection?.id || "all", query).filter(
-    (p) => selected === "all" || selected === p.id,
+  const results = pickleProducts.filter(
+    (p) =>
+      (!collection || p.collectionId === collection.id) &&
+      (selected === "all" || selected === p.id) &&
+      `${p.name} ${p.description}`
+        .toLowerCase()
+        .includes(query.trim().toLowerCase()),
   );
   return (
     <div className="pickle-page">
@@ -382,9 +390,18 @@ export function PickleCatalogue({
             />
           </label>
         </div>
+        {loading && <p role="status">Checking the latest pantry…</p>}
+        {error && (
+          <div className="catalogue-warning" role="status">
+            {error}{" "}
+            <button className="text-link" onClick={refresh}>
+              Try again
+            </button>
+          </div>
+        )}
         <p className="pickle-results" role="status">
           {results.length} {results.length === 1 ? "flavour" : "flavours"} ·
-          ₹200 each · Confirm jar size, availability and delivery
+          ₹150 delivery per enquiry · Confirm jar size and availability
         </p>
         <div className="pickle-grid">
           {results.map((p) => (
@@ -412,6 +429,7 @@ export function PickleCatalogue({
   );
 }
 export function PickleProductPage({ product: p }: { product: PickleProduct }) {
+  const { products: pickleProducts } = useCatalogue();
   const c = collectionFor(p);
   return (
     <div className="pickle-product-page">
@@ -460,7 +478,13 @@ export function PickleProductPage({ product: p }: { product: PickleProduct }) {
             </div>
             <div>
               <dt>Availability</dt>
-              <dd>Not yet confirmed</dd>
+              <dd>
+                {p.availability === "available"
+                  ? "Available"
+                  : p.availability === "unavailable"
+                    ? "Currently unavailable"
+                    : "Confirm by enquiry"}
+              </dd>
             </div>
             <div>
               <dt>Service area</dt>
@@ -472,8 +496,11 @@ export function PickleProductPage({ product: p }: { product: PickleProduct }) {
             </div>
           </dl>
           <p className="pickle-disclosure">
-            Save your chosen flavour to an enquiry list, then confirm the
-            details before ordering. No order or payment is processed here.
+            Add your chosen flavour to your cart, then confirm the details
+            before ordering. No order or payment is processed here.
+          </p>
+          <p className="delivery-note">
+            ₹{DELIVERY_CHARGE} delivery per enquiry · Hyderabad only
           </p>
           <SavePickle product={p} detail />
           <a

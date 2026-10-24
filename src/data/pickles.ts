@@ -25,7 +25,7 @@ export interface PickleProduct {
   jarSize: string | null;
   ingredients: string[] | null;
   flavourDescriptors: string[];
-  availability: "unconfirmed";
+  availability: "unconfirmed" | "available" | "unavailable";
   orderMethod: "direct-message" | null;
   serviceArea: string | null;
 }

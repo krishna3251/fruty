@@ -48,7 +48,7 @@ export default function InformationPage({ path }: { path: string }) {
       <p className="policy-intro">
         {path === "/contact"
           ? "Ask about either pickle on WhatsApp or by email. We keep contact details behind these links."
-          : "Implementation notice for the pickle enquiry catalogue. Updated 23 October 2026."}
+          : "Implementation notice for the pickle enquiry catalogue. Updated 24 October 2026."}
       </p>
       {path === "/privacy" ? (
         <>
@@ -99,11 +99,20 @@ export default function InformationPage({ path }: { path: string }) {
             if you choose Google sign-in. We do not receive your Google
             password. Essential Clerk session cookies keep you signed in; these
             are separate from optional analytics consent. The Clerk SDK is
-            loaded when you visit an account page, and SDK telemetry is
-            disabled. Use your account’s security controls to manage sessions or
-            sign out. Account and provider-side retention and deletion requests
-            require the owner’s confirmed privacy process. Your enquiry basket
-            stays on this device and is not synced to your account.
+            loaded when you open the account dialog or visit an account page,
+            and SDK telemetry is disabled. Use your account’s security controls
+            to manage sessions or sign out. Account and provider-side retention
+            and deletion requests require the owner’s confirmed privacy process.
+            Your enquiry basket stays on this device and is not synced to your
+            account.
+          </p>
+          <h2>Owner product management</h2>
+          <p>
+            The private owner panel uses verified Clerk account access and a
+            server-checked panel password. Product photos, prices and
+            descriptions are stored in Vercel Blob and made available in the
+            public catalogue. The panel password is not stored in the browser.
+            No customer address or payment data is stored by this panel.
           </p>
           <h2>Forms and checkout</h2>
           <p>
@@ -188,11 +197,13 @@ export default function InformationPage({ path }: { path: string }) {
           <h2>Using this catalogue</h2>
           <p>
             Tropical Feast is a pickle discovery and enquiry catalogue for two
-            owner-confirmed flavours: pineapple and cucumber. Both pickles are
-            listed at ₹200 each. Jar sizes, ingredients/allergens and stock
-            remain unconfirmed. No offer to supply goods or contract is created
-            by saving a product or copying an enquiry draft. A separately
-            archived fruit demonstration retains its sample prices and checkout.
+            owner-confirmed flavours: pineapple and cucumber. Product prices
+            appear in the catalogue. Delivery is ₹150 per enquiry; the cart
+            shows the current product prices and total. Jar sizes,
+            ingredients/allergens and stock remain unconfirmed. No offer to
+            supply goods or contract is created by saving a product or copying
+            an enquiry draft. A separately archived fruit demonstration retains
+            its sample prices and checkout.
           </p>
           <h2>Orders, payments and accounts</h2>
           <p>
@@ -207,11 +218,11 @@ export default function InformationPage({ path }: { path: string }) {
           <h2>Before live sales begin</h2>
           <p>
             The owner must publish the verified seller identity, service area,
-            total price/tax rules, payment methods, delivery charges and times,
-            cancellation conditions, damaged-produce process, return
-            eligibility, refund process/timeframes, customer support and
-            applicable jurisdiction. These commercial terms are not yet provided
-            and no delivery/refund guarantee is represented here.
+            total price/tax rules, payment methods, delivery times, cancellation
+            conditions, damaged-produce process, return eligibility, refund
+            process/timeframes, customer support and applicable jurisdiction.
+            These commercial terms are not yet provided and no delivery/refund
+            guarantee is represented here.
           </p>
           <h2>Content and availability</h2>
           <p>

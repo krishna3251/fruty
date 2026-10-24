@@ -60,6 +60,7 @@ for (const path of [
   ...archivePaths,
   ...accountPaths,
   "/thank-you",
+  "/admin",
 ]) {
   const m = pageMeta(path);
   let html = base

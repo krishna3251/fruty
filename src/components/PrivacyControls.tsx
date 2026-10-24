@@ -26,7 +26,14 @@ export default function PrivacyControls({
   const unobstructed =
     !blocked &&
     !editing &&
-    !["/account", "/sign-in", "/sign-up", "/privacy", "/terms"].includes(path);
+    ![
+      "/account",
+      "/sign-in",
+      "/sign-up",
+      "/admin",
+      "/privacy",
+      "/terms",
+    ].includes(path);
   useEffect(() => {
     const focus = (event: FocusEvent) => {
       const target =

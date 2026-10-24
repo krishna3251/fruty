@@ -13,7 +13,7 @@ import {
   validClerkPublishableKey,
 } from "../lib/authConfig";
 const ClerkAccount = lazy(() => import("./ClerkAccount"));
-export type AccountMode = "sign-in" | "sign-up" | "account";
+export type AccountMode = "sign-in" | "sign-up" | "account" | "admin";
 class AccountBoundary extends Component<
   { children: ReactNode },
   { failed: boolean }
@@ -64,15 +64,19 @@ function AccountConnection({ mode }: { mode: AccountMode }) {
 }
 export default function AccountPage({ mode }: { mode: AccountMode }) {
   return (
-    <section className="account-page section-pad">
+    <section
+      className={`account-page section-pad ${mode === "admin" ? "admin-page" : ""}`}
+    >
       <div className="account-intro">
         <span className="eyebrow">FERMENTED PICKLES / YOUR ACCOUNT</span>
         <h1>
-          {mode === "sign-up"
-            ? "Make yourself at home."
-            : mode === "account"
-              ? "Your account."
-              : "Welcome back."}
+          {mode === "admin"
+            ? "Your private pantry."
+            : mode === "sign-up"
+              ? "Make yourself at home."
+              : mode === "account"
+                ? "Your account."
+                : "Welcome back."}
         </h1>
         <p>
           Sign in to manage your profile. Browsing and enquiries are always

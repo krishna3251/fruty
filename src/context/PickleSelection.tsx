@@ -5,9 +5,13 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { useCatalogue } from "./Catalogue";
 import { pickleProducts } from "../data/pickles";
 export const PICKLE_SELECTION_KEY = "fruity-pickle-selection-v1";
-export function restoreSelection(raw: string | null): string[] {
+export function restoreSelection(
+  raw: string | null,
+  allowed: string[] | null = pickleProducts.map((p) => p.id),
+): string[] {
   try {
     const value: unknown = JSON.parse(raw || "[]");
     return Array.isArray(value)
@@ -22,7 +26,10 @@ export function restoreSelection(raw: string | null): string[] {
               .filter(
                 (id): id is string =>
                   typeof id === "string" &&
-                  pickleProducts.some((p) => p.id === id),
+                  (allowed
+                    ? allowed.includes(id)
+                    : /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(id) &&
+                      id !== "fermented-pale-vegetable-pickle"),
               ),
           ),
         ]
@@ -64,7 +71,10 @@ export function restoreQuantities(
 }
 function readBasket() {
   try {
-    const ids = restoreSelection(localStorage.getItem(PICKLE_SELECTION_KEY));
+    const ids = restoreSelection(
+      localStorage.getItem(PICKLE_SELECTION_KEY),
+      null,
+    );
     return {
       ids,
       quantities: restoreQuantities(
@@ -81,10 +91,12 @@ const SelectionContext = createContext<{
   quantities: Record<string, number>;
   itemCount: number;
   toggle: (id: string) => void;
+  add: (id: string) => void;
   setQuantity: (id: string, quantity: number) => void;
   storageUnavailable: boolean;
 } | null>(null);
 export function PickleSelectionProvider({ children }: { children: ReactNode }) {
+  const { products } = useCatalogue();
   const [basket, setBasket] = useState(readBasket);
   const [storageUnavailable, setStorageUnavailable] = useState(false);
   useEffect(() => {
@@ -107,7 +119,7 @@ export function PickleSelectionProvider({ children }: { children: ReactNode }) {
     return () => window.removeEventListener("storage", sync);
   }, []);
   const toggle = (id: string) => {
-    if (!pickleProducts.some((p) => p.id === id)) return;
+    if (!basket.ids.includes(id) && !products.some((p) => p.id === id)) return;
     setBasket((current) => {
       const ids = current.ids.includes(id)
         ? current.ids.filter((p) => p !== id)
@@ -117,6 +129,23 @@ export function PickleSelectionProvider({ children }: { children: ReactNode }) {
         quantities: restoreQuantities(JSON.stringify(current.quantities), ids),
       };
     });
+  };
+  const add = (id: string) => {
+    if (
+      !products.some(
+        (p) =>
+          p.id === id && p.price !== null && p.availability !== "unavailable",
+      )
+    )
+      return;
+    setBasket((current) =>
+      current.ids.includes(id)
+        ? current
+        : {
+            ids: [...current.ids, id],
+            quantities: { ...current.quantities, [id]: 1 },
+          },
+    );
   };
   const setQuantity = (id: string, quantity: number) => {
     if (
@@ -140,6 +169,7 @@ export function PickleSelectionProvider({ children }: { children: ReactNode }) {
           0,
         ),
         toggle,
+        add,
         setQuantity,
         storageUnavailable,
       }}

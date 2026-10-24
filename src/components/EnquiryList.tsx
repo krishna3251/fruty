@@ -1,3 +1,5 @@
+import { useCatalogue } from "../context/Catalogue";
+import { cartTotals } from "../lib/catalogue";
 import { useRef, useState } from "react";
 import {
   ArrowUpRight,
@@ -8,11 +10,7 @@ import {
   MessageCircle,
   ShoppingBag,
 } from "lucide-react";
-import {
-  collectionFor,
-  pickleCollections,
-  pickleProducts,
-} from "../data/pickles";
+import { collectionFor, pickleCollections } from "../data/pickles";
 import { usePickleSelection } from "../context/PickleSelection";
 import { enquiryWhatsApp } from "../lib/contact";
 import EmailEnquiry from "./EmailEnquiry";
@@ -23,15 +21,22 @@ export default function EnquiryList({
 }: {
   onNavigate?: () => void;
 }) {
+  const { products: pickleProducts, error: catalogueError } = useCatalogue();
   const selection = usePickleSelection();
   const [status, setStatus] = useState("");
   const [copying, setCopying] = useState(false);
   const copyingRef = useRef(false);
   if (!selection) return null;
   const selected = pickleProducts.filter((p) => selection.ids.includes(p.id));
-  const subtotal = selected.reduce(
-    (sum, p) => sum + (p.price ?? 0) * (selection.quantities[p.id] || 1),
-    0,
+  const { subtotal, delivery, total } = cartTotals(
+    selected,
+    selection.quantities,
+  );
+  const missing = selection.ids.filter(
+    (id) => !pickleProducts.some((p) => p.id === id),
+  );
+  const unavailable = selected.some(
+    (p) => p.availability === "unavailable" || p.price === null,
   );
   const message = [
     "Hello, I’d like to enquire about:",
@@ -39,8 +44,10 @@ export default function EnquiryList({
       (p) =>
         `• ${selection.quantities[p.id] || 1} × ${p.name} — ${collectionFor(p).name} — ${money(p.price!)} each`,
     ),
-    `Products subtotal: ${money(subtotal)} (delivery and final charges to be confirmed).`,
-    "Please confirm jar sizes, ingredients/allergens, stock, delivery charges and the final total before I order.",
+    `Products subtotal: ${money(subtotal)}`,
+    `Delivery: ${money(delivery)}`,
+    `Total: ${money(total)}`,
+    "Please confirm jar sizes, ingredients/allergens, stock, delivery details and the final total before I order.",
   ].join("\n");
   const dm = enquiryWhatsApp(message);
   return (
@@ -49,8 +56,28 @@ export default function EnquiryList({
     >
       <p className="basket-intro">
         Pick your jars. We’ll help with the rest.{" "}
-        <span>₹200 each · Hyderabad enquiries</span>
+        <span>₹150 delivery · Hyderabad enquiries</span>
       </p>
+      {catalogueError && <p role="status">{catalogueError}</p>}
+      {missing.length > 0 && (
+        <div role="status">
+          Some saved products are no longer in this catalogue.{" "}
+          {missing.map((id) => (
+            <button
+              className="text-link"
+              key={id}
+              onClick={() => selection.toggle(id)}
+            >
+              Remove missing item
+            </button>
+          ))}
+        </div>
+      )}
+      {unavailable && (
+        <p role="alert">
+          An item is unavailable. Remove it before sending your enquiry.
+        </p>
+      )}
       {selection.storageUnavailable && (
         <p role="status">
           Browser storage is unavailable. Your list lasts for this visit only.
@@ -69,13 +96,15 @@ export default function EnquiryList({
               <button
                 key={p.id}
                 className="basket-suggestion"
-                onClick={() => selection.toggle(p.id)}
-                aria-label={`Add ${p.name} to enquiry list`}
+                onClick={() => selection.add(p.id)}
+                disabled={p.availability === "unavailable" || p.price === null}
+                aria-label={`Add to cart: ${p.name}`}
               >
                 <img src={p.image} alt={p.imageAlt} width="160" height="110" />
                 <span>{p.name}</span>
                 <small>
-                  ₹200 <Plus size={15} />
+                  {p.price === null ? "Price on enquiry" : money(p.price)}{" "}
+                  <Plus size={15} />
                 </small>
               </button>
             ))}
@@ -111,7 +140,12 @@ export default function EnquiryList({
                         <a href={`/products/${p.id}`} onClick={onNavigate}>
                           {p.name}
                         </a>
-                        <small>Crisp · Spicy · Tangy</small>
+                        <small>
+                          {p.flavourDescriptors.join(" · ")}
+                          {p.availability === "unavailable"
+                            ? " · Unavailable"
+                            : ""}
+                        </small>
                         <strong className="basket-unit-price">
                           {money(p.price!)} <span>/ jar · size to confirm</span>
                         </strong>
@@ -174,12 +208,27 @@ export default function EnquiryList({
               <span>Products subtotal</span>
               <strong>{money(subtotal)}</strong>
               <small>
-                Delivery and any final charges are confirmed before ordering.
+                Confirm jar size, stock and delivery details before ordering.
               </small>
             </div>
+            <div className="cart-total-row">
+              <span>Delivery</span>
+              <strong>{money(delivery)}</strong>
+            </div>
+            <div className="cart-total-row cart-grand-total">
+              <span>Total</span>
+              <strong>{money(total)}</strong>
+            </div>
+            <a
+              className="cart-account-link"
+              href="/account"
+              onClick={onNavigate}
+            >
+              Sign in / Manage account ↗
+            </a>
             <span className="basket-action-label">SEND YOUR ENQUIRY</span>
             <div className="basket-contact-actions">
-              {dm && (
+              {dm && !unavailable && (
                 <a
                   className="basket-contact whatsapp-contact"
                   href={dm}
@@ -190,7 +239,9 @@ export default function EnquiryList({
                   <ArrowUpRight size={16} />
                 </a>
               )}
-              <EmailEnquiry message={message} label="Email" prominent />
+              {!unavailable && (
+                <EmailEnquiry message={message} label="Email" prominent />
+              )}
             </div>
             <p className="basket-reassurance">
               Opens an editable message. Review and send it yourself.

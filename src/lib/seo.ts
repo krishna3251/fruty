@@ -4,6 +4,7 @@ import {
   pickleCollections,
   pickleProducts,
   collectionFor,
+  type PickleProduct,
 } from "../data/pickles";
 export const publicPaths = [
   "/",
@@ -21,7 +22,18 @@ export const archivePaths = [
   "/fruit-story",
   ...products.map((p) => `/products/${p.id}`),
 ];
-export function pageMeta(path: string) {
+export function pageMeta(
+  path: string,
+  catalogue: PickleProduct[] = pickleProducts,
+) {
+  if (path === "/admin")
+    return {
+      title: "Owner Product Panel | Fermented Pickles",
+      description:
+        "Private product management for the Fermented Pickles owner.",
+      type: "website",
+      index: false,
+    };
   if (accountPaths.includes(path))
     return {
       title:
@@ -47,7 +59,7 @@ export function pageMeta(path: string) {
       type: "website",
       index: false,
     };
-  const pickle = pickleProducts.find((p) => path === `/products/${p.id}`);
+  const pickle = catalogue.find((p) => path === `/products/${p.id}`);
   if (pickle)
     return {
       title: `${pickle.name} | Tropical Feast`,
@@ -82,7 +94,7 @@ export function pageMeta(path: string) {
     "/": {
       title: "Fermented Pickles | Pineapple & Cucumber Pickles",
       description:
-        "Watch the pineapple pickle film at Fermented Pickles. Discover Tropical Feast’s pineapple and cucumber pickles at ₹200 each and enquire in Hyderabad.",
+        "Watch the pineapple pickle film at Fermented Pickles. Discover Tropical Feast’s pineapple and cucumber pickles and enquire in Hyderabad.",
     },
     "/shop": {
       title: "Shop Pineapple & Cucumber Pickles | Tropical Feast",
