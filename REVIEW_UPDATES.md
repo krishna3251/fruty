@@ -17,4 +17,14 @@ No images or layouts were copied from other stores. Product photography remains 
 
 ## Verification
 
-Local and live results will be added after checks finish. Email/WhatsApp links prepare drafts; no message is sent automatically. Payment/inventory services and unknown commercial details were not fabricated.
+- `npm run verify`: TypeScript/Vite production build passed, all 43 tests passed, formatting passed. `git diff --check` passed.
+- Source deployment `be930c1` reached Vercel READY and the public alias serves the update.
+- Actual browser at 1363 × 936: hero video was muted, playing, readyState 4, without native controls. Hero mode is autoplay; zero pin spacers; no horizontal overflow.
+- Empty cart displays both supplied product photos and working quick-add buttons, within a compact content-sized drawer.
+- Quantity changes produce the correct subtotal and Gmail draft (two pineapple + one cucumber = ₹600). Both external actions have the encoded draft; no message was sent during testing.
+- Collapsed draft remains outside the accessibility tree. Tabbing from its disclosure summary wraps to the close button instead of entering hidden controls.
+- Ordering route retains the header, has no horizontal overflow, and the programmatically focused heading has no outline box.
+- Mobile layouts and safe-area rules were reviewed in code. A fresh mobile viewport screenshot was not possible because the available browser has no viewport-emulation capability; this is not claimed as a live mobile visual pass.
+- [Live desktop photo-cart screenshot](docs/photo-cart.jpg).
+
+Email/WhatsApp links prepare drafts; no message is sent automatically. Payment/inventory services and unknown commercial details were not fabricated.
