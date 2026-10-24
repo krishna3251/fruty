@@ -474,8 +474,8 @@ test("pickle catalogue filters by collection, searches both flavours and recover
   assert.equal(window.location.pathname, "/products/tropical-pineapple-pickle");
   assert.ok(main.getByText("Hyderabad only"));
   assert.equal(main.queryByRole("button", { name: /add.*bag/i }), null);
-  assert.ok(main.getByText("Ordering channel awaiting confirmation"));
-  assert.equal(main.queryByRole("link", { name: "DM Tropical Feast" }), null);
+  assert.ok(main.getByRole("link", { name: "WhatsApp enquiry" }));
+  assert.ok(main.getByRole("link", { name: "Email enquiry" }));
   cleanup();
   window.history.replaceState({}, "", "/");
 });
@@ -519,13 +519,13 @@ test("Tropical Feast DM is only enabled for its explicit safe configuration", as
     siteConfig.tropicalFeastDmUrl = "javascript:alert(1)";
     render(React.createElement(TropicalOrdering));
     assert.equal(
-      screen.queryByRole("link", { name: "DM Tropical Feast" }),
+      screen.queryByRole("link", { name: "WhatsApp enquiry" }),
       null,
     );
     cleanup();
     siteConfig.tropicalFeastDmUrl = "https://dm.example.test/verified-supplier";
     render(React.createElement(TropicalOrdering));
-    const link = screen.getByRole("link", { name: "DM Tropical Feast" });
+    const link = screen.getByRole("link", { name: "WhatsApp enquiry" });
     assert.equal(link.getAttribute("href"), siteConfig.tropicalFeastDmUrl);
     assert.equal(link.getAttribute("target"), "_blank");
     assert.match(link.getAttribute("rel") || "", /noopener/);
@@ -616,7 +616,7 @@ test("primary homepage and shop are pickle-only, with enquiry controls and persi
     });
     fireEvent.click(dialog.getByRole("button", { name: "Copy enquiry draft" }));
     await waitFor(() => assert.ok(dialog.getByText(/Enquiry draft copied/)));
-    assert.match(copied, /confirm prices, jar sizes, ingredients/);
+    assert.match(copied, /confirm jar sizes, ingredients/);
   } finally {
     if (previousClipboard)
       Object.defineProperty(navigator, "clipboard", previousClipboard);
@@ -666,7 +666,7 @@ test("primary ordering and missing routes offer useful recovery without fruit na
   cleanup();
   window.history.replaceState({}, "", "/");
 });
-test("primary product details save unpriced pickles while archived fruit cart remains separately usable", async () => {
+test("primary product details save priced pickles while archived fruit cart remains separately usable", async () => {
   localStorage.clear();
   window.history.replaceState({}, "", "/products/tropical-pineapple-pickle");
   mountPantry();
@@ -813,6 +813,92 @@ test("slow desktop media keeps its matching poster and can switch to unpinned ma
     window.matchMedia = originalMedia;
     window.setTimeout = originalTimer;
   }
+});
+
+test("phone hero autoplays muted without native chrome and supports pause and play", async () => {
+  const { default: CinematicHero } =
+    await import("../src/components/CinematicHero.tsx");
+  const originalMedia = window.matchMedia;
+  const proto = window.HTMLMediaElement.prototype;
+  const originalPlay = proto.play,
+    originalPause = proto.pause;
+  const pausedDescriptor = Object.getOwnPropertyDescriptor(proto, "paused")!;
+  const playing = new WeakSet<HTMLMediaElement>();
+  window.matchMedia = (query) => ({
+    ...originalMedia(query),
+    matches: query.includes("max-width: 767px"),
+  });
+  Object.defineProperty(proto, "paused", {
+    configurable: true,
+    get() {
+      return !playing.has(this);
+    },
+  });
+  proto.play = function () {
+    playing.add(this);
+    this.dispatchEvent(new window.Event("play"));
+    return Promise.resolve();
+  };
+  proto.pause = function () {
+    playing.delete(this);
+    this.dispatchEvent(new window.Event("pause"));
+  };
+  try {
+    render(React.createElement(CinematicHero));
+    const media = document.querySelector<HTMLVideoElement>("video")!;
+    assert.equal(media.autoplay, true);
+    assert.equal(media.muted, true);
+    assert.equal(media.controls, false);
+    assert.equal(
+      document.querySelector(".cinema-hero")?.getAttribute("data-mode"),
+      "autoplay",
+    );
+    assert.equal(document.querySelectorAll(".cinema-loading-poster").length, 0);
+    fireEvent.click(screen.getByRole("button", { name: "Pause product film" }));
+    assert.equal(media.paused, true);
+    fireEvent.click(screen.getByRole("button", { name: "Play product film" }));
+    await waitFor(() => assert.equal(media.paused, false));
+    cleanup();
+    assert.equal(media.paused, true);
+  } finally {
+    cleanup();
+    window.matchMedia = originalMedia;
+    proto.play = originalPlay;
+    proto.pause = originalPause;
+    Object.defineProperty(proto, "paused", pausedDescriptor);
+  }
+});
+test("contact buttons expose destinations only in links and both pickle details show the owner price", () => {
+  for (const path of [
+    "/",
+    "/contact",
+    "/privacy",
+    "/products/tropical-pineapple-pickle",
+    "/products/tropical-cucumber-pickle",
+  ]) {
+    window.history.replaceState({}, "", path);
+    mountPantry();
+    assert.doesNotMatch(
+      document.body.textContent || "",
+      /krishnasoni3251@gmail\.com|9398152226/,
+    );
+    if (path.startsWith("/products/")) {
+      const main = within(screen.getByRole("main"));
+      assert.ok(main.getAllByText(/₹200/).length);
+      assert.match(
+        main
+          .getByRole("link", { name: "WhatsApp enquiry" })
+          .getAttribute("href")!,
+        /^https:\/\/wa\.me\/919398152226\?text=/,
+      );
+      assert.match(
+        main.getByRole("link", { name: "Email enquiry" }).getAttribute("href")!,
+        /^mailto:krishnasoni3251@gmail\.com\?/,
+      );
+    }
+    cleanup();
+  }
+  window.history.replaceState({}, "", "/");
 });
 
 test.after(() => {

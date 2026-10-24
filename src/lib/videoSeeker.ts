@@ -1,7 +1,7 @@
 // One outstanding seek at a time. Rapid scroll changes replace the pending target,
 // rather than repeatedly cancelling the decoder's in-flight work.
 export function createVideoSeeker(video: HTMLVideoElement) {
-  let target = 0;
+  let target: number | null = null;
   let frame = 0;
   let disposed = false;
   const schedule = () => {
@@ -9,11 +9,15 @@ export function createVideoSeeker(video: HTMLVideoElement) {
   };
   const flush = () => {
     frame = 0;
-    if (disposed || video.readyState < 1 || video.seeking) return;
+    if (disposed || target === null || video.readyState < 1 || video.seeking)
+      return;
     const sameFrame =
       Math.floor(video.currentTime * 24 + 0.0001) ===
       Math.floor(target * 24 + 0.0001);
-    if (sameFrame && Math.abs(video.currentTime - target) < 1 / 48) return;
+    if (sameFrame && Math.abs(video.currentTime - target) < 1 / 48) {
+      target = null;
+      return;
+    }
     try {
       video.currentTime = target;
     } catch {

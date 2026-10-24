@@ -330,3 +330,56 @@
     font-size: 18px;
   }
 }
+/* A clean, inline film on phones; native controls stay available in manual/reduced-motion mode. */
+.cinema-hero.is-mobile-film {
+  padding-top: 25px;
+}
+.cinema-hero.is-mobile-film .cinema-copy {
+  padding-bottom: 22px;
+}
+.cinema-hero.is-mobile-film .cinema-copy .eyebrow {
+  margin-bottom: 15px;
+}
+.cinema-hero.is-mobile-film h1 {
+  font-size: clamp(39px, 10.5vw, 49px);
+  letter-spacing: -0.045em;
+  margin-bottom: 17px;
+}
+.cinema-hero.is-mobile-film .cinema-copy h1 em {
+  margin-right: 0.12em;
+}
+.cinema-hero.is-mobile-film .cinema-copy p {
+  margin-bottom: 19px;
+}
+.cinema-hero.is-mobile-film .cinema-chapters,
+.cinema-hero.is-mobile-film .cinema-slider,
+.cinema-hero.is-mobile-film .cinema-footnote {
+  display: none;
+}
+.cinema-hero.is-mobile-film .cinema-rail {
+  margin-top: 15px;
+  padding-bottom: 18px;
+}
+.cinema-playback {
+  position: absolute;
+  z-index: 2;
+  right: 15px;
+  bottom: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 44px;
+  padding: 10px 14px;
+  border: 1px solid #183d2533;
+  border-radius: 24px;
+  color: #183d25;
+  background: #fff9eef0;
+  font-size: 11px;
+  pointer-events: auto;
+}
+.pickle-order-action {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+}

@@ -10,7 +10,7 @@ import {
 import { restoreSelection } from "../src/context/PickleSelection.tsx";
 import { products } from "../src/data/products.ts";
 import { restoreCart } from "../src/context/cartModel.ts";
-test("supplied pickle records remain distinct, unpriced, local and outside the fruit checkout", () => {
+test("supplied pickle records remain distinct, owner-priced, local and outside the fruit checkout", () => {
   assert.equal(pickleProducts.length, 2);
   assert.equal(
     new Set([...products, ...pickleProducts].map((p) => p.id)).size,
@@ -19,7 +19,7 @@ test("supplied pickle records remain distinct, unpriced, local and outside the f
   assert.equal(pickleCollections.length, 1);
   assert.equal(pickleCollections[0].id, "tropical-feast");
   for (const p of pickleProducts) {
-    assert.equal(p.price, null);
+    assert.equal(p.price, 200);
     assert.equal(p.jarSize, null);
     assert.equal(p.ingredients, null);
     assert.equal(p.currency, "INR");

@@ -4,10 +4,10 @@ import {
   collectionFor,
   pickleCollections,
   pickleProducts,
-  safeEnquiryUrl,
 } from "../data/pickles";
 import { usePickleSelection } from "../context/PickleSelection";
-import { siteConfig } from "../lib/config";
+import { enquiryEmail, enquiryWhatsApp } from "../lib/contact";
+import { money } from "../data/products";
 export default function EnquiryList() {
   const selection = usePickleSelection();
   const [status, setStatus] = useState("");
@@ -17,10 +17,13 @@ export default function EnquiryList() {
   const selected = pickleProducts.filter((p) => selection.ids.includes(p.id));
   const message = [
     "Hello, I’d like to enquire about:",
-    ...selected.map((p) => `• ${p.name} — ${collectionFor(p).name}`),
-    "Please confirm prices, jar sizes, ingredients/allergens, stock and delivery before I order.",
+    ...selected.map(
+      (p) => `• ${p.name} — ${collectionFor(p).name} — ${money(p.price!)}`,
+    ),
+    "Please confirm jar sizes, ingredients/allergens, stock, delivery charges and the final total before I order.",
   ].join("\n");
-  const dm = safeEnquiryUrl(siteConfig.tropicalFeastDmUrl);
+  const dm = enquiryWhatsApp(message);
+  const email = enquiryEmail(message);
   return (
     <div className="enquiry-list">
       <p>
@@ -55,7 +58,7 @@ export default function EnquiryList() {
                   <div className="enquiry-item" key={p.id}>
                     <div>
                       <a href={`/products/${p.id}`}>{p.name}</a>
-                      <small>Price & jar size unconfirmed</small>
+                      <small>{money(p.price!)} · Confirm jar size</small>
                     </div>
                     <button
                       className="icon-button"
@@ -84,7 +87,7 @@ export default function EnquiryList() {
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    Open Tropical Feast DM <ArrowUpRight size={16} />
+                    Enquire on WhatsApp <ArrowUpRight size={16} />
                   </a>
                 ) : (
                   <a
@@ -101,6 +104,11 @@ export default function EnquiryList() {
               </section>
             ) : null;
           })}
+          {email && (
+            <a className="text-link" href={email}>
+              Enquire by email <ArrowUpRight size={16} />
+            </a>
+          )}
           <label className="enquiry-message">
             Your enquiry draft
             <textarea readOnly value={message} rows={7} />
@@ -117,7 +125,7 @@ export default function EnquiryList() {
                 if (!navigator.clipboard?.writeText) throw Error("unavailable");
                 await navigator.clipboard.writeText(message);
                 setStatus(
-                  "Enquiry draft copied. Nothing has been sent; contact Tropical Feast when its verified ordering channel is available.",
+                  "Enquiry draft copied. Nothing has been sent; open WhatsApp or email to send it.",
                 );
               } catch {
                 setStatus(

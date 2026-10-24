@@ -66,6 +66,13 @@ test("seeking waits for metadata, coalesces in-flight updates and releases pendi
   const media = new Media();
   const seeker = createVideoSeeker(media as unknown as HTMLVideoElement);
   try {
+    media.readyState = 1;
+    media.time = 0.5;
+    media.dispatchEvent(new Event("progress"));
+    flush();
+    assert.deepEqual(media.writes, []);
+    media.readyState = 0;
+    media.time = 0;
     seeker.seek(3);
     flush();
     assert.deepEqual(media.writes, []);
@@ -84,6 +91,10 @@ test("seeking waits for metadata, coalesces in-flight updates and releases pendi
     assert.deepEqual(media.writes, [3, 2]);
     media.seeking = false;
     seeker.seek(2.001);
+    flush();
+    assert.deepEqual(media.writes, [3, 2]);
+    media.time = 4;
+    media.dispatchEvent(new Event("progress"));
     flush();
     assert.deepEqual(media.writes, [3, 2]);
     // A tiny delta across a frame boundary must still reach the actual last frame.

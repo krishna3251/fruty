@@ -36,6 +36,7 @@ import {
   PickleProductPage,
   TropicalOrdering,
 } from "./components/Pickles";
+import { enquiryEmail, enquiryWhatsApp } from "./lib/contact";
 import CinematicHero from "./components/CinematicHero";
 import EnquiryList from "./components/EnquiryList";
 import Modal from "./components/Modal";
@@ -61,15 +62,15 @@ function PantryQuestions() {
         {[
           [
             "How do I order?",
-            "Start with a product’s details and save your favourites to an enquiry list. Tropical Feast uses a separately configured direct-message channel for Hyderabad enquiries. Its verified DM URL has not yet been supplied. Nothing is sent or ordered automatically.",
+            "Save your favourites to an enquiry list, then open WhatsApp or email to send your questions. Enquiries are for Hyderabad. Nothing is sent or ordered automatically.",
           ],
           [
             "Where are the pickles available?",
             "Tropical Feast enquiries are for Hyderabad only. Confirm delivery details and availability before ordering.",
           ],
           [
-            "Where are the prices and jar sizes?",
-            "They have not been supplied. Confirm the total price in INR, jar size, availability, ingredients/allergens and delivery directly with the relevant supplier before ordering.",
+            "What are the prices and jar sizes?",
+            "Pineapple Pickle and Cucumber Pickle are ₹200 each. Confirm jar size, availability, ingredients/allergens, delivery charges and the final total before ordering.",
           ],
           [
             "Which flavours do you offer?",
@@ -344,6 +345,16 @@ function PantryShell({ path }: { path: string }) {
             <span className="eyebrow">CLEAR & SIMPLE</span>
             <a href="/ordering">Ordering information</a>
             <a href="/contact">Contact</a>
+            {enquiryWhatsApp() && (
+              <a
+                href={enquiryWhatsApp()!}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                WhatsApp enquiry
+              </a>
+            )}
+            {enquiryEmail() && <a href={enquiryEmail()!}>Email enquiry</a>}
             <a href="/privacy">Privacy & storage</a>
             <a href="/terms">Website terms</a>
           </div>

@@ -14,12 +14,11 @@ import {
   brandAssets,
   collectionFor,
   filterPickles,
-  safeEnquiryUrl,
   type PickleProduct,
   type PickleCollection,
 } from "../data/pickles";
 import { money } from "../data/products";
-import { siteConfig } from "../lib/config";
+import { enquiryEmail, enquiryWhatsApp } from "../lib/contact";
 import { FruitImage } from "./Resilience";
 import { usePickleSelection } from "../context/PickleSelection";
 export function PickleHero() {
@@ -209,8 +208,14 @@ export function PickleCraft() {
     </section>
   );
 }
-export function TropicalOrdering() {
-  const link = safeEnquiryUrl(siteConfig.tropicalFeastDmUrl);
+export function TropicalOrdering({
+  product,
+}: { product?: PickleProduct } = {}) {
+  const message = product
+    ? `Hello, I’d like to enquire about ${product.name} at ₹${product.price}. Please confirm jar size, ingredients/allergens, availability and delivery.`
+    : undefined;
+  const link = enquiryWhatsApp(message);
+  const email = enquiryEmail(message);
   return (
     <section
       className="pickle-ordering section-pad"
@@ -229,6 +234,11 @@ export function TropicalOrdering() {
         </p>
       </div>
       <div className="pickle-order-action">
+        {email && (
+          <a className="text-link" href={email}>
+            Email enquiry <ArrowUpRight size={17} />
+          </a>
+        )}
         {link ? (
           <>
             <a
@@ -237,10 +247,10 @@ export function TropicalOrdering() {
               target="_blank"
               rel="noopener noreferrer"
             >
-              DM Tropical Feast <ArrowUpRight size={18} />
+              WhatsApp enquiry <ArrowUpRight size={18} />
             </a>
             <p>
-              Opens the configured external DM channel. No order is placed
+              Opens WhatsApp so you can confirm the details. No order is placed
               automatically.
             </p>
           </>
@@ -369,7 +379,7 @@ export function PickleCatalogue({
         </div>
         <p className="pickle-results" role="status">
           {results.length} {results.length === 1 ? "flavour" : "flavours"} ·
-          Prices, jar sizes and availability not yet confirmed
+          ₹200 each · Confirm jar size, availability and delivery
         </p>
         <div className="pickle-grid">
           {results.map((p) => (
@@ -453,7 +463,7 @@ export function PickleProductPage({ product: p }: { product: PickleProduct }) {
             </div>
             <div>
               <dt>Order method</dt>
-              <dd>Direct message · see channel status below</dd>
+              <dd>WhatsApp or email enquiry</dd>
             </div>
           </dl>
           <p className="pickle-disclosure">
@@ -469,7 +479,7 @@ export function PickleProductPage({ product: p }: { product: PickleProduct }) {
           </a>
         </div>
       </section>
-      <TropicalOrdering />
+      <TropicalOrdering product={p} />
       <section className="section-pad">
         <div className="section-heading">
           <h2>Try the other flavour.</h2>

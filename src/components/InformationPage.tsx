@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { siteConfig } from "../lib/config";
+import { enquiryWhatsApp } from "../lib/contact";
 export default function InformationPage({ path }: { path: string }) {
   const [storageError, setStorageError] = useState("");
   if (path === "/thank-you") {
@@ -46,7 +47,7 @@ export default function InformationPage({ path }: { path: string }) {
       </h1>
       <p className="policy-intro">
         {path === "/contact"
-          ? "Business contact details will appear here once the owner supplies them."
+          ? "Ask about either pickle on WhatsApp or by email. We keep contact details behind these links."
           : "Implementation notice for the pickle enquiry catalogue. Updated 23 October 2026."}
       </p>
       {path === "/privacy" ? (
@@ -57,7 +58,7 @@ export default function InformationPage({ path }: { path: string }) {
               "Business/legal name: not supplied by the owner."}{" "}
             Privacy contact:{" "}
             {siteConfig.email ? (
-              <a href={`mailto:${siteConfig.email}`}>{siteConfig.email}</a>
+              <a href={`mailto:${siteConfig.email}`}>Contact by email</a>
             ) : (
               "not supplied. The owner must provide a working privacy contact before collecting personal information commercially."
             )}
@@ -75,9 +76,9 @@ export default function InformationPage({ path }: { path: string }) {
           </p>
           <h2>Collection enquiries</h2>
           <p>
-            Tropical Feast has a separately configurable external direct-message
-            channel. Following that link, when available, takes you to the
-            configured provider; this website does not send your message or
+            Tropical Feast offers external WhatsApp and email enquiry links.
+            Following that link, when available, takes you to the configured
+            provider or email app; this website does not send your message or
             contact details automatically. The supplier and provider must
             confirm how they handle enquiries.
           </p>
@@ -160,11 +161,11 @@ export default function InformationPage({ path }: { path: string }) {
           <h2>Using this catalogue</h2>
           <p>
             Tropical Feast is a pickle discovery and enquiry catalogue for two
-            owner-confirmed flavours: pineapple and cucumber. Prices, jar sizes,
-            ingredients/allergens and stock remain unconfirmed. No offer to
-            supply goods or contract is created by saving a product or copying
-            an enquiry draft. A separately archived fruit demonstration retains
-            its sample prices and checkout.
+            owner-confirmed flavours: pineapple and cucumber. Both pickles are
+            listed at ₹200 each. Jar sizes, ingredients/allergens and stock
+            remain unconfirmed. No offer to supply goods or contract is created
+            by saving a product or copying an enquiry draft. A separately
+            archived fruit demonstration retains its sample prices and checkout.
           </p>
           <h2>Orders, payments and accounts</h2>
           <p>
@@ -210,19 +211,23 @@ export default function InformationPage({ path }: { path: string }) {
             <dt>Email</dt>
             <dd>
               {/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(siteConfig.email) ? (
-                <a href={`mailto:${siteConfig.email}`}>{siteConfig.email}</a>
+                <a href={`mailto:${siteConfig.email}`}>Contact by email</a>
               ) : (
                 "Not provided — no support email is published"
               )}
             </dd>
-            <dt>Phone</dt>
+            <dt>WhatsApp</dt>
             <dd>
-              {/^\+?[\d\s()-]{7,25}$/.test(siteConfig.phone) ? (
-                <a href={`tel:${siteConfig.phone.replace(/[^+\d]/g, "")}`}>
-                  {siteConfig.phone}
+              {enquiryWhatsApp() ? (
+                <a
+                  href={enquiryWhatsApp()!}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Chat on WhatsApp
                 </a>
               ) : (
-                "Not provided — no support phone is published"
+                "Contact channel unavailable"
               )}
             </dd>
             <dt>Physical address</dt>

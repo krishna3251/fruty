@@ -36,7 +36,7 @@ export function pageMeta(path: string) {
   if (pickle)
     return {
       title: `${pickle.name} | Tropical Feast`,
-      description: `${pickle.description} Price, jar size and availability awaiting confirmation.`,
+      description: `${pickle.description} ₹200. Confirm jar size, availability and delivery before ordering.`,
       type: "website",
       index: true,
     };

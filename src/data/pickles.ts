@@ -1,5 +1,5 @@
 // Owner confirmed two flavours and supplied the homepage, logo and product images.
-// Prices, jar sizes, ingredient lists and stock have not been provided.
+// Owner confirmed ₹200 for each pickle. Jar sizes, ingredients and stock remain unconfirmed.
 export type PickleCollectionId = "tropical-feast";
 export interface PickleCollection {
   id: PickleCollectionId;
@@ -48,7 +48,7 @@ export const pickleCollections: PickleCollection[] = [
   },
 ];
 const pending = {
-  price: null,
+  price: 200,
   currency: "INR",
   jarSize: null,
   ingredients: null,

@@ -1,5 +1,12 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { ArrowDown, ArrowUpRight, Film, RefreshCw } from "lucide-react";
+import {
+  ArrowDown,
+  ArrowUpRight,
+  Film,
+  RefreshCw,
+  Play,
+  Pause,
+} from "lucide-react";
 import {
   PICKLE_VIDEO,
   storyChapters,
@@ -24,11 +31,73 @@ export default function CinematicHero({
     () => window.matchMedia(simplifiedQuery).matches,
   );
   const [manual, setManual] = useState(false);
+  const [reducedMotion, setReducedMotion] = useState(
+    () => window.matchMedia("(prefers-reduced-motion: reduce)").matches,
+  );
+  const [playing, setPlaying] = useState(false);
+  const [mobilePaused, setMobilePaused] = useState(false);
   const [status, setStatus] = useState<"loading" | "ready" | "slow" | "error">(
     "loading",
   );
   const [attempt, setAttempt] = useState(0);
   const simple = simplified || paused || manual || status === "error";
+  const mobileFilm =
+    simplified && !reducedMotion && !paused && !manual && status !== "error";
+  useEffect(() => {
+    const query = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const update = () => setReducedMotion(query.matches);
+    query.addEventListener("change", update);
+    return () => query.removeEventListener("change", update);
+  }, []);
+  useEffect(() => {
+    const media = video.current;
+    if (!media || !mobileFilm || mobilePaused) return;
+    let inView = true;
+    let active = true;
+    const playVisible = () => {
+      if (!active || document.hidden || !inView || media.ended) return;
+      void media.play().catch(() => {
+        /* The explicit Play button remains available. */
+      });
+    };
+    const visibility = () => {
+      if (document.hidden || !inView) {
+        if (!media.paused) media.pause();
+      } else playVisible();
+    };
+    const observer =
+      typeof IntersectionObserver !== "undefined"
+        ? new IntersectionObserver(
+            (entries) => {
+              inView = entries[0]?.isIntersecting ?? false;
+              visibility();
+            },
+            { threshold: 0.15 },
+          )
+        : null;
+    observer?.observe(media);
+    document.addEventListener("visibilitychange", visibility);
+    media.muted = true;
+    playVisible();
+    return () => {
+      active = false;
+      observer?.disconnect();
+      document.removeEventListener("visibilitychange", visibility);
+      if (!media.paused) media.pause();
+    };
+  }, [mobileFilm, mobilePaused, attempt]);
+  const toggleMobileFilm = () => {
+    const media = video.current;
+    if (!media) return;
+    if (!media.paused) {
+      setMobilePaused(true);
+      media.pause();
+    } else {
+      setMobilePaused(false);
+      if (media.ended) media.currentTime = 0;
+      void media.play().catch(() => setManual(true));
+    }
+  };
 
   useEffect(() => {
     const query = window.matchMedia(simplifiedQuery);
@@ -73,7 +142,11 @@ export default function CinematicHero({
     section.style.setProperty("--final-opacity", "0");
     section.style.setProperty("--mid-opacity", "0");
     section.style.setProperty("--intro-y", "0px");
-    section.dataset.mode = simple ? "manual" : "scroll";
+    section.dataset.mode = mobileFilm
+      ? "autoplay"
+      : simple
+        ? "manual"
+        : "scroll";
     const setHeader = () => {
       const height =
         document.querySelector(".pantry-header")?.getBoundingClientRect()
@@ -171,7 +244,7 @@ export default function CinematicHero({
       const introEl = section.querySelector<HTMLElement>(".cinema-intro");
       if (introEl) introEl.inert = false;
     };
-  }, [simple, attempt]);
+  }, [simple, mobileFilm, attempt]);
 
   const selectMoment = (progress: number) => {
     if (!simple && moveScroll.current) moveScroll.current(progress);
@@ -194,7 +267,7 @@ export default function CinematicHero({
   return (
     <section
       ref={root}
-      className={`cinema-hero ${simple ? "is-simple" : ""}`}
+      className={`cinema-hero ${simple ? "is-simple" : ""} ${mobileFilm ? "is-mobile-film" : ""}`}
       aria-labelledby="cinema-title"
       data-phase="intro"
     >
@@ -208,8 +281,12 @@ export default function CinematicHero({
           height="720"
           muted
           playsInline
-          preload={simple ? "none" : "auto"}
-          controls={simple && status !== "error"}
+          preload={mobileFilm ? "auto" : simple ? "none" : "auto"}
+          autoPlay={mobileFilm && !mobilePaused}
+          controls={simple && !mobileFilm && status !== "error"}
+          onPlay={() => setPlaying(true)}
+          onPause={() => setPlaying(false)}
+          onEnded={() => setPlaying(false)}
           onTimeUpdate={() => {
             if (simple && range.current && video.current)
               range.current.value = String(
@@ -241,6 +318,16 @@ export default function CinematicHero({
             height="720"
             alt="Final pineapple pickle jar from the supplied animation"
           />
+        )}
+        {mobileFilm && (
+          <button
+            className="cinema-playback"
+            onClick={toggleMobileFilm}
+            aria-label={playing ? "Pause product film" : "Play product film"}
+          >
+            {playing ? <Pause size={16} /> : <Play size={16} />}
+            <span>{playing ? "Pause" : "Play"}</span>
+          </button>
         )}
       </div>
       <div className="cinema-copy">
@@ -293,9 +380,9 @@ export default function CinematicHero({
         A ten-second product animation: an empty jar, pineapple pieces and
         seasonings falling, a golden lid closing, and the Tropical Feast
         pineapple label turning into view. Scroll down or up to move through it
-        on desktop. On small screens or with reduced motion, use the video
-        controls or sequence slider. The film is a visual presentation, not a
-        verified recipe.
+        on desktop. On phones the muted film plays automatically and can be
+        paused. With reduced motion, use the manual video controls or sequence
+        slider. The film is a visual presentation, not a verified recipe.
       </p>
       <div className="cinema-rail">
         <div className="cinema-rail-top">
@@ -351,17 +438,6 @@ export default function CinematicHero({
             <button onClick={() => setManual(true)}>Use video controls</button>{" "}
             or <a href="#collections">browse the pickles</a>.
           </p>
-        )}
-        {!simple && (status === "loading" || status === "slow") && (
-          <img
-            className="cinema-loading-poster"
-            src={PICKLE_VIDEO.poster}
-            alt=""
-            aria-hidden="true"
-            width="1280"
-            height="720"
-            fetchPriority="high"
-          />
         )}
         {status === "error" && (
           <p className="cinema-status" role="status">

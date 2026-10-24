@@ -89,3 +89,7 @@ The original footage’s tight final framing remains a source limitation. No rep
 ## Owner-requested star cleanup
 
 On 24 October 2026 the owner requested hiding the white star at the lower right of the footage. The web delivery copy now blends out only that 70×72 pixel background region (x=1126, y=565 in the 1280×720 encode). Matching first/final posters were re-extracted from the cleaned MP4. There is no added badge, no crop or cover over the jar/label, and no change to the scroll mapping, frame count, duration or keyframe spacing. The original uploaded MP4 is untouched. Earlier range-response byte counts above document the preceding deployment. The screenshots were refreshed after cleanup. Live verification returned HTTP 200 with 2,046,422 bytes matching the cleaned local MP4, and Chrome reached 9.958333 seconds with the corner mark absent. The production build and complete video decode passed.
+
+## Mobile playback update
+
+The owner subsequently requested a cleaner autoplay presentation on phones. Normal small-screen mode now plays the muted film inline, with an accessible custom play/pause control, offscreen/background pausing and a final-frame hold. Native player chrome and chapter/slider rows are hidden in this mode. Reduced motion and manual fallback continue to use native controls, and desktop remains scroll controlled. See `OWNER_CONTENT.md` for the current ₹200 prices and active enquiry buttons. Earlier manual-only mobile checks above describe the prior version.
