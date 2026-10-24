@@ -769,6 +769,52 @@ test("cinematic hero keeps a single local video, supports manual seeking and rec
   }
 });
 
+test("slow desktop media keeps its matching poster and can switch to unpinned manual controls", async () => {
+  const { default: CinematicHero } =
+    await import("../src/components/CinematicHero.tsx");
+  const originalMedia = window.matchMedia;
+  const originalTimer = window.setTimeout;
+  let loadingTimeout: (() => void) | undefined;
+  window.matchMedia = (query) => ({ ...originalMedia(query), matches: false });
+  window.setTimeout = ((handler: TimerHandler, delay?: number) => {
+    if (delay === 8000 && typeof handler === "function") {
+      loadingTimeout = handler as () => void;
+      return 0;
+    }
+    return originalTimer(handler, delay);
+  }) as typeof window.setTimeout;
+  try {
+    render(React.createElement(CinematicHero));
+    assert.ok(screen.getByText("Preparing your jar story…"));
+    assert.ok(document.querySelector(".cinema-loading-poster"));
+    await React.act(async () => {
+      loadingTimeout?.();
+    });
+    assert.ok(screen.getByText(/The film is taking a little longer/));
+    assert.ok(document.querySelector(".cinema-loading-poster"));
+    fireEvent.click(
+      screen.getAllByRole("button", {
+        name: "Use video controls",
+        exact: true,
+      })[0],
+    );
+    assert.equal(
+      document.querySelector(".cinema-hero")?.getAttribute("data-mode"),
+      "manual",
+    );
+    assert.equal(
+      document.querySelector<HTMLVideoElement>("video")?.controls,
+      true,
+    );
+    assert.equal(document.querySelector(".cinema-loading-poster"), null);
+    cleanup();
+  } finally {
+    cleanup();
+    window.matchMedia = originalMedia;
+    window.setTimeout = originalTimer;
+  }
+});
+
 test.after(() => {
   cleanup();
   ScrollTrigger.killAll();
