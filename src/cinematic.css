@@ -861,3 +861,168 @@
     padding-inline: 8px;
   }
 }
+
+.pantry-account-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-width: 44px;
+  min-height: 44px;
+  font-size: 11px;
+}
+.pantry-account-link:hover,
+.pantry-account-link[aria-current] {
+  color: #718058;
+}
+.account-page {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.8fr) minmax(0, 1.2fr);
+  gap: 40px;
+  align-items: start;
+  min-height: 65svh;
+}
+.account-intro h1 {
+  font:
+    400 clamp(38px, 4.5vw, 68px)/1.08 Georgia,
+    serif;
+  letter-spacing: -0.045em;
+  margin: 20px 0;
+  color: #183d25;
+  max-width: 480px;
+}
+.account-intro > p {
+  font-size: 13px;
+  line-height: 1.9;
+  max-width: 360px;
+  color: #53614b;
+}
+.account-trust {
+  display: flex;
+  gap: 9px;
+  align-items: center;
+  font-size: 10px;
+  margin-block: 24px;
+  color: #53614b;
+}
+.account-intro .text-link {
+  font-size: 12px;
+}
+.account-surface {
+  min-width: 0;
+  display: flex;
+  justify-content: center;
+  padding-top: 12px;
+}
+.account-surface > div {
+  min-width: 0;
+  max-width: 100%;
+}
+.account-surface .cl-rootBox,
+.account-surface .cl-cardBox {
+  max-width: 100%;
+}
+.account-unavailable {
+  width: 100%;
+  border: 1px solid #183d2525;
+  border-radius: 8px;
+  background: #f6efdf;
+  padding: 28px;
+}
+.account-unavailable h2 {
+  font:
+    30px/1.2 Georgia,
+    serif;
+  margin: 0 0 15px;
+  color: #183d25;
+}
+.account-unavailable p,
+.account-scope {
+  font-size: 12px;
+  line-height: 1.8;
+  color: #53614b;
+}
+.account-unavailable > a {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-top: 18px;
+  font-size: 12px;
+}
+.account-profile {
+  width: 100%;
+}
+.account-session-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 15px;
+  font-size: 11px;
+  align-items: center;
+}
+.account-session-actions button {
+  font-size: 12px;
+  min-height: 44px;
+}
+.account-privacy {
+  grid-column: 1/-1;
+  text-align: center;
+  font-size: 10px;
+  line-height: 1.8;
+  color: #53614b;
+  margin-top: 10px;
+}
+.account-privacy a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+@media (max-width: 767px) {
+  .pantry-account-link span {
+    display: none;
+  }
+  .pantry-store .pantry-tools {
+    gap: 4px;
+  }
+  .account-page {
+    grid-template-columns: 1fr;
+    gap: 25px;
+    padding-inline: 6%;
+    padding-top: 32px;
+  }
+  .account-intro h1 {
+    font-size: clamp(35px, 8vw, 49px);
+  }
+  .account-surface {
+    justify-content: flex-start;
+  }
+  .account-unavailable {
+    padding: 24px;
+  }
+  .account-privacy {
+    text-align: left;
+  }
+}
+@media (max-width: 370px) {
+  .pantry-list-button > span {
+    display: none;
+  }
+  .pantry-store .pantry-tools {
+    gap: 0;
+  }
+  .pantry-store .pantry-logo .brand-wordmark {
+    font-size: 16px;
+  }
+  .pantry-store .pantry-logo > img {
+    width: 36px;
+    height: 36px;
+  }
+}
+@media (max-width: 767px) {
+  .pantry-store .pantry-header {
+    gap: 8px;
+  }
+  .pantry-list-button {
+    padding-inline: 8px;
+    gap: 7px;
+  }
+}

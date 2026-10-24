@@ -7,6 +7,7 @@ import {
   pageMeta,
   publicPaths,
   archivePaths,
+  accountPaths,
   safeOrigin,
 } from "../src/lib/seo.ts";
 import {
@@ -54,7 +55,12 @@ const fallback = (path: string) => {
   }
   return `<noscript><main class="pantry-store information-page section-pad"><a href="/">Fermented Pickles</a><h1>${escape(product?.name || "Pineapple & Cucumber Pickles")}</h1><p>The animated film and saved basket need JavaScript. You can still browse the products and open an enquiry below. Hyderabad enquiries only; no online payment is taken.</p>${shown.map((p) => `<article><h2><a href="/products/${p.id}">${escape(p.name)}</a></h2><img src="${escape(p.image)}" alt="${escape(p.imageAlt)}" width="300" height="200"><p>${escape(p.description)}</p><p>${p.price === null ? "Price on enquiry" : `₹${p.price}`} · Confirm jar size, ingredients/allergens, availability and delivery.</p></article>`).join("")}<p>${whatsapp ? `<a href="${escape(whatsapp)}" target="_blank" rel="noopener noreferrer">WhatsApp enquiry</a> · ` : ""}${/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ? `<a href="${escape(gmail.href)}" target="_blank" rel="noopener noreferrer">Open Gmail</a>` : ""}</p><a href="/shop">View both flavours</a></main></noscript>`;
 };
-for (const path of [...publicPaths, ...archivePaths, "/thank-you"]) {
+for (const path of [
+  ...publicPaths,
+  ...archivePaths,
+  ...accountPaths,
+  "/thank-you",
+]) {
   const m = pageMeta(path);
   let html = base
     .replace(/<title>.*?<\/title>/s, "")

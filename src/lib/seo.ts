@@ -15,12 +15,27 @@ export const publicPaths = [
   "/terms",
   "/contact",
 ];
+export const accountPaths = ["/account", "/sign-in", "/sign-up"];
 export const archivePaths = [
   "/fruit-demo",
   "/fruit-story",
   ...products.map((p) => `/products/${p.id}`),
 ];
 export function pageMeta(path: string) {
+  if (accountPaths.includes(path))
+    return {
+      title:
+        path === "/sign-up"
+          ? "Create Your Account | Fermented Pickles"
+          : path === "/sign-in"
+            ? "Sign In | Fermented Pickles"
+            : "Your Account | Fermented Pickles",
+      description:
+        "Secure sign-in, registration and profile management for Fermented Pickles. Guest browsing and pickle enquiries remain available.",
+      type: "website",
+      index: false,
+    };
+
   if (["/fruit-demo", "/fruit-story"].includes(path))
     return {
       title:

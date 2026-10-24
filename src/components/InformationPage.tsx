@@ -91,6 +91,20 @@ export default function InformationPage({ path }: { path: string }) {
             yourself. The supplier and provider must confirm how they handle
             enquiries.
           </p>
+          <h2>Customer accounts</h2>
+          <p>
+            Account sign-in, registration, verification and profile management
+            are provided by Clerk when configured. Clerk processes account
+            details and authentication activity; Google processes authentication
+            if you choose Google sign-in. We do not receive your Google
+            password. Essential Clerk session cookies keep you signed in; these
+            are separate from optional analytics consent. The Clerk SDK is
+            loaded when you visit an account page, and SDK telemetry is
+            disabled. Use your account’s security controls to manage sessions or
+            sign out. Account and provider-side retention and deletion requests
+            require the owner’s confirmed privacy process. Your enquiry basket
+            stays on this device and is not synced to your account.
+          </p>
           <h2>Forms and checkout</h2>
           <p>
             The public pickle catalogue has no online checkout. Its enquiry
@@ -127,8 +141,10 @@ export default function InformationPage({ path }: { path: string }) {
           </p>
           <h2>Control and retention</h2>
           <p>
-            You can remove browser data below. This does not delete any
-            information already sent to a configured newsletter or analytics
+            You can remove the saved shopping and analytics preference data
+            below. This does not sign you out of Clerk or delete your account;
+            use the account page to manage your session. This does not delete
+            any information already sent to a configured newsletter or analytics
             provider. Use the owner’s privacy contact for provider-side requests
             once supplied. No claim of compliance with a particular privacy law
             is made.
@@ -182,9 +198,10 @@ export default function InformationPage({ path }: { path: string }) {
             The pickle website does not accept payments or verify orders. A
             supplier must confirm the details directly before any off-site
             transaction. No purchase contract is formed through the archived
-            demo checkout. No real payment, order fulfillment, delivery
-            reservation, inventory allocation or account sign-in is connected. A
-            demo receipt is not a tax invoice or order confirmation.
+            demo checkout. Account sign-in is provided by Clerk when configured.
+            No real payment, order fulfillment, delivery reservation or
+            inventory allocation is connected. A demo receipt is not a tax
+            invoice or order confirmation.
           </p>
           <h2>Before live sales begin</h2>
           <p>

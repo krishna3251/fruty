@@ -15,6 +15,7 @@ import {
   Pause,
   Play,
   X,
+  UserRound,
 } from "lucide-react";
 import { useReducedMotion } from "framer-motion";
 import { useRoute } from "./hooks/useRoute";
@@ -46,6 +47,7 @@ import PrivacyControls from "./components/PrivacyControls";
 import InformationPage from "./components/InformationPage";
 import MobileShopCTA from "./components/MobileShopCTA";
 import { OfflineNotice } from "./components/Resilience";
+const AccountPage = lazy(() => import("./components/AccountPage"));
 const LegacyFruitStore = lazy(() => import("./LegacyFruitStore"));
 function PantryQuestions() {
   return (
@@ -175,6 +177,19 @@ function PantryShell({ path }: { path: string }) {
           </a>
         </nav>
         <div className="pantry-tools">
+          <a
+            className="pantry-account-link"
+            href="/account"
+            aria-label="Your account"
+            aria-current={
+              ["/account", "/sign-in", "/sign-up"].includes(path)
+                ? "page"
+                : undefined
+            }
+          >
+            <UserRound size={18} />
+            <span>Account</span>
+          </a>
           <button
             className="pantry-list-button"
             aria-label={`Open enquiry list, ${selection.itemCount} items`}
@@ -246,6 +261,24 @@ function PantryShell({ path }: { path: string }) {
               <Newsletter />
             </section>
           </>
+        ) : ["/account", "/sign-in", "/sign-up"].includes(path) ? (
+          <Suspense
+            fallback={
+              <section className="section-pad" role="status">
+                Loading account…
+              </section>
+            }
+          >
+            <AccountPage
+              mode={
+                path === "/sign-up"
+                  ? "sign-up"
+                  : path === "/sign-in"
+                    ? "sign-in"
+                    : "account"
+              }
+            />
+          </Suspense>
         ) : product ? (
           <PickleProductPage product={product} />
         ) : catalogue || collection ? (

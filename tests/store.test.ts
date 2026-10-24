@@ -1056,3 +1056,20 @@ test("empty enquiry basket offers both pictured products and closes when browsin
   );
   cleanup();
 });
+
+test("account navigation and unavailable-provider state stay honest without blocking guest shopping", async () => {
+  window.history.replaceState({}, "", "/shop");
+  mountPantry();
+  fireEvent.click(
+    screen.getByRole("link", { name: "Your account", exact: true }),
+  );
+  await waitFor(() =>
+    assert.ok(screen.getByText("Accounts aren’t available here yet.")),
+  );
+  assert.equal(window.location.pathname, "/account");
+  assert.equal(screen.queryByRole("textbox", { name: /password/i }), null);
+  assert.ok(screen.getByRole("link", { name: "Explore pickles", exact: true }));
+  assert.ok(document.body.textContent?.includes("essential session cookies"));
+  cleanup();
+  window.history.replaceState({}, "", "/");
+});

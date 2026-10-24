@@ -100,7 +100,9 @@ export default function PrivacyControls({ path }: { path: string }) {
             <p>
               Your pickle enquiry list is kept on this device. The archived
               fruit demo also stores its bag, saved fruit and demo receipts
-              here. No tracking is needed to shop.
+              here. No tracking is needed to shop. Account pages use essential
+              Clerk session cookies for sign-in, independently of optional
+              analytics.
             </p>
             {configured ? (
               <label className="consent-choice">
