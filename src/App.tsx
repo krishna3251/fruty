@@ -257,6 +257,11 @@ function PantryShell({ path }: { path: string }) {
         ) : path === "/ordering" ? (
           <>
             <section className="pantry-order-intro section-pad">
+              <nav className="breadcrumbs" aria-label="Breadcrumb">
+                <a href="/">Home</a>
+                <span>/</span>
+                <span>How to order</span>
+              </nav>
               <span className="eyebrow">FROM DISCOVERY TO ENQUIRY</span>
               <h1>
                 Find your jar.
@@ -280,6 +285,26 @@ function PantryShell({ path }: { path: string }) {
                   stock and delivery.
                 </li>
               </ol>
+              <div
+                className="ordering-flavours"
+                aria-label="Available pickle flavours"
+              >
+                {pickleProducts.map((p) => (
+                  <a key={p.id} href={`/products/${p.id}`}>
+                    <img
+                      src={p.image}
+                      alt={p.imageAlt}
+                      width="110"
+                      height="80"
+                    />
+                    <span>
+                      {p.name}
+                      <small>₹200 · Tropical Feast</small>
+                    </span>
+                    <ArrowUpRight size={18} />
+                  </a>
+                ))}
+              </div>
               <button
                 className="button primary"
                 onClick={() => setListOpen(true)}
@@ -404,7 +429,7 @@ function PantryShell({ path }: { path: string }) {
       )}
       {listOpen && (
         <Modal title="Your pickle enquiry list" onClose={closeList} drawer>
-          <EnquiryList />
+          <EnquiryList onNavigate={closeList} />
         </Modal>
       )}
     </div>

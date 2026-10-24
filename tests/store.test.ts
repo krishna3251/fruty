@@ -112,7 +112,10 @@ test("shop filters, search, bag, quantity, demo checkout and persistence work to
     ),
   );
   fireEvent.keyDown(document, { key: "Escape" });
-  assert.equal(screen.queryByRole("dialog"), null);
+  assert.ok(
+    screen.queryByRole("dialog") === null,
+    "Browsing closes the drawer",
+  );
   cleanup();
   mount();
   assert.ok(screen.getByRole("button", { name: "Open bag, 2 items" }));
@@ -588,6 +591,7 @@ test("primary homepage and shop are pickle-only, with enquiry controls and persi
   assert.ok(
     dialog.getByRole("heading", { name: "Tropical Feast", exact: true }),
   );
+  fireEvent.click(dialog.getByText("Preview or copy your enquiry"));
   assert.match(
     dialog.getByRole("textbox", { name: "Your enquiry draft" }).textContent ||
       "",
@@ -774,6 +778,9 @@ test("slow desktop media keeps its matching poster and can switch to unpinned ma
     await import("../src/components/CinematicHero.tsx");
   const originalMedia = window.matchMedia;
   const originalTimer = window.setTimeout;
+  const proto = window.HTMLMediaElement.prototype;
+  const originalPlay = proto.play;
+  proto.play = () => Promise.resolve();
   let loadingTimeout: (() => void) | undefined;
   window.matchMedia = (query) => ({ ...originalMedia(query), matches: false });
   window.setTimeout = ((handler: TimerHandler, delay?: number) => {
@@ -812,10 +819,11 @@ test("slow desktop media keeps its matching poster and can switch to unpinned ma
     cleanup();
     window.matchMedia = originalMedia;
     window.setTimeout = originalTimer;
+    proto.play = originalPlay;
   }
 });
 
-test("phone hero autoplays muted without native chrome and supports pause and play", async () => {
+test("inline hero autoplays muted without pinning and supports pause and play", async () => {
   const { default: CinematicHero } =
     await import("../src/components/CinematicHero.tsx");
   const originalMedia = window.matchMedia;
@@ -826,7 +834,7 @@ test("phone hero autoplays muted without native chrome and supports pause and pl
   const playing = new WeakSet<HTMLMediaElement>();
   window.matchMedia = (query) => ({
     ...originalMedia(query),
-    matches: query.includes("max-width: 767px"),
+    matches: false,
   });
   Object.defineProperty(proto, "paused", {
     configurable: true,
@@ -853,6 +861,8 @@ test("phone hero autoplays muted without native chrome and supports pause and pl
       document.querySelector(".cinema-hero")?.getAttribute("data-mode"),
       "autoplay",
     );
+    assert.equal(document.querySelectorAll(".cinema-loading-poster").length, 1);
+    fireEvent.loadedData(media);
     assert.equal(document.querySelectorAll(".cinema-loading-poster").length, 0);
     fireEvent.click(screen.getByRole("button", { name: "Pause product film" }));
     assert.equal(media.paused, true);
@@ -926,12 +936,15 @@ test("enquiry basket quantities, subtotal and both email routes persist and stay
     "2",
   );
   assert.ok(dialog.getByText("₹400"));
-  const gmail = dialog.getByRole("link", { name: "Open Gmail" });
+  const gmail = dialog.getByRole("link", { name: "Email", exact: true });
+  assert.equal(dialog.getAllByRole("img").length, 1);
+  assert.ok(dialog.getByRole("link", { name: "WhatsApp", exact: true }));
   const web = new URL(gmail.getAttribute("href")!);
   assert.equal(web.origin, "https://mail.google.com");
   assert.match(web.searchParams.get("body")!, /2 × Pineapple Pickle/);
   assert.match(web.searchParams.get("body")!, /Products subtotal: ₹400/);
   assert.equal(gmail.getAttribute("target"), "_blank");
+  fireEvent.click(dialog.getByText("Preview or copy your enquiry"));
   assert.match(
     dialog
       .getByRole("link", { name: "Use my email app instead" })
@@ -1003,4 +1016,43 @@ test.after(() => {
   ScrollTrigger.disable(true);
   gsap.ticker.sleep();
   dom.window.close();
+});
+
+test("empty enquiry basket offers both pictured products and closes when browsing the current shop route", () => {
+  localStorage.clear();
+  window.history.replaceState({}, "", "/shop");
+  mountPantry();
+  fireEvent.click(
+    screen.getByRole("button", {
+      name: "Open enquiry list, 0 items",
+      exact: true,
+    }),
+  );
+  let dialog = within(screen.getByRole("dialog"));
+  assert.equal(dialog.getAllByRole("img").length, 2);
+  fireEvent.click(dialog.getByRole("link", { name: "Explore pickles" }));
+  assert.ok(
+    screen.queryByRole("dialog") === null,
+    "Browsing closes the drawer",
+  );
+  fireEvent.click(
+    screen.getByRole("button", {
+      name: "Open enquiry list, 0 items",
+      exact: true,
+    }),
+  );
+  dialog = within(screen.getByRole("dialog"));
+  fireEvent.click(
+    dialog.getByRole("button", {
+      name: "Add Pineapple Pickle to enquiry list",
+    }),
+  );
+  assert.ok(dialog.getByRole("link", { name: "Email", exact: true }));
+  assert.ok(dialog.getByRole("link", { name: "WhatsApp", exact: true }));
+  assert.equal(dialog.getAllByText("₹200", { selector: "strong" }).length, 2);
+  assert.equal(
+    document.querySelector<HTMLDetailsElement>(".basket-draft-details")?.open,
+    false,
+  );
+  cleanup();
 });

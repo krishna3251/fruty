@@ -4,17 +4,19 @@ export default function EmailEnquiry({
   message,
   label = "Email enquiry",
   fallback = false,
+  prominent = false,
 }: {
   message?: string;
   label?: string;
   fallback?: boolean;
+  prominent?: boolean;
 }) {
   const gmail = enquiryGmail(message);
   if (!gmail) return null;
   return (
     <div className="email-enquiry-actions">
       <a
-        className="text-link"
+        className={prominent ? "basket-contact email-contact" : "text-link"}
         href={gmail}
         target="_blank"
         rel="noopener noreferrer"

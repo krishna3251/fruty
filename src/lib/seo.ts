@@ -65,9 +65,9 @@ export function pageMeta(path: string) {
         "Explore pineapple and cucumber pickles from Tropical Feast, with owner-supplied product images and clear enquiry details.",
     },
     "/": {
-      title: "Fermented Pickles | The Pineapple Jar Story",
+      title: "Fermented Pickles | Pineapple & Cucumber Pickles",
       description:
-        "Scroll through a pineapple pickle product film at Fermented Pickles. Discover Tropical Feast’s pineapple and cucumber flavours and prepare an enquiry.",
+        "Watch the pineapple pickle film at Fermented Pickles. Discover Tropical Feast’s pineapple and cucumber pickles at ₹200 each and enquire in Hyderabad.",
     },
     "/shop": {
       title: "Shop Pineapple & Cucumber Pickles | Tropical Feast",

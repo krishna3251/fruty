@@ -26,9 +26,15 @@ export default function Modal({
     const handle = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
       if (e.key === "Tab") {
-        const nodes = ref.current?.querySelectorAll<HTMLElement>(
-          'button:not(:disabled),a[href],input,select,textarea,[tabindex="0"]',
-        );
+        const nodes = Array.from(
+          ref.current?.querySelectorAll<HTMLElement>(
+            'button:not(:disabled),a[href],input:not(:disabled),select:not(:disabled),textarea:not(:disabled),summary,[tabindex="0"]',
+          ) || [],
+        ).filter((node) => {
+          if (node.closest("[hidden],[inert]")) return false;
+          const closedDetails = node.closest("details:not([open])");
+          return !closedDetails || node.tagName === "SUMMARY";
+        });
         if (!nodes?.length) return;
         const first = nodes[0],
           last = nodes[nodes.length - 1];
