@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { ArrowDown, ArrowUpRight, Film, RefreshCw } from "lucide-react";
 import {
   PICKLE_VIDEO,
@@ -59,7 +59,8 @@ export default function CinematicHero({
     };
   }, [attempt]);
 
-  useEffect(() => {
+  // Revert the pin wrapper before React removes its DOM node on route changes.
+  useLayoutEffect(() => {
     const section = root.current;
     const media = video.current;
     if (!section || !media) return;

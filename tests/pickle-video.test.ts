@@ -86,6 +86,8 @@ test("seeking waits for metadata, coalesces in-flight updates and releases pendi
     seeker.seek(2.001);
     flush();
     assert.deepEqual(media.writes, [3, 2]);
+    // A tiny delta across a frame boundary must still reach the actual last frame.
+    media.time = 9.95368;
     seeker.seek(20);
     flush();
     assert.equal(media.writes.at(-1), 10 - 1 / 24);

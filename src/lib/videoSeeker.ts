@@ -10,7 +10,10 @@ export function createVideoSeeker(video: HTMLVideoElement) {
   const flush = () => {
     frame = 0;
     if (disposed || video.readyState < 1 || video.seeking) return;
-    if (Math.abs(video.currentTime - target) < 1 / 48) return;
+    const sameFrame =
+      Math.floor(video.currentTime * 24 + 0.0001) ===
+      Math.floor(target * 24 + 0.0001);
+    if (sameFrame && Math.abs(video.currentTime - target) < 1 / 48) return;
     try {
       video.currentTime = target;
     } catch {
