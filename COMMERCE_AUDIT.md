@@ -50,4 +50,13 @@ These informed accurate product schema and browser restrictions. Search rich res
 
 ## Live verification
 
-Deployment and browser verification results will be recorded after publication.
+- Production deployment `01e77ad` reached READY on Vercel and is live at https://fruty-fawn.vercel.app.
+- HTTP: homepage, shop, pineapple product, contact and privacy return 200; unknown route returns 404; `/pickles` returns 301 to `/shop`; `/shop/` returns 308 to `/shop`; sitemap contains nine URLs.
+- Live HTML includes Product price 200 INR and breadcrumb JSON-LD. CSP, HSTS, nosniff and frame-denial headers are present.
+- Browser: desktop basket quantity changes produced ₹600 for two pineapple jars and one cucumber jar; Gmail URL includes the correct full draft and opens a new tab. Native mail-app fallback is present. Reload preserved quantities and subtotal.
+- Browser at 390 × 844: document width 390 with no horizontal overflow; drawer scrolls vertically and all enquiry actions remain reachable. Mobile hero video was muted, playing, readyState 4, with no native controls.
+- Checked desktop product and basket flows showed no browser console errors. Exactly one Product schema script and the correct canonical were present on the product page.
+- [Mobile enquiry basket screenshot](docs/enquiry-basket.jpg).
+- External email delivery was not exercised; redirect construction and in-page destinations were verified without sending any message. No Lighthouse score, Google indexing, payment security or penetration-test result is claimed.
+
+The site is ready as an enquiry catalogue. Full online commerce remains dependent on the business and backend requirements above.
