@@ -17,7 +17,11 @@
         "X-Content-Type-Options": "nosniff",
         "Referrer-Policy": "strict-origin-when-cross-origin",
         "Permissions-Policy": "camera=(), microphone=(), geolocation=()",
-        "X-Frame-Options": "DENY"
+        "X-Frame-Options": "DENY",
+        "Content-Security-Policy": "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; script-src 'self' https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*.google-analytics.com https://*.googletagmanager.com; media-src 'self'; font-src 'self'; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com; form-action 'self'; upgrade-insecure-requests",
+        "Strict-Transport-Security": "max-age=31536000",
+        "Cross-Origin-Opener-Policy": "same-origin-allow-popups",
+        "X-Permitted-Cross-Domain-Policies": "none"
       },
       "continue": true
     },
@@ -41,6 +45,20 @@
       "status": 410
     },
     {
+      "src": "/pickles/?",
+      "headers": {
+        "Location": "/shop"
+      },
+      "status": 301
+    },
+    {
+      "src": "/(.+)/",
+      "headers": {
+        "Location": "/$1"
+      },
+      "status": 308
+    },
+    {
       "handle": "filesystem"
     },
     {
@@ -54,10 +72,6 @@
     {
       "src": "/(privacy|terms|contact|thank-you)/?",
       "dest": "/$1/index.html"
-    },
-    {
-      "src": "/pickles/?",
-      "dest": "/pickles/index.html"
     },
     {
       "src": "/collections/(tropical-feast)/?",

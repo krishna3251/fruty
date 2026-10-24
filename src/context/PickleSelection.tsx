@@ -31,46 +31,121 @@ export function restoreSelection(raw: string | null): string[] {
     return [];
   }
 }
+export const PICKLE_QUANTITIES_KEY = "fruity-pickle-quantities-v1";
+export const MAX_ENQUIRY_QUANTITY = 99;
+export function restoreQuantities(
+  raw: string | null,
+  ids: string[],
+): Record<string, number> {
+  let value: unknown;
+  try {
+    value = JSON.parse(raw || "{}");
+  } catch {
+    value = {};
+  }
+  const record =
+    value && typeof value === "object" && !Array.isArray(value)
+      ? (value as Record<string, unknown>)
+      : {};
+  return Object.fromEntries(
+    ids.map((id) => {
+      const qty = record[id];
+      return [
+        id,
+        typeof qty === "number" &&
+        Number.isInteger(qty) &&
+        qty >= 1 &&
+        qty <= MAX_ENQUIRY_QUANTITY
+          ? qty
+          : 1,
+      ];
+    }),
+  );
+}
+function readBasket() {
+  try {
+    const ids = restoreSelection(localStorage.getItem(PICKLE_SELECTION_KEY));
+    return {
+      ids,
+      quantities: restoreQuantities(
+        localStorage.getItem(PICKLE_QUANTITIES_KEY),
+        ids,
+      ),
+    };
+  } catch {
+    return { ids: [] as string[], quantities: {} as Record<string, number> };
+  }
+}
 const SelectionContext = createContext<{
   ids: string[];
+  quantities: Record<string, number>;
+  itemCount: number;
   toggle: (id: string) => void;
+  setQuantity: (id: string, quantity: number) => void;
   storageUnavailable: boolean;
 } | null>(null);
 export function PickleSelectionProvider({ children }: { children: ReactNode }) {
-  const [ids, setIds] = useState(() => {
-    try {
-      return restoreSelection(localStorage.getItem(PICKLE_SELECTION_KEY));
-    } catch {
-      return [];
-    }
-  });
+  const [basket, setBasket] = useState(readBasket);
   const [storageUnavailable, setStorageUnavailable] = useState(false);
   useEffect(() => {
     try {
-      localStorage.setItem(PICKLE_SELECTION_KEY, JSON.stringify(ids));
+      localStorage.setItem(PICKLE_SELECTION_KEY, JSON.stringify(basket.ids));
+      localStorage.setItem(
+        PICKLE_QUANTITIES_KEY,
+        JSON.stringify(basket.quantities),
+      );
     } catch {
       setStorageUnavailable(true);
     }
-  }, [ids]);
+  }, [basket]);
   useEffect(() => {
     const sync = (e: StorageEvent) => {
-      if (e.key === PICKLE_SELECTION_KEY || e.key === null)
-        setIds(restoreSelection(e.newValue));
+      if ([PICKLE_SELECTION_KEY, PICKLE_QUANTITIES_KEY, null].includes(e.key))
+        setBasket(readBasket());
     };
     window.addEventListener("storage", sync);
     return () => window.removeEventListener("storage", sync);
   }, []);
   const toggle = (id: string) => {
     if (!pickleProducts.some((p) => p.id === id)) return;
-    setIds((current) =>
-      current.includes(id) ? current.filter((p) => p !== id) : [...current, id],
+    setBasket((current) => {
+      const ids = current.ids.includes(id)
+        ? current.ids.filter((p) => p !== id)
+        : [...current.ids, id];
+      return {
+        ids,
+        quantities: restoreQuantities(JSON.stringify(current.quantities), ids),
+      };
+    });
+  };
+  const setQuantity = (id: string, quantity: number) => {
+    if (
+      !Number.isInteger(quantity) ||
+      quantity < 1 ||
+      quantity > MAX_ENQUIRY_QUANTITY
+    )
+      return;
+    setBasket((current) =>
+      current.ids.includes(id)
+        ? { ...current, quantities: { ...current.quantities, [id]: quantity } }
+        : current,
     );
   };
   return (
-    <SelectionContext.Provider value={{ ids, toggle, storageUnavailable }}>
+    <SelectionContext.Provider
+      value={{
+        ...basket,
+        itemCount: basket.ids.reduce(
+          (n, id) => n + (basket.quantities[id] || 1),
+          0,
+        ),
+        toggle,
+        setQuantity,
+        storageUnavailable,
+      }}
+    >
       {children}
     </SelectionContext.Provider>
   );
 }
-// Optional for archived components that render outside the primary pantry store.
 export const usePickleSelection = () => useContext(SelectionContext);

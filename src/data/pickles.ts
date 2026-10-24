@@ -108,6 +108,7 @@ export function safeEnquiryUrl(value: string) {
 // Preserve a saved cucumber preference from the earlier duplicate entry.
 // The removed, unconfirmed vegetable is never converted to a different flavour.
 export const retiredPickleRoutes: Record<string, string> = {
+  "/pickles": "/shop",
   "/collections/fermented-pickles": "/shop",
   "/products/fermented-cucumber-pickle": "/products/tropical-cucumber-pickle",
 };

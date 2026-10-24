@@ -1,3 +1,4 @@
+import { money } from "../data/products";
 import { products } from "../data/products";
 import {
   pickleCollections,
@@ -7,7 +8,6 @@ import {
 export const publicPaths = [
   "/",
   "/shop",
-  "/pickles",
   ...pickleCollections.map((c) => `/collections/${c.id}`),
   ...pickleProducts.map((p) => `/products/${p.id}`),
   "/ordering",
@@ -36,7 +36,7 @@ export function pageMeta(path: string) {
   if (pickle)
     return {
       title: `${pickle.name} | Tropical Feast`,
-      description: `${pickle.description} ₹200. Confirm jar size, availability and delivery before ordering.`,
+      description: `Explore Tropical Feast’s ${pickle.name.toLowerCase()}${pickle.price === null ? " — price on enquiry" : ` at ${money(pickle.price)}`}. Enquire in Hyderabad and confirm jar size, ingredients, availability and delivery.`,
       type: "website",
       index: true,
     };

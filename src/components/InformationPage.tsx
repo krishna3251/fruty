@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { siteConfig } from "../lib/config";
-import { enquiryWhatsApp } from "../lib/contact";
+import { enquiryWhatsApp, enquiryGmail } from "../lib/contact";
 export default function InformationPage({ path }: { path: string }) {
   const [storageError, setStorageError] = useState("");
   if (path === "/thank-you") {
@@ -58,29 +58,38 @@ export default function InformationPage({ path }: { path: string }) {
               "Business/legal name: not supplied by the owner."}{" "}
             Privacy contact:{" "}
             {siteConfig.email ? (
-              <a href={`mailto:${siteConfig.email}`}>Contact by email</a>
+              <a
+                href={enquiryGmail()!}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Contact by email
+              </a>
             ) : (
               "not supplied. The owner must provide a working privacy contact before collecting personal information commercially."
             )}
           </p>
           <h2>What stays on your device</h2>
           <p>
-            Your pickle enquiry list (fruity-pickle-selection-v1) stores only
-            selected product IDs locally until you remove them or clear site
-            data. No enquiry is automatically transmitted. The archived fruit
-            demo’s bag (furity-cart-v1), saved fruit (furity-saved-v1), and
-            sample receipts (furity-receipts-v1) use localStorage. They remain
-            until you clear them or your browser removes site data. Demo
-            receipts contain a sample ID, date, product IDs, quantities and
-            estimated total; they contain no contact/address details.
+            Your enquiry basket stores product IDs (fruity-pickle-selection-v1)
+            and requested quantities (fruity-pickle-quantities-v1) locally until
+            you remove them or clear site data. No enquiry is automatically
+            transmitted. The archived fruit demo’s bag (furity-cart-v1), saved
+            fruit (furity-saved-v1), and sample receipts (furity-receipts-v1)
+            use localStorage. They remain until you clear them or your browser
+            removes site data. Demo receipts contain a sample ID, date, product
+            IDs, quantities and estimated total; they contain no contact/address
+            details.
           </p>
           <h2>Collection enquiries</h2>
           <p>
             Tropical Feast offers external WhatsApp and email enquiry links.
             Following that link, when available, takes you to the configured
-            provider or email app; this website does not send your message or
-            contact details automatically. The supplier and provider must
-            confirm how they handle enquiries.
+            provider or email app. WhatsApp and Gmail web links include the
+            selected product draft in the destination URL when you click. The
+            website does not send the message automatically; review and send it
+            yourself. The supplier and provider must confirm how they handle
+            enquiries.
           </p>
           <h2>Forms and checkout</h2>
           <p>
@@ -130,6 +139,7 @@ export default function InformationPage({ path }: { path: string }) {
               try {
                 for (const key of [
                   "fruity-pickle-selection-v1",
+                  "fruity-pickle-quantities-v1",
                   "furity-cart-v1",
                   "furity-saved-v1",
                   "furity-receipts-v1",
@@ -211,7 +221,13 @@ export default function InformationPage({ path }: { path: string }) {
             <dt>Email</dt>
             <dd>
               {/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(siteConfig.email) ? (
-                <a href={`mailto:${siteConfig.email}`}>Contact by email</a>
+                <a
+                  href={enquiryGmail()!}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Contact by email
+                </a>
               ) : (
                 "Not provided — no support email is published"
               )}

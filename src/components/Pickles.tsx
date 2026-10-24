@@ -18,7 +18,7 @@ import {
   type PickleCollection,
 } from "../data/pickles";
 import { money } from "../data/products";
-import { enquiryEmail, enquiryWhatsApp } from "../lib/contact";
+import { enquiryGmail, enquiryWhatsApp } from "../lib/contact";
 import { FruitImage } from "./Resilience";
 import { usePickleSelection } from "../context/PickleSelection";
 export function PickleHero() {
@@ -215,7 +215,7 @@ export function TropicalOrdering({
     ? `Hello, I’d like to enquire about ${product.name} at ₹${product.price}. Please confirm jar size, ingredients/allergens, availability and delivery.`
     : undefined;
   const link = enquiryWhatsApp(message);
-  const email = enquiryEmail(message);
+  const email = enquiryGmail(message);
   return (
     <section
       className="pickle-ordering section-pad"
@@ -235,7 +235,12 @@ export function TropicalOrdering({
       </div>
       <div className="pickle-order-action">
         {email && (
-          <a className="text-link" href={email}>
+          <a
+            className="text-link"
+            href={email}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             Email enquiry <ArrowUpRight size={17} />
           </a>
         )}

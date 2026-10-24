@@ -1,12 +1,14 @@
 import { useRef, useState } from "react";
-import { ArrowUpRight, Copy, Trash2 } from "lucide-react";
+import { ArrowUpRight, Copy, Trash2, Minus, Plus } from "lucide-react";
 import {
   collectionFor,
   pickleCollections,
   pickleProducts,
 } from "../data/pickles";
 import { usePickleSelection } from "../context/PickleSelection";
-import { enquiryEmail, enquiryWhatsApp } from "../lib/contact";
+import { enquiryWhatsApp } from "../lib/contact";
+import EmailEnquiry from "./EmailEnquiry";
+import { MAX_ENQUIRY_QUANTITY } from "../context/PickleSelection";
 import { money } from "../data/products";
 export default function EnquiryList() {
   const selection = usePickleSelection();
@@ -15,20 +17,25 @@ export default function EnquiryList() {
   const copyingRef = useRef(false);
   if (!selection) return null;
   const selected = pickleProducts.filter((p) => selection.ids.includes(p.id));
+  const subtotal = selected.reduce(
+    (sum, p) => sum + (p.price ?? 0) * (selection.quantities[p.id] || 1),
+    0,
+  );
   const message = [
     "Hello, I’d like to enquire about:",
     ...selected.map(
-      (p) => `• ${p.name} — ${collectionFor(p).name} — ${money(p.price!)}`,
+      (p) =>
+        `• ${selection.quantities[p.id] || 1} × ${p.name} — ${collectionFor(p).name} — ${money(p.price!)} each`,
     ),
+    `Products subtotal: ${money(subtotal)} (delivery and final charges to be confirmed).`,
     "Please confirm jar sizes, ingredients/allergens, stock, delivery charges and the final total before I order.",
   ].join("\n");
   const dm = enquiryWhatsApp(message);
-  const email = enquiryEmail(message);
   return (
     <div className="enquiry-list">
       <p>
-        Your list is saved on this device. It is not a cart, order or
-        reservation; no payment is taken.
+        Your enquiry basket is saved on this device. Prices are ₹200 per item;
+        saving a basket does not place an order or take a payment.
       </p>
       {selection.storageUnavailable && (
         <p role="status">
@@ -58,7 +65,44 @@ export default function EnquiryList() {
                   <div className="enquiry-item" key={p.id}>
                     <div>
                       <a href={`/products/${p.id}`}>{p.name}</a>
-                      <small>{money(p.price!)} · Confirm jar size</small>
+                      <small>{money(p.price!)} each · Confirm jar size</small>
+                      <div
+                        className="enquiry-quantity"
+                        aria-label={`${p.name} quantity controls`}
+                      >
+                        <button
+                          className="icon-button"
+                          aria-label={`Decrease ${p.name} quantity`}
+                          disabled={(selection.quantities[p.id] || 1) <= 1}
+                          onClick={() =>
+                            selection.setQuantity(
+                              p.id,
+                              (selection.quantities[p.id] || 1) - 1,
+                            )
+                          }
+                        >
+                          <Minus size={15} />
+                        </button>
+                        <output aria-label={`${p.name} quantity`}>
+                          {selection.quantities[p.id] || 1}
+                        </output>
+                        <button
+                          className="icon-button"
+                          aria-label={`Increase ${p.name} quantity`}
+                          disabled={
+                            (selection.quantities[p.id] || 1) >=
+                            MAX_ENQUIRY_QUANTITY
+                          }
+                          onClick={() =>
+                            selection.setQuantity(
+                              p.id,
+                              (selection.quantities[p.id] || 1) + 1,
+                            )
+                          }
+                        >
+                          <Plus size={15} />
+                        </button>
+                      </div>
                     </div>
                     <button
                       className="icon-button"
@@ -104,11 +148,14 @@ export default function EnquiryList() {
               </section>
             ) : null;
           })}
-          {email && (
-            <a className="text-link" href={email}>
-              Enquire by email <ArrowUpRight size={16} />
-            </a>
-          )}
+          <div className="enquiry-subtotal">
+            <span>Products subtotal</span>
+            <strong>{money(subtotal)}</strong>
+            <small>
+              Delivery and any final charges are confirmed before ordering.
+            </small>
+          </div>
+          <EmailEnquiry message={message} label="Open Gmail" fallback />
           <label className="enquiry-message">
             Your enquiry draft
             <textarea readOnly value={message} rows={7} />

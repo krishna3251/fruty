@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { pageMeta, safeOrigin } from "../lib/seo";
+import { structuredData, serializeStructuredData } from "../lib/structuredData";
 import { siteConfig } from "../lib/config";
 export default function PageMetadata({ path }: { path: string }) {
   useEffect(() => {
@@ -25,7 +26,7 @@ export default function PageMetadata({ path }: { path: string }) {
     };
     meta("description", m.description);
     meta("robots", m.index ? "index,follow" : "noindex,follow");
-    meta("og:site_name", "Tropical Feast", true);
+    meta("og:site_name", "Fermented Pickles", true);
     meta("og:title", m.title, true);
     meta("og:description", m.description, true);
     meta("og:url", origin + path, true);
@@ -44,6 +45,15 @@ export default function PageMetadata({ path }: { path: string }) {
       document.head.append(canonical);
     }
     canonical.href = origin + path;
+    document.getElementById("page-structured-data")?.remove();
+    const data = structuredData(path, origin);
+    if (data) {
+      const script = document.createElement("script");
+      script.id = "page-structured-data";
+      script.type = "application/ld+json";
+      script.textContent = serializeStructuredData(data);
+      document.head.append(script);
+    }
   }, [path]);
   return null;
 }

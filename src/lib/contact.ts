@@ -9,5 +9,20 @@ export function enquiryWhatsApp(message?: string) {
 }
 export function enquiryEmail(message?: string) {
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(siteConfig.email)) return null;
-  return `mailto:${siteConfig.email}?subject=${encodeURIComponent("Tropical Feast pickle enquiry")}${message ? `&body=${encodeURIComponent(message)}` : ""}`;
+  const recipient = encodeURIComponent(siteConfig.email).replace(/%40/gi, "@");
+  return `mailto:${recipient}?subject=${encodeURIComponent("Tropical Feast pickle enquiry")}${message ? `&body=${encodeURIComponent(message)}` : ""}`;
+}
+
+// Web compose works without a registered mailto handler. Nothing is sent by opening it.
+export function enquiryGmail(message?: string) {
+  if (!enquiryEmail()) return null;
+  const url = new URL("https://mail.google.com/mail/");
+  url.search = new URLSearchParams({
+    view: "cm",
+    fs: "1",
+    to: siteConfig.email,
+    su: "Tropical Feast pickle enquiry",
+    ...(message ? { body: message } : {}),
+  }).toString();
+  return url.href;
 }

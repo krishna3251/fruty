@@ -893,11 +893,107 @@ test("contact buttons expose destinations only in links and both pickle details 
       );
       assert.match(
         main.getByRole("link", { name: "Email enquiry" }).getAttribute("href")!,
-        /^mailto:krishnasoni3251@gmail\.com\?/,
+        /^https:\/\/mail\.google\.com\/mail\/\?/,
       );
     }
     cleanup();
   }
+  window.history.replaceState({}, "", "/");
+});
+
+test("enquiry basket quantities, subtotal and both email routes persist and stay in sync", async () => {
+  localStorage.clear();
+  window.history.replaceState({}, "", "/shop");
+  mountPantry();
+  fireEvent.click(
+    screen.getByRole("button", {
+      name: "Save Pineapple Pickle — Tropical Feast",
+      exact: true,
+    }),
+  );
+  fireEvent.click(
+    screen.getByRole("button", {
+      name: "Open enquiry list, 1 items",
+      exact: true,
+    }),
+  );
+  let dialog = within(screen.getByRole("dialog"));
+  fireEvent.click(
+    dialog.getByRole("button", { name: "Increase Pineapple Pickle quantity" }),
+  );
+  assert.equal(
+    dialog.getByLabelText("Pineapple Pickle quantity").textContent,
+    "2",
+  );
+  assert.ok(dialog.getByText("₹400"));
+  const gmail = dialog.getByRole("link", { name: "Open Gmail" });
+  const web = new URL(gmail.getAttribute("href")!);
+  assert.equal(web.origin, "https://mail.google.com");
+  assert.match(web.searchParams.get("body")!, /2 × Pineapple Pickle/);
+  assert.match(web.searchParams.get("body")!, /Products subtotal: ₹400/);
+  assert.equal(gmail.getAttribute("target"), "_blank");
+  assert.match(
+    dialog
+      .getByRole("link", { name: "Use my email app instead" })
+      .getAttribute("href")!,
+    /^mailto:/,
+  );
+  assert.equal(
+    JSON.parse(localStorage.getItem("fruity-pickle-quantities-v1")!)[
+      "tropical-pineapple-pickle"
+    ],
+    2,
+  );
+  cleanup();
+  mountPantry();
+  fireEvent.click(
+    screen.getByRole("button", {
+      name: "Open enquiry list, 2 items",
+      exact: true,
+    }),
+  );
+  dialog = within(screen.getByRole("dialog"));
+  assert.equal(
+    dialog.getByLabelText("Pineapple Pickle quantity").textContent,
+    "2",
+  );
+  fireEvent.click(
+    dialog.getByRole("button", { name: "Decrease Pineapple Pickle quantity" }),
+  );
+  assert.equal(
+    dialog.getByLabelText("Pineapple Pickle quantity").textContent,
+    "1",
+  );
+  assert.equal(
+    (
+      dialog.getByRole("button", {
+        name: "Decrease Pineapple Pickle quantity",
+      }) as HTMLButtonElement
+    ).disabled,
+    true,
+  );
+  cleanup();
+  window.history.replaceState({}, "", "/");
+});
+test("SPA metadata replaces product structured data after navigating to contact", () => {
+  window.history.replaceState({}, "", "/products/tropical-cucumber-pickle");
+  mountPantry();
+  assert.equal(document.querySelectorAll("#page-structured-data").length, 1);
+  assert.match(
+    document.getElementById("page-structured-data")!.textContent!,
+    /"Product"/,
+  );
+  fireEvent.click(screen.getByRole("link", { name: "Contact", exact: true }));
+  assert.equal(document.querySelectorAll("#page-structured-data").length, 1);
+  assert.doesNotMatch(
+    document.getElementById("page-structured-data")!.textContent!,
+    /"Product"/,
+  );
+  assert.equal(
+    document.querySelector('link[rel="canonical"]')?.getAttribute("href"),
+    "https://fruty-fawn.vercel.app/contact",
+  );
+  cleanup();
   window.history.replaceState({}, "", "/");
 });
 

@@ -36,7 +36,7 @@ import {
   PickleProductPage,
   TropicalOrdering,
 } from "./components/Pickles";
-import { enquiryEmail, enquiryWhatsApp } from "./lib/contact";
+import { enquiryGmail, enquiryWhatsApp } from "./lib/contact";
 import CinematicHero from "./components/CinematicHero";
 import EnquiryList from "./components/EnquiryList";
 import Modal from "./components/Modal";
@@ -177,12 +177,12 @@ function PantryShell({ path }: { path: string }) {
         <div className="pantry-tools">
           <button
             className="pantry-list-button"
-            aria-label={`Open enquiry list, ${selection.ids.length} items`}
+            aria-label={`Open enquiry list, ${selection.itemCount} items`}
             onClick={() => setListOpen(true)}
           >
             <Bookmark size={18} />
             <span>Enquiry list</span>
-            <b>{selection.ids.length}</b>
+            <b>{selection.itemCount}</b>
           </button>
           <button
             className="icon-button pantry-menu"
@@ -354,7 +354,15 @@ function PantryShell({ path }: { path: string }) {
                 WhatsApp enquiry
               </a>
             )}
-            {enquiryEmail() && <a href={enquiryEmail()!}>Email enquiry</a>}
+            {enquiryGmail() && (
+              <a
+                href={enquiryGmail()!}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Email enquiry
+              </a>
+            )}
             <a href="/privacy">Privacy & storage</a>
             <a href="/terms">Website terms</a>
           </div>

@@ -1,11 +1,24 @@
-import { useEffect, type RefObject } from "react";
+import { useEffect, useState, type RefObject } from "react";
 export function usePantryMotion(
   root: RefObject<HTMLDivElement | null>,
   path: string,
   paused: boolean,
 ) {
+  const [desktop, setDesktop] = useState(
+    () => window.matchMedia("(min-width: 900px)").matches,
+  );
   useEffect(() => {
-    if (paused || window.matchMedia("(prefers-reduced-motion: reduce)").matches)
+    const media = window.matchMedia("(min-width: 900px)");
+    const update = () => setDesktop(media.matches);
+    media.addEventListener("change", update);
+    return () => media.removeEventListener("change", update);
+  }, []);
+  useEffect(() => {
+    if (
+      !desktop ||
+      paused ||
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    )
       return;
     let cancelled = false;
     let dispose: (() => void) | undefined;
@@ -64,5 +77,5 @@ export function usePantryMotion(
       cancelled = true;
       dispose?.();
     };
-  }, [root, path, paused]);
+  }, [root, path, paused, desktop]);
 }
