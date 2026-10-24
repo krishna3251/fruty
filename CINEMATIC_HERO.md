@@ -16,20 +16,20 @@ Observed moments (frame samples, not recipe claims):
 | 7.167–8.5 s     | Closed jar; the camera gradually pushes closer.                                                                                     |
 | 8.75–9.958333 s | Jar turns, Tropical Feast label comes into view; final front-facing product shot.                                                   |
 
-Lighting stays warm. The camera/jar scale changes near the end and the label appears through rotation, not an HTML overlay. The original final push-in is tight enough that parts of the jar meet/cross the source-frame boundary. The website uses `object-fit: contain` and does not add cropping, retouch labels, hide the source watermark or manufacture missing image content. Opening/final images are extracted directly from the footage. This is not a seamless looping clip; the implementation holds its final frame and releases into the existing two-flavour product section rather than looping back to an empty jar.
+Lighting stays warm. The camera/jar scale changes near the end and the label appears through rotation, not an HTML overlay. The original final push-in is tight enough that parts of the jar meet/cross the source-frame boundary. The website uses `object-fit: contain` and does not add cropping, retouch labels or manufacture missing image content. Opening/final images are extracted directly from the footage. This is not a seamless looping clip; the implementation holds its final frame and releases into the existing two-flavour product section rather than looping back to an empty jar.
 
 ## Delivery asset
 
 Already installed: `public/videos/pineapple-pickle.mp4`, referenced as `/videos/pineapple-pickle.mp4`. No manual placement is needed for this update. Keep this asset and its two WebP posters together when moving the project.
 
-The web delivery copy is 1280×720, H.264/yuv420p, 24 fps, 240 frames, exactly 10 seconds, with a keyframe every six frames (0.25 seconds), no B-frames/audio and faststart metadata. Size: 2,052,924 bytes, versus the original 3,504,195. The supplied original is unchanged. Downscaling/compression preserves the full frame, sequence and product, rather than replacing the animation.
+The web delivery copy is 1280×720, H.264/yuv420p, 24 fps, 240 frames, exactly 10 seconds, with a keyframe every six frames (0.25 seconds), no B-frames/audio and faststart metadata. Size: 2,046,422 bytes, versus the original 3,504,195. The supplied original is unchanged. Downscaling/compression preserves the full frame, sequence and product, rather than replacing the animation.
 
 To reproduce from the supplied original using FFmpeg:
 
 ```bash
-ffmpeg -i input.mp4 -an -c:v libx264 -preset slow -crf 23 -vf scale=1280:720 -pix_fmt yuv420p -g 6 -keyint_min 6 -sc_threshold 0 -bf 0 -movflags +faststart public/videos/pineapple-pickle.mp4
-ffmpeg -i input.mp4 -frames:v 1 -vf scale=1280:720 -c:v libwebp -quality 85 public/videos/pineapple-pickle-poster.webp
-ffmpeg -ss 9.958333 -i input.mp4 -frames:v 1 -vf scale=1280:720 public/videos/pineapple-pickle-final.webp
+ffmpeg -i input.mp4 -an -c:v libx264 -preset slow -crf 23 -vf "scale=1280:720,delogo=x=1126:y=565:w=70:h=72" -pix_fmt yuv420p -g 6 -keyint_min 6 -sc_threshold 0 -bf 0 -movflags +faststart public/videos/pineapple-pickle.mp4
+ffmpeg -i public/videos/pineapple-pickle.mp4 -frames:v 1 -vf scale=1280:720 -c:v libwebp -quality 85 public/videos/pineapple-pickle-poster.webp
+ffmpeg -ss 9.958333 -i public/videos/pineapple-pickle.mp4 -frames:v 1 -vf scale=1280:720 public/videos/pineapple-pickle-final.webp
 ```
 
 ## Interaction
@@ -85,3 +85,7 @@ Production source deployment: `da79152` (Vercel READY); following documentation/
 Screenshots: [opening hero](docs/pineapple-scroll-hero.jpg) and [final reveal](docs/pineapple-scroll-reveal.jpg).
 
 The original footage’s tight final framing remains a source limitation. No replacement video, fabricated frame, extra variety, price, ingredient list or fulfilment integration was introduced. See `OWNER_CONTENT.md` for the existing commercial configuration requirements, which this hero does not change.
+
+## Owner-requested star cleanup
+
+On 24 October 2026 the owner requested hiding the white star at the lower right of the footage. The web delivery copy now blends out only that 70×72 pixel background region (x=1126, y=565 in the 1280×720 encode). Matching first/final posters were re-extracted from the cleaned MP4. There is no added badge, no crop or cover over the jar/label, and no change to the scroll mapping, frame count, duration or keyframe spacing. The original uploaded MP4 is untouched. Earlier screenshots and range-response byte counts above document the preceding deployment.
