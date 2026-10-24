@@ -70,6 +70,7 @@ export default function CinematicHero({
     if (!media.paused) media.pause();
     section.style.setProperty("--intro-opacity", "1");
     section.style.setProperty("--final-opacity", "0");
+    section.style.setProperty("--mid-opacity", "0");
     section.style.setProperty("--intro-y", "0px");
     section.dataset.mode = simple ? "manual" : "scroll";
     const setHeader = () => {
@@ -91,12 +92,16 @@ export default function CinematicHero({
         const playhead = { progress: 0 };
         const update = () => {
           const p = playhead.progress;
-          const intro = Math.max(0, 1 - Math.max(0, p - 0.2) / 0.22);
+          const intro = Math.max(0, 1 - Math.max(0, p - 0.14) / 0.16);
+          const mid =
+            Math.min(1, Math.max(0, (p - 0.31) / 0.08)) *
+            Math.min(1, Math.max(0, (0.83 - p) / 0.05));
           const final = Math.min(1, Math.max(0, (p - 0.83) / 0.11));
           section.style.setProperty("--story-progress", String(p));
           section.style.setProperty("--intro-opacity", String(intro));
           section.style.setProperty("--intro-y", `${-18 * (1 - intro)}px`);
           section.style.setProperty("--final-opacity", String(final));
+          section.style.setProperty("--mid-opacity", String(mid));
           section.dataset.phase =
             p < 0.2 ? "intro" : p < 0.64 ? "fill" : p < 0.83 ? "lid" : "reveal";
           // Hidden links must also leave the tab order/accessibility tree.
@@ -216,6 +221,17 @@ export default function CinematicHero({
           Your browser cannot play this video. Explore the pineapple and
           cucumber products below.
         </video>
+        {!simple && (status === "loading" || status === "slow") && (
+          <img
+            className="cinema-loading-poster"
+            src={PICKLE_VIDEO.poster}
+            alt=""
+            aria-hidden="true"
+            width="1280"
+            height="720"
+            fetchPriority="high"
+          />
+        )}
         {status === "error" && (
           <img
             className="cinema-error-poster"
@@ -336,6 +352,17 @@ export default function CinematicHero({
             <button onClick={() => setManual(true)}>Use video controls</button>{" "}
             or <a href="#collections">browse the pickles</a>.
           </p>
+        )}
+        {!simple && (status === "loading" || status === "slow") && (
+          <img
+            className="cinema-loading-poster"
+            src={PICKLE_VIDEO.poster}
+            alt=""
+            aria-hidden="true"
+            width="1280"
+            height="720"
+            fetchPriority="high"
+          />
         )}
         {status === "error" && (
           <p className="cinema-status" role="status">

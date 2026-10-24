@@ -129,10 +129,12 @@ function PantryShell({ path }: { path: string }) {
       <a className="skip-link" href="#pantry-main">
         Skip to content
       </a>
-      <div className="pantry-announcement">
-        <span>THE PICKLE PANTRY</span>
-        <span>Two flavours. Pineapple & cucumber.</span>
-      </div>
+      {!home && (
+        <div className="pantry-announcement">
+          <span>THE PICKLE PANTRY</span>
+          <span>Two flavours. Pineapple & cucumber.</span>
+        </div>
+      )}
       <header className="pantry-header">
         <a href="/" className="pantry-logo" aria-label="Fermented Pickles home">
           <img
