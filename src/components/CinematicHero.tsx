@@ -247,10 +247,8 @@ export default function CinematicHero({
           <span className="eyebrow">FERMENTED PICKLES / A PINEAPPLE STORY</span>
           <h1 id="cinema-title">
             Tradition,
-            <br />
-            <em>preserved</em>
-            <br />
-            in every bite.
+            <br /> <em>preserved</em>
+            <br /> in every bite.
           </h1>
           <p>
             Bold flavours. A little character. Discover the golden side of

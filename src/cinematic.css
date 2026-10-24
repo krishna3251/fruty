@@ -228,10 +228,6 @@
 .cinema-hero.is-simple h1 br {
   display: none;
 }
-.cinema-hero.is-simple h1 em::before,
-.cinema-hero.is-simple h1 em::after {
-  content: " ";
-}
 .cinema-hero.is-simple .cinema-copy p {
   max-width: 430px;
 }
@@ -318,5 +314,19 @@
 @media (max-width: 767px) {
   .cinema-footnote {
     padding-right: 0;
+  }
+}
+@media (max-width: 360px) {
+  .pantry-store .pantry-header {
+    gap: 6px;
+  }
+  .pantry-store .pantry-tools {
+    gap: 6px;
+  }
+  .pantry-store .pantry-menu {
+    min-width: 44px;
+  }
+  .pantry-store .pantry-logo .brand-wordmark {
+    font-size: 18px;
   }
 }
