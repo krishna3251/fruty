@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Modal from "./Modal";
 import { siteConfig } from "../lib/config";
 import {
@@ -10,11 +10,39 @@ import {
   trackPage,
   trackEvent,
 } from "../lib/analytics";
-export default function PrivacyControls({ path }: { path: string }) {
+export default function PrivacyControls({
+  path,
+  blocked = false,
+}: {
+  path: string;
+  blocked?: boolean;
+}) {
   const configured = analyticsConfigured(siteConfig.analyticsId);
   const [consent, setConsent] = useState(readConsent);
   const [open, setOpen] = useState(false);
   const [choice, setChoice] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const closePreferences = useCallback(() => setOpen(false), []);
+  const unobstructed =
+    !blocked &&
+    !editing &&
+    !["/account", "/sign-in", "/sign-up", "/privacy", "/terms"].includes(path);
+  useEffect(() => {
+    const focus = (event: FocusEvent) => {
+      const target =
+        event.type === "focusout" ? event.relatedTarget : event.target;
+      setEditing(
+        target instanceof Element &&
+          !!target.closest("form,input,textarea,select"),
+      );
+    };
+    document.addEventListener("focusin", focus);
+    document.addEventListener("focusout", focus);
+    return () => {
+      document.removeEventListener("focusin", focus);
+      document.removeEventListener("focusout", focus);
+    };
+  }, []);
   useEffect(() => {
     if (consent?.analytics && startAnalytics(siteConfig.analyticsId, true)) {
       if (
@@ -26,7 +54,7 @@ export default function PrivacyControls({ path }: { path: string }) {
   }, [consent, path]);
   useEffect(() => {
     const handler = (e: StorageEvent) => {
-      if (e.key === "furity-consent-v1") {
+      if (e.key === "furity-consent-v1" || e.key === null) {
         const current = readConsent();
         setConsent(current);
         if (!current?.analytics && stopAnalytics()) window.location.reload();
@@ -65,22 +93,32 @@ export default function PrivacyControls({ path }: { path: string }) {
       >
         Cookie & storage preferences
       </button>
-      {configured && !consent && !open && (
+      {!consent && !open && unobstructed && (
         <section
           className="consent-banner"
-          aria-label="Optional analytics preferences"
+          aria-label={
+            configured
+              ? "Optional analytics preferences"
+              : "Cookies and essential storage"
+          }
         >
           <div>
-            <h2>Your visit. Your choice.</h2>
+            <h2>
+              {configured
+                ? "Your visit. Your choice."
+                : "Cookies, kept simple."}
+            </h2>
             <p>
-              Optional Google Analytics helps us understand page and product
-              use. It stays off until you accept. Shopping storage works
-              independently.
+              {configured
+                ? "Optional analytics stays off until you allow it. Essential basket storage and sign-in cookies work independently."
+                : "Your basket stays on this device. Signing in uses essential session cookies. Optional analytics is not in use."}
             </p>
             <a href="/privacy">Read the privacy notice</a>
           </div>
           <div className="consent-actions">
-            <button onClick={() => decide(false)}>Reject optional</button>
+            <button onClick={() => decide(false)}>
+              {configured ? "Reject optional" : "Got it"}
+            </button>
             <button
               onClick={() => {
                 setChoice(false);
@@ -89,14 +127,19 @@ export default function PrivacyControls({ path }: { path: string }) {
             >
               Preferences
             </button>
-            <button onClick={() => decide(true)}>Accept analytics</button>
+            {configured && (
+              <button onClick={() => decide(true)}>Accept analytics</button>
+            )}
           </div>
         </section>
       )}
       {open && (
-        <Modal title="Your privacy preferences" onClose={() => setOpen(false)}>
-          <div className="policy-content">
-            <h3>Shopping storage</h3>
+        <Modal title="Your privacy preferences" onClose={closePreferences}>
+          <div className="policy-content cookie-preferences">
+            <div className="cookie-category-header">
+              <h3>Essential storage</h3>
+              <span>Always active</span>
+            </div>
             <p>
               Your pickle enquiry list is kept on this device. The archived
               fruit demo also stores its bag, saved fruit and demo receipts
@@ -104,6 +147,10 @@ export default function PrivacyControls({ path }: { path: string }) {
               Clerk session cookies for sign-in, independently of optional
               analytics.
             </p>
+            <div className="cookie-category-header">
+              <h3>Analytics</h3>
+              <span>{configured ? "Optional" : "Not in use"}</span>
+            </div>
             {configured ? (
               <label className="consent-choice">
                 <input
@@ -120,16 +167,27 @@ export default function PrivacyControls({ path }: { path: string }) {
               </p>
             )}
             <p>
-              Preferences expire after 180 days. You can change them here at any
-              time. Revoking active analytics reloads this page to stop the
-              loaded tag.
+              Your choice is saved for 180 days when browser storage is
+              available, or for this visit otherwise. You can change it here at
+              any time. Rejecting analytics keeps sign-in available. Revoking
+              active analytics reloads this page to stop its loaded tag.
             </p>
-            <button
-              className="button primary"
-              onClick={() => decide(configured && choice)}
-            >
-              Save preferences
-            </button>
+            <div className="cookie-preference-actions">
+              <button
+                className="button primary"
+                onClick={() => decide(configured && choice)}
+              >
+                Save preferences
+              </button>
+              {configured && (
+                <button
+                  className="button cookie-essential-only"
+                  onClick={() => decide(false)}
+                >
+                  Essential only
+                </button>
+              )}
+            </div>
             <a href="/privacy" className="text-link">
               Privacy details
             </a>

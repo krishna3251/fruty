@@ -71,12 +71,12 @@ export default function AccountPage({ mode }: { mode: AccountMode }) {
           {mode === "sign-up"
             ? "Make yourself at home."
             : mode === "account"
-              ? "Your little corner of the pantry."
+              ? "Your account."
               : "Welcome back."}
         </h1>
         <p>
-          Manage your sign-in and profile securely. You can always browse the
-          two flavours and send an enquiry as a guest.
+          Sign in to manage your profile. Browsing and enquiries are always
+          available to guests.
         </p>
         <span className="account-trust">
           <ShieldCheck size={17} /> Authentication powered by Clerk

@@ -447,7 +447,7 @@ function PantryShell({ path }: { path: string }) {
           <span>Product and brand images supplied by the owner</span>
         </div>
       </footer>
-      <PrivacyControls path={path} />
+      <PrivacyControls path={path} blocked={listOpen || menu} />
       <MobileShopCTA path={path} blocked={listOpen} />
       {!reduced && (
         <button

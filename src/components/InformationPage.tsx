@@ -132,12 +132,13 @@ export default function InformationPage({ path }: { path: string }) {
             features are disabled.
           </p>
           <p>
-            Consent choices use furity-consent-v1 for 180 days. Rejecting
-            optional analytics does not prevent shopping. Preferences can be
-            reopened in the footer. Hosting on Vercel involves standard request
-            processing; the owner must confirm any hosting-log retention
-            settings. No advertising pixel, embedded social feed or third-party
-            font service is used.
+            Your dismissed cookie notice and optional analytics choices use
+            furity-consent-v1 for up to 180 days (or this visit if browser
+            storage is blocked). Rejecting optional analytics does not prevent
+            shopping. Preferences can be reopened in the footer. Hosting on
+            Vercel involves standard request processing; the owner must confirm
+            any hosting-log retention settings. No advertising pixel, embedded
+            social feed or third-party font service is used.
           </p>
           <h2>Control and retention</h2>
           <p>

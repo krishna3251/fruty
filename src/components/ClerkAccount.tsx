@@ -108,8 +108,14 @@ export default function ClerkAccount({
       }}
       appearance={{
         elements: {
-          rootBox: { maxWidth: "100%" },
-          cardBox: { maxWidth: "100%" },
+          rootBox: { maxWidth: "100%", minWidth: 0 },
+          cardBox: { maxWidth: "100%", minWidth: 0 },
+          card: {
+            maxWidth: "100%",
+            width: "100%",
+            minWidth: 0,
+            boxSizing: "border-box",
+          },
         },
         variables: {
           colorPrimary: "#183D25",

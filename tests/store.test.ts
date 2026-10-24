@@ -1073,3 +1073,90 @@ test("account navigation and unavailable-provider state stay honest without bloc
   cleanup();
   window.history.replaceState({}, "", "/");
 });
+
+test("essential-cookie notice is honest, remembers acknowledgement, and stays clear of account forms and drawers", async () => {
+  const { default: PrivacyControls } =
+    await import("../src/components/PrivacyControls.tsx");
+  const { siteConfig } = await import("../src/lib/config.ts");
+  const analytics = await import("../src/lib/analytics.ts");
+  const previous = siteConfig.analyticsId;
+  siteConfig.analyticsId = "";
+  localStorage.clear();
+  const view = render(React.createElement(PrivacyControls, { path: "/shop" }));
+  assert.ok(
+    screen.getByRole("region", { name: "Cookies and essential storage" }),
+  );
+  assert.equal(
+    screen.queryByRole("button", { name: "Accept analytics" }),
+    null,
+  );
+  view.rerender(
+    React.createElement(PrivacyControls, { path: "/shop", blocked: true }),
+  );
+  assert.equal(
+    screen.queryByRole("region", { name: "Cookies and essential storage" }),
+    null,
+  );
+  view.rerender(React.createElement(PrivacyControls, { path: "/sign-in" }));
+  assert.equal(
+    screen.queryByRole("region", { name: "Cookies and essential storage" }),
+    null,
+  );
+  view.rerender(React.createElement(PrivacyControls, { path: "/shop" }));
+  fireEvent.click(screen.getByRole("button", { name: "Got it" }));
+  assert.equal(analytics.readConsent()?.analytics, false);
+  cleanup();
+  render(React.createElement(PrivacyControls, { path: "/shop" }));
+  assert.equal(
+    screen.queryByRole("region", { name: "Cookies and essential storage" }),
+    null,
+  );
+  fireEvent.click(
+    screen.getByRole("button", { name: "Cookie & storage preferences" }),
+  );
+  assert.ok(screen.getByText("Always active"));
+  assert.ok(screen.getByText("Not in use"));
+  assert.equal(screen.queryByRole("checkbox"), null);
+  assert.equal(document.getElementById("furity-analytics"), null);
+  fireEvent.click(screen.getByRole("button", { name: "Save preferences" }));
+  assert.equal(screen.queryByRole("dialog"), null);
+  cleanup();
+  localStorage.clear();
+  siteConfig.analyticsId = previous;
+});
+
+test("optional analytics preference keeps keyboard focus and rejecting analytics preserves auth cookies", async () => {
+  const { default: PrivacyControls } =
+    await import("../src/components/PrivacyControls.tsx");
+  const { siteConfig } = await import("../src/lib/config.ts");
+  const analytics = await import("../src/lib/analytics.ts");
+  const previous = siteConfig.analyticsId;
+  siteConfig.analyticsId = "G-COOKIEUNIT";
+  localStorage.clear();
+  render(React.createElement(PrivacyControls, { path: "/shop" }));
+  fireEvent.click(
+    screen.getByRole("button", { name: "Preferences", exact: true }),
+  );
+  const checkbox = screen.getByRole("checkbox", {
+    name: "Allow optional Google Analytics",
+  });
+  await React.act(async () => checkbox.focus());
+  fireEvent.click(checkbox);
+  assert.ok(
+    document.activeElement === checkbox,
+    "Changing optional cookies must not reset dialog focus",
+  );
+  document.cookie = "__session=unit-auth-marker;path=/";
+  document.cookie = "_ga=unit-analytics-marker;path=/";
+  fireEvent.click(
+    screen.getByRole("button", { name: "Essential only", exact: true }),
+  );
+  assert.equal(analytics.readConsent()?.analytics, false);
+  assert.ok(document.cookie.includes("__session=unit-auth-marker"));
+  assert.ok(!document.cookie.includes("_ga=unit-analytics-marker"));
+  assert.equal(document.getElementById("furity-analytics"), null);
+  document.cookie = "__session=;max-age=0;path=/";
+  cleanup();
+  localStorage.clear();
+  siteConfig.analyticsId = previous;
+});

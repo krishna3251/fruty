@@ -1033,3 +1033,247 @@
   border-radius: 5px;
   margin: 0;
 }
+
+/* Phone-first account, basket and privacy controls. */
+.pantry-store .consent-banner {
+  max-width: 960px;
+  margin-inline: auto;
+  gap: 24px;
+  padding: 20px 24px;
+  bottom: max(16px, env(safe-area-inset-bottom));
+  background: #fff9ee;
+  color: #183d25;
+}
+.pantry-store .consent-banner h2 {
+  font:
+    26px/1.15 Georgia,
+    serif;
+}
+.pantry-store .consent-actions button {
+  min-height: 44px;
+  border-radius: 6px;
+  background: #edf0df;
+  color: #183d25;
+  font-size: 11px;
+}
+.pantry-store .consent-actions button:hover {
+  background: #dce3c8;
+}
+.pantry-store:has(.consent-banner) .pantry-motion {
+  display: none;
+}
+.modal:has(.cookie-preferences) {
+  background: #fff9ee;
+  max-height: calc(100dvh - 24px);
+  width: 540px;
+  color: #183d25;
+}
+.modal:has(.cookie-preferences) .modal-head {
+  background: #fff9ee;
+}
+.cookie-preferences {
+  padding: 22px 26px;
+}
+.cookie-category-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 10px;
+}
+.cookie-category-header:not(:first-child) {
+  border-top: 1px solid #183d2526;
+  padding-top: 20px;
+  margin-top: 22px;
+}
+.cookie-category-header h3 {
+  font:
+    24px/1.2 Georgia,
+    serif;
+  margin: 0;
+}
+.cookie-category-header span {
+  font-size: 10px;
+  padding: 5px 9px;
+  border-radius: 4px;
+  background: #e8ecd9;
+  white-space: nowrap;
+}
+.cookie-preferences p {
+  font-size: 12px;
+  line-height: 1.8;
+}
+.cookie-preferences .consent-choice {
+  min-height: 48px;
+  padding: 12px 0;
+  cursor: pointer;
+}
+.cookie-preferences .consent-choice input {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+.cookie-preference-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 22px;
+}
+.cookie-preference-actions .button {
+  min-height: 48px;
+  font-size: 12px;
+}
+.cookie-essential-only {
+  border: 1px solid #183d25;
+  background: transparent;
+}
+@media (max-width: 767px) {
+  .pantry-store .pantry-header {
+    padding-inline: 4%;
+    gap: 7px;
+  }
+  .pantry-store .pantry-tools {
+    gap: 2px;
+    flex-shrink: 0;
+  }
+  .pantry-account-link,
+  .pantry-menu {
+    min-width: 44px;
+    min-height: 44px;
+  }
+  .pantry-list-button {
+    min-height: 44px;
+    padding-inline: 7px;
+    gap: 6px;
+  }
+  .pantry-store .account-page {
+    padding: 24px 4% 36px;
+    gap: 20px;
+  }
+  .account-intro h1 {
+    font-size: 34px;
+    margin: 8px 0 10px;
+    max-width: 100%;
+  }
+  .account-intro > p {
+    margin: 0;
+    font-size: 12px;
+    line-height: 1.65;
+    max-width: 100%;
+  }
+  .account-intro .eyebrow {
+    font-size: 8px;
+    letter-spacing: 0.09em;
+  }
+  .account-intro .account-trust,
+  .account-intro > .text-link {
+    display: none;
+  }
+  .account-surface {
+    padding: 0;
+    justify-content: center;
+    width: 100%;
+  }
+  .account-privacy {
+    margin: 0;
+  }
+  .account-environment {
+    font-size: 10px;
+    padding: 10px 12px;
+  }
+  .account-session-actions {
+    gap: 12px;
+    font-size: 10px;
+  }
+  .account-session-actions button {
+    min-height: 44px;
+  }
+  .pantry-store .consent-banner {
+    left: 10px;
+    right: 10px;
+    padding: 16px;
+    bottom: max(10px, env(safe-area-inset-bottom));
+    max-height: min(55dvh, 420px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+  .pantry-store .consent-banner h2 {
+    font-size: 23px;
+    margin-bottom: 7px;
+  }
+  .pantry-store .consent-banner p {
+    font-size: 11px;
+    line-height: 1.65;
+  }
+  .pantry-store .consent-actions {
+    margin-top: 12px;
+    gap: 8px;
+  }
+  .pantry-store .consent-actions button {
+    min-height: 46px;
+    padding: 10px;
+  }
+  .pantry-store .consent-actions button:nth-last-child(2):first-child,
+  .pantry-store .consent-actions button:nth-child(2):last-child {
+    grid-column: auto;
+  }
+  .modal:has(.cookie-preferences) {
+    width: 100%;
+    max-height: calc(100dvh - 20px);
+    border-radius: 9px;
+  }
+  .cookie-preferences {
+    padding: 18px;
+  }
+  .cookie-category-header h3 {
+    font-size: 23px;
+  }
+  .cookie-preference-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+  .cookie-preferences > .text-link {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+  }
+  .basket-contact-actions .basket-contact {
+    min-height: 48px;
+  }
+  .drawer:has(.enquiry-list) .modal-head,
+  .modal:has(.cookie-preferences) .modal-head {
+    min-height: 66px;
+  }
+  .basket-products .enquiry-item > .icon-button {
+    min-width: 44px;
+    min-height: 44px;
+  }
+  .basket-products .enquiry-item {
+    grid-template-columns: 70px minmax(0, 1fr) 44px;
+    gap: 8px;
+  }
+}
+@media (max-width: 359px) {
+  .pantry-store .pantry-logo .brand-wordmark {
+    max-width: 80px;
+    font-size: 16px;
+  }
+  .pantry-store .pantry-logo > img {
+    width: 32px;
+    height: 32px;
+  }
+  .pantry-store .pantry-logo {
+    gap: 4px;
+  }
+  .basket-products .enquiry-item {
+    grid-template-columns: 58px minmax(0, 1fr) 44px;
+    gap: 7px;
+  }
+  .basket-products .enquiry-item .basket-product-info > a {
+    font-size: 18px;
+  }
+  .basket-products .enquiry-quantity .icon-button {
+    min-width: 34px;
+  }
+}
