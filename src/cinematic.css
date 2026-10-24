@@ -1610,3 +1610,6 @@
     line-height: 1.2;
   }
 }
+.login-dialog .account-page {
+  min-height: 0;
+}

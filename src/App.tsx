@@ -99,8 +99,12 @@ function PantryQuestions() {
 function PantryShell({ path }: { path: string }) {
   const root = useRef<HTMLDivElement>(null);
   const [menu, setMenu] = useState(false);
-  const { products: pickleProducts, loading: catalogueLoading } =
-    useCatalogue();
+  const {
+    products: pickleProducts,
+    loading: catalogueLoading,
+    error: catalogueError,
+    refresh: refreshCatalogue,
+  } = useCatalogue();
   const [listOpen, setListOpen] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
   const closeAccount = useCallback(() => setAccountOpen(false), []);
@@ -234,6 +238,14 @@ function PantryShell({ path }: { path: string }) {
         </div>
       </header>
       <main id="pantry-main">
+        {catalogueError && (home || path.startsWith("/products/")) && (
+          <div className="catalogue-warning" role="status">
+            {catalogueError}{" "}
+            <button className="text-link" onClick={refreshCatalogue}>
+              Try again
+            </button>
+          </div>
+        )}
         {home ? (
           <>
             <CinematicHero paused={paused} />

@@ -1314,3 +1314,94 @@ test("owner product editor handles refused access, preserves a failed edit, and 
     cleanup();
   }
 });
+
+test("owner editor uploads a photo and publishes a new product with verified input and stable slug", async () => {
+  const previous = globalThis.fetch;
+  const reader = Object.getOwnPropertyDescriptor(globalThis, "FileReader");
+  Object.defineProperty(globalThis, "FileReader", {
+    value: dom.window.FileReader,
+    configurable: true,
+  });
+  const { pickleProducts } = await import("../src/data/pickles.ts");
+  const { ProductManager } = await import("../src/components/AdminPanel.tsx");
+  const calls: { url: unknown; body: any }[] = [];
+  const photoPath =
+    "/api/product-image?id=11111111-1111-4111-8111-111111111111";
+  globalThis.fetch = async (url, options) => {
+    if (url === "/api/product-image") {
+      calls.push({ url, body: options?.body });
+      return Response.json({ image: photoPath });
+    }
+    const body = JSON.parse(options?.body as string);
+    calls.push({ url, body });
+    return Response.json(
+      body.action === "unlock"
+        ? { products: pickleProducts, revision: "unit" }
+        : { products: [...pickleProducts, body.product], revision: "saved" },
+    );
+  };
+  try {
+    render(
+      React.createElement(ProductManager, {
+        getToken: async () => "unit-fixture-token",
+      }),
+    );
+    fireEvent.change(screen.getByLabelText("Panel password"), {
+      target: { value: "unit-fixture-password" },
+    });
+    fireEvent.click(
+      screen.getByRole("button", { name: "Unlock product panel" }),
+    );
+    await waitFor(() =>
+      assert.ok(screen.getByRole("heading", { name: "The pantry manager." })),
+    );
+    fireEvent.click(
+      screen.getByRole("button", { name: "Add product", exact: true }),
+    );
+    fireEvent.change(screen.getByLabelText("Product name"), {
+      target: { value: "New Pantry Pickle" },
+    });
+    assert.equal(
+      (screen.getByLabelText("Product URL slug") as HTMLInputElement).value,
+      "new-pantry-pickle",
+    );
+    fireEvent.change(screen.getByLabelText("Price (₹)"), {
+      target: { value: "220" },
+    });
+    fireEvent.change(screen.getByLabelText("Description"), {
+      target: { value: "Owner-supplied description for a unit-test product." },
+    });
+    fireEvent.change(screen.getByLabelText("Photo description"), {
+      target: { value: "A pickle jar photographed on a tabletop" },
+    });
+    fireEvent.change(screen.getByLabelText(/Product photo/), {
+      target: {
+        files: [
+          new dom.window.File([new Uint8Array([1, 2, 3])], "unit-photo.webp", {
+            type: "image/webp",
+          }),
+        ],
+      },
+    });
+    await waitFor(() =>
+      assert.ok(screen.getByRole("img", { name: "Selected product preview" })),
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Publish product" }));
+    await waitFor(() =>
+      assert.ok(
+        screen.getByText("New Pantry Pickle saved to the live catalogue."),
+      ),
+    );
+    assert.equal(calls.filter((c) => c.url === "/api/product-image").length, 1);
+    const create = calls.find((c) => c.body.action === "create")!.body;
+    assert.equal(create.product.price, 220);
+    assert.equal(create.product.image, photoPath);
+    assert.equal(create.product.jarSize, null);
+    assert.equal(create.product.ingredients, null);
+  } finally {
+    globalThis.fetch = previous;
+    if (reader) Object.defineProperty(globalThis, "FileReader", reader);
+    else Reflect.deleteProperty(globalThis, "FileReader");
+    cleanup();
+  }
+});

@@ -79,8 +79,9 @@ export default function AccountPage({ mode }: { mode: AccountMode }) {
                 : "Welcome back."}
         </h1>
         <p>
-          Sign in to manage your profile. Browsing and enquiries are always
-          available to guests.
+          {mode === "admin"
+            ? "Sign in with the verified owner account to manage products, photos, prices and availability."
+            : "Sign in to manage your profile. Browsing and enquiries are always available to guests."}
         </p>
         <span className="account-trust">
           <ShieldCheck size={17} /> Authentication powered by Clerk

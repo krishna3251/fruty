@@ -43,4 +43,12 @@ The public shop refreshes catalogue data on load; an existing open customer tab 
 
 ## Verification
 
-`npm run verify`: production build, frontend and server TypeScript, 57 automated tests and Prettier passed. Tests cover owner-identity matching, salted-password verification, forbidden origins, input/file rejection, delivery totals, dynamic product/carts, login-dialog operation, and editor error/success flows using mocked transport. The authenticated add/upload/save flow has not yet been exercised with a real owner session. Production dependency audit and live deployment checks are recorded after deployment verification. A fresh actual phone viewport was not available in the cloud browser; responsive styles were inspected and mobile-specific behavior tested where possible.
+`npm run verify`: production build, frontend and server TypeScript, 58 automated tests and Prettier passed. Tests cover owner-identity matching, salted-password verification, forbidden origins, input/file rejection, delivery totals, dynamic product/carts, login-dialog operation, and editor error/success flows using mocked transport. The authenticated add/upload/save flow has not yet been exercised with a real owner session. Production dependency audit and live deployment checks are recorded after deployment verification. A fresh actual phone viewport was not available in the cloud browser; responsive styles were inspected and mobile-specific behavior tested where possible.
+
+## Live verification on 24 October 2026
+
+Production deployment reached READY. The live catalogue and sitemap returned HTTP 200; the product page returned current metadata; a nonexistent product and invalid image ID returned HTTP 404. The owner panel returned no-store, noindex HTML. Both protected catalogue and photo POST endpoints returned 401 without a session, and 403 for a foreign Origin. The browser verified two Add to cart controls, the illustrated cart and ₹550 total for two jars, Google/email sign-in in the login dialog, and the separate `/admin` sign-in gate. No application console errors were observed. No message was sent and no account was created. The owner editor was exercised with mocked requests for access denial, failed edit/retry, photo upload, new product publication and panel locking; a real owner-session upload/save still needs the owner’s sign-in. `npm audit --omit=dev` reports zero known vulnerabilities after overriding transitive Zod to its patched 4.6.7 release.
+
+![Live cart with delivery](docs/cart-delivery.jpg)
+
+![Live login dialog](docs/login-dialog.jpg)

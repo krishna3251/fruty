@@ -213,7 +213,7 @@ export function TropicalOrdering({
   product,
 }: { product?: PickleProduct } = {}) {
   const message = product
-    ? `Hello, I’d like to enquire about ${product.name} at ₹${product.price}. Please confirm jar size, ingredients/allergens, availability and delivery.`
+    ? `Hello, I’d like to enquire about ${product.name} at ₹${product.price}, plus ₹150 delivery. Please confirm jar size, ingredients/allergens, availability and delivery.`
     : undefined;
   const link = enquiryWhatsApp(message);
   const email = enquiryGmail(message);
