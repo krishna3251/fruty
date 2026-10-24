@@ -14,6 +14,10 @@
 
 Local: production build, 48 tests and formatting passed; `git diff --check` passed. Added tests for acknowledgement persistence, banner suppression around forms/drawers, unconfigured analytics, keyboard focus and preserving synthetic login cookies while removing analytics cookies.
 
-Live browser observations will be recorded after deployment. Fresh mobile viewport emulation is unavailable in the current browser; small-screen rules were reviewed in code, not claimed as a device/browser pass.
+Live: deployment `b274810` reached Vercel READY. The shop shows an essential-storage notice with Got it and Preferences; opening the cart hides that notice. Preferences shows Essential storage / Always active and Analytics / Not in use. Saving then reloading kept the notice dismissed and loaded zero analytics scripts. The footer button reopens preferences. No site console errors were observed in the checked flow.
+
+[Verified cookie-preferences screenshot](docs/cookie-preferences.jpg).
+
+Fresh mobile viewport emulation is unavailable in the current browser; 320–767px rules were reviewed in code, not claimed as a device/browser pass.
 
 Clerk remains in development mode. Its production-domain and Google OAuth configuration requirements are unchanged. No account creation or authenticated session round trip was performed.
