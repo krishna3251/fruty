@@ -103,6 +103,11 @@ export default function AccountPage({ mode }: { mode: AccountMode }) {
           </div>
         )}
       </div>
+      {clerkPublishableKey.startsWith("pk_test_") && (
+        <p className="account-environment" role="status">
+          Account sign-in is in testing while production setup is completed.
+        </p>
+      )}
       <p className="account-privacy">
         Signing in uses essential session cookies. Optional analytics
         preferences stay separate. <a href="/privacy">Privacy & storage</a>

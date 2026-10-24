@@ -918,10 +918,6 @@
   min-width: 0;
   max-width: 100%;
 }
-.account-surface .cl-rootBox,
-.account-surface .cl-cardBox {
-  max-width: 100%;
-}
 .account-unavailable {
   width: 100%;
   border: 1px solid #183d2525;
@@ -1025,4 +1021,15 @@
     padding-inline: 8px;
     gap: 7px;
   }
+}
+
+.account-environment {
+  grid-column: 1/-1;
+  font-size: 11px;
+  padding: 12px 16px;
+  border: 1px solid #c9ac6b55;
+  color: #695427;
+  background: #f4ead4;
+  border-radius: 5px;
+  margin: 0;
 }

@@ -92,7 +92,25 @@ export default function ClerkAccount({
       signInFallbackRedirectUrl="/account"
       signUpFallbackRedirectUrl="/account"
       telemetry={{ disabled: true }}
+      localization={{
+        signIn: {
+          start: {
+            title: "Sign in to Fermented Pickles",
+            subtitle: "Welcome back. Your pantry awaits.",
+          },
+        },
+        signUp: {
+          start: {
+            title: "Create your pantry account",
+            subtitle: "Welcome to Fermented Pickles.",
+          },
+        },
+      }}
       appearance={{
+        elements: {
+          rootBox: { maxWidth: "100%" },
+          cardBox: { maxWidth: "100%" },
+        },
         variables: {
           colorPrimary: "#183D25",
           colorBackground: "#FFF9EE",

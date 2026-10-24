@@ -23,7 +23,13 @@ The existing Clerk Marketplace resource connected to Vercel project `fruty` is u
 
 ## Verification
 
-Local and live verification results will be recorded after publication.
+- `npm run verify`: production TypeScript/Vite build, all 46 tests and formatting passed. Public-key validation, non-indexable account pages, no-store routing and missing-provider/guest navigation are covered.
+- A separate Vite build with a synthetic public-key fixture verified the Vercel `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` alias. No actual secret was read or included.
+- Production dependency audit reported zero known vulnerabilities at execution time; not a penetration test.
+- Actual live browser: Clerk sign-in loads on `/account` with Google and email options. The Sign up link opens `/sign-up`, rendering the real email/password registration form and Google option. No horizontal overflow at 1363px.
+- The connected resource is a DEVELOPMENT instance (`unique-flamingo-6954.clerk.accounts.dev`), confirmed by Clerk’s visible Development mode indicator. This is suitable for testing; production authentication is NOT ready until the owner completes production domain and Google OAuth setup. No completed account creation, email delivery, authenticated profile, logout or Google OAuth round trip is claimed as tested.
+- Clerk remains authoritative for accounts. We did not enter credentials, send verification emails or create test users.
+- A follow-up branding adjustment names the shop in the auth headings and displays an explicit testing notice while the connected key is a development key.
 
 References:
 
