@@ -25,7 +25,7 @@ export default function MobileShopCTA({
     if (path !== "/" || blocked || typeof IntersectionObserver === "undefined")
       return;
     const target = document.querySelector(
-      ".pickle-hero .button, .hero-copy .button",
+      ".cinema-intro .button, .pickle-hero .button, .hero-copy .button",
     );
     const shop =
       document.getElementById("pickle-grid") || document.getElementById("shop");

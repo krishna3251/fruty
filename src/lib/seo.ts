@@ -65,9 +65,9 @@ export function pageMeta(path: string) {
         "Explore pineapple and cucumber pickles from Tropical Feast, with owner-supplied product images and clear enquiry details.",
     },
     "/": {
-      title: "Tropical Feast | Pineapple & Cucumber Pickles",
+      title: "Fermented Pickles | The Pineapple Jar Story",
       description:
-        "Rich flavours, beautifully preserved. Discover Tropical Feast pineapple and cucumber pickles, save your favourites and check Hyderabad enquiry availability.",
+        "Scroll through a pineapple pickle product film at Fermented Pickles. Discover Tropical Feast’s pineapple and cucumber flavours and prepare an enquiry.",
     },
     "/shop": {
       title: "Shop Pineapple & Cucumber Pickles | Tropical Feast",

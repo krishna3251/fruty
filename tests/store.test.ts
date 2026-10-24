@@ -700,6 +700,75 @@ test("primary product details save unpriced pickles while archived fruit cart re
   window.history.replaceState({}, "", "/");
 });
 
+test("cinematic hero keeps a single local video, supports manual seeking and recovers from loading failures", async () => {
+  window.history.replaceState({}, "", "/");
+  const originalTimer = window.setTimeout;
+  const originalLoad = window.HTMLMediaElement.prototype.load;
+  let loadingTimeout: (() => void) | undefined;
+  window.setTimeout = ((handler: TimerHandler, delay?: number) => {
+    if (delay === 8000 && typeof handler === "function") {
+      loadingTimeout = handler as () => void;
+      return 0;
+    }
+    return originalTimer(handler, delay);
+  }) as typeof window.setTimeout;
+  let reloads = 0;
+  window.HTMLMediaElement.prototype.load = () => {
+    reloads++;
+  };
+  try {
+    mountPantry();
+    const media = document.querySelector<HTMLVideoElement>(".cinema-video")!;
+    assert.equal(document.querySelectorAll("video").length, 1);
+    assert.equal(media.getAttribute("src"), "/videos/pineapple-pickle.mp4");
+    assert.equal(
+      media.getAttribute("poster"),
+      "/videos/pineapple-pickle-poster.webp",
+    );
+    assert.equal(media.autoplay, false);
+    assert.equal(media.muted, true);
+    assert.equal(media.controls, true);
+    assert.equal(media.preload, "none");
+    fireEvent.click(
+      screen.getByRole("button", { name: "The golden fill", exact: true }),
+    );
+    assert.equal(reloads, 1);
+    assert.equal(media.preload, "auto");
+    assert.equal(
+      document.querySelector(".cinema-hero")?.getAttribute("data-mode"),
+      "manual",
+    );
+    Object.defineProperty(media, "readyState", {
+      configurable: true,
+      value: 2,
+    });
+    Object.defineProperty(media, "duration", { configurable: true, value: 10 });
+    fireEvent.loadedMetadata(media);
+    fireEvent.change(
+      screen.getByRole("slider", { name: "Explore the jar sequence" }),
+      { target: { value: "94" } },
+    );
+    await waitFor(() => assert.ok(media.currentTime > 9.9));
+    fireEvent.change(
+      screen.getByRole("slider", { name: "Explore the jar sequence" }),
+      { target: { value: "20" } },
+    );
+    await waitFor(() => assert.ok(media.currentTime < 2));
+    fireEvent.error(media);
+    assert.ok(screen.getByText(/The film couldn’t load/));
+    assert.ok(screen.getByRole("button", { name: "Retry film" }));
+    fireEvent.click(screen.getByRole("button", { name: "Retry film" }));
+    assert.equal(reloads, 2);
+    assert.equal(document.querySelectorAll("video").length, 1);
+    assert.ok(loadingTimeout);
+    cleanup();
+  } finally {
+    cleanup();
+    window.setTimeout = originalTimer;
+    window.HTMLMediaElement.prototype.load = originalLoad;
+  }
+});
+
 test.after(() => {
   cleanup();
   ScrollTrigger.killAll();

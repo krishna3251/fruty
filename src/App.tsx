@@ -31,12 +31,12 @@ import {
   usePickleSelection,
 } from "./context/PickleSelection";
 import {
-  PickleHero,
   PickleHome,
   PickleCatalogue,
   PickleProductPage,
   TropicalOrdering,
 } from "./components/Pickles";
+import CinematicHero from "./components/CinematicHero";
 import EnquiryList from "./components/EnquiryList";
 import Modal from "./components/Modal";
 import Newsletter from "./components/Newsletter";
@@ -134,7 +134,7 @@ function PantryShell({ path }: { path: string }) {
         <span>Two flavours. Pineapple & cucumber.</span>
       </div>
       <header className="pantry-header">
-        <a href="/" className="pantry-logo" aria-label="Tropical Feast home">
+        <a href="/" className="pantry-logo" aria-label="Fermented Pickles home">
           <img
             src={brandAssets.logo}
             alt="Tropical Feast logo"
@@ -142,7 +142,7 @@ function PantryShell({ path }: { path: string }) {
             height="80"
           />
           <span className="brand-wordmark">
-            Tropical Feast<small>RICH FLAVOURS, BEAUTIFULLY PRESERVED.</small>
+            Fermented Pickles<small>FEATURING TROPICAL FEAST</small>
           </span>
         </a>
         <nav
@@ -195,7 +195,7 @@ function PantryShell({ path }: { path: string }) {
       <main id="pantry-main">
         {home ? (
           <>
-            <PickleHero />
+            <CinematicHero paused={paused} />
             <div className="pantry-editorial-strip">
               <span>
                 <Leaf size={17} /> A fresh perspective on pickles
@@ -359,7 +359,8 @@ function PantryShell({ path }: { path: string }) {
         </div>
         <div className="pantry-footer-bottom">
           <span>
-            © {new Date().getFullYear()} Tropical Feast · Pineapple & cucumber
+            © {new Date().getFullYear()} Fermented Pickles · Featuring Tropical
+            Feast
           </span>
           <span>
             Enquiry catalogue · no online payments or confirmed orders
