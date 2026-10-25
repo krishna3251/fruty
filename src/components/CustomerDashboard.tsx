@@ -1,3 +1,4 @@
+import { useNotify } from "../context/Notifications";
 import { useCallback, useEffect, useState } from "react";
 import { useSession } from "../context/Session";
 import { usePickleSelection } from "../context/PickleSelection";
@@ -19,6 +20,7 @@ export default function CustomerDashboard() {
   } | null>(null);
   const [address, setAddress] = useState<Address>({ ...emptyAddress });
   const [error, setError] = useState("");
+  const notify = useNotify();
   const [status, setStatus] = useState("");
   const [busy, setBusy] = useState(false);
   const [confirmation, setConfirmation] = useState("");
@@ -48,6 +50,7 @@ export default function CustomerDashboard() {
       await customerApi("/api/customer", body, session.getToken);
       await load();
       setStatus("Your change was saved.");
+      notify("Your change was saved.", "success");
       return true;
     } catch (e) {
       setError((e as Error).message);
@@ -162,7 +165,7 @@ export default function CustomerDashboard() {
                   Products {money(Number(o.subtotal))} ·{" "}
                   {o.total === null
                     ? "Delivery and final amount to be confirmed"
-                    : `Confirmed total ${money(Number(o.total))}`}{" "}
+                    : `${["confirmed", "preparing", "dispatched", "delivered"].includes(o.status) ? "Confirmed" : "Estimated"} total ${money(Number(o.total))}`}{" "}
                   · Payment: {o.payment_status}
                 </p>
               </article>

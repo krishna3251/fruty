@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { SignIn, SignUp, UserProfile, useClerk, useUser } from "@clerk/react";
+import PasswordRecovery from "./PasswordRecovery";
 import CustomerDashboard from "./CustomerDashboard";
 import AdminPanel from "./AdminPanel";
 import type { AccountMode } from "./AccountPage";
@@ -12,6 +13,8 @@ function AccountContents({
 }) {
   const { isLoaded, isSignedIn } = useUser();
   const { signOut } = useClerk();
+  const [recovering, setRecovering] = useState(false);
+  const [email, setEmail] = useState("");
   const [leaving, setLeaving] = useState(false);
   const [error, setError] = useState("");
   useEffect(() => {
@@ -62,6 +65,13 @@ function AccountContents({
         </p>
       </div>
     );
+  if (recovering)
+    return (
+      <PasswordRecovery
+        initialEmail={email}
+        onBack={() => setRecovering(false)}
+      />
+    );
   return mode === "sign-up" ? (
     <SignUp
       routing="hash"
@@ -71,14 +81,32 @@ function AccountContents({
       fallback={<p role="status">Loading sign-up…</p>}
     />
   ) : (
-    <SignIn
-      routing="hash"
-      signUpUrl="/sign-up"
-      forceRedirectUrl={mode === "admin" ? "/admin" : "/account"}
-      signUpForceRedirectUrl={mode === "admin" ? "/admin" : "/account"}
-      oauthFlow="redirect"
-      fallback={<p role="status">Loading sign-in…</p>}
-    />
+    <div
+      className="signin-with-recovery"
+      onChangeCapture={(e) => {
+        const target = e.target;
+        if (
+          target instanceof HTMLInputElement &&
+          (target.type === "email" || target.name === "identifier")
+        )
+          setEmail(target.value);
+      }}
+    >
+      <SignIn
+        routing="hash"
+        signUpUrl="/sign-up"
+        forceRedirectUrl={mode === "admin" ? "/admin" : "/account"}
+        signUpForceRedirectUrl={mode === "admin" ? "/admin" : "/account"}
+        oauthFlow="redirect"
+        fallback={<p role="status">Loading sign-in…</p>}
+      />
+      <button
+        className="text-link recovery-link"
+        onClick={() => setRecovering(true)}
+      >
+        Forgot password?
+      </button>
+    </div>
   );
 }
 export default function ClerkAccount({

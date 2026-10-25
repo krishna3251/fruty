@@ -271,3 +271,169 @@
     13px/1.6 Manrope,
     sans-serif;
 }
+/* One restrained notification surface, above mobile shopping/navigation. */
+.pantry-notifications {
+  position: fixed;
+  z-index: 140;
+  top: 100px;
+  right: 24px;
+  width: min(380px, calc(100vw - 32px));
+  display: grid;
+  gap: 10px;
+  pointer-events: none;
+}
+.pantry-toast {
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr) 36px;
+  gap: 12px;
+  align-items: start;
+  padding: 16px;
+  background: #fff9ee;
+  color: #183d25;
+  border: 1px solid #a9b984;
+  border-radius: 10px;
+  box-shadow: 0 10px 35px #183d2520;
+  pointer-events: auto;
+}
+.pantry-toast p {
+  font-size: 13px;
+  line-height: 1.6;
+  margin: 0;
+}
+.pantry-toast .icon-button {
+  min-width: 36px;
+  min-height: 36px;
+  margin-top: -8px;
+}
+.toast-error {
+  border-color: #99513c;
+  color: #763822;
+}
+.toast-warning {
+  border-color: #ad863d;
+  color: #644a20;
+}
+.basket-line-total {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  margin: 8px 0;
+}
+.delivery-fields textarea {
+  width: 100%;
+  min-height: 80px;
+  padding: 12px;
+  font: inherit;
+  background: #fffdf7;
+  color: #183d25;
+  border: 1px solid #b9bea9;
+  border-radius: 6px;
+}
+@media (max-width: 767px) {
+  .pantry-notifications {
+    top: calc(max(16px, env(safe-area-inset-top)) + 64px);
+    right: 16px;
+  }
+  .delivery-fields :is(input, textarea),
+  .welcome-auth input {
+    font-size: 16px;
+  }
+  .modal-backdrop {
+    padding-top: max(10px, env(safe-area-inset-top));
+    padding-bottom: max(10px, env(safe-area-inset-bottom));
+  }
+  .modal:has(.welcome-dialog) {
+    max-height: calc(100dvh - 20px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+  .enquiry-list.has-items .review-entry {
+    position: sticky;
+    bottom: -1px;
+    z-index: 2;
+    padding: 12px 0 max(12px, env(safe-area-inset-bottom));
+    background: #fff9ee;
+    border-top: 1px solid #cbd1bd;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .pantry-toast {
+    animation: toast-arrive 0.2s ease-out;
+  }
+  @keyframes toast-arrive {
+    from {
+      transform: translateY(-8px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+}
+.policy-contact-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 24px 0;
+}
+.owner-overview {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 12px;
+  margin: 24px 0;
+}
+.owner-overview div {
+  padding: 16px;
+  border: 1px solid #cbd1bd;
+  border-radius: 8px;
+  background: #f1f0e1;
+}
+.owner-overview dt {
+  font-size: 12px;
+  line-height: 1.5;
+}
+.owner-overview dd {
+  margin: 8px 0 0;
+  font-size: 28px;
+  font-weight: 700;
+}
+.password-recovery h2 {
+  font:
+    28px Georgia,
+    serif;
+  margin-bottom: 16px;
+}
+.password-recovery form,
+.password-recovery label {
+  display: grid;
+  gap: 12px;
+}
+.password-recovery p {
+  font-size: 13px;
+  line-height: 1.7;
+  margin: 12px 0;
+}
+.password-recovery input {
+  width: 100%;
+  min-width: 0;
+  min-height: 48px;
+  border: 1px solid #b9bea9;
+  border-radius: 6px;
+  padding: 12px;
+  font: inherit;
+  font-size: 16px;
+  background: #fffdf7;
+  color: #183d25;
+}
+.recovery-password {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.password-recovery .text-link,
+.recovery-link {
+  display: block;
+  margin: 16px 0;
+  min-height: 44px;
+}

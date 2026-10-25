@@ -157,11 +157,13 @@ function PickleCard({ product: p }: { product: PickleProduct }) {
         </div>
         <p className="pickle-descriptors">{p.flavourDescriptors.join(" · ")}</p>
         <div className="product-card-price">
-          <strong>{p.jarSize || "Size on enquiry"}</strong>
-          <span>See price in your cart before enquiring</span>
+          <strong>
+            {p.price === null ? "Price on enquiry" : money(p.price)}
+          </strong>
+          <span>{p.jarSize || "Size on enquiry"} / jar</span>
         </div>
         <p className="product-delivered-price">
-          Hyderabad only · delivery by location
+          Hyderabad only · ₹150 standard delivery
         </p>
         <SavePickle product={p} />
         <a className="text-link" href={`/products/${p.id}`}>
@@ -200,8 +202,8 @@ function PairPick() {
       </div>
       <div className="pair-pick-action">
         <strong>
-          Your flavour duo
-          <small>See current prices in cart · delivery confirmed in chat</small>
+          {money(pair.reduce((sum, p) => sum + p!.price!, 0))} for both jars
+          <small>Plus ₹150 standard delivery per order</small>
         </strong>
         <button
           className="button primary"
@@ -317,7 +319,8 @@ export function TropicalOrdering({
         <p>
           Pineapple and cucumber pickle enquiries are by direct message. Confirm
           availability, price, jar size, ingredients and delivery before
-          ordering. Delivery charges will be confirmed on WhatsApp.
+          ordering. Standard delivery is ₹150 per order. Confirm coverage and
+          timing on WhatsApp.
         </p>
       </div>
       <div className="pickle-order-action">
@@ -499,7 +502,7 @@ export function PickleCatalogue({
         )}
         <p className="pickle-results" role="status">
           {results.length} {results.length === 1 ? "flavour" : "flavours"} ·
-          Delivery by location · Confirm availability
+          ₹150 standard delivery · Confirm availability
         </p>
         <div className="pickle-grid">
           {results.map((p) => (

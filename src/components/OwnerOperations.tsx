@@ -59,6 +59,46 @@ export default function OwnerOperations({
         Private customer information. Only a real business confirmation should
         change an enquiry into an order.
       </p>
+      {orders !== null && (
+        <dl className="owner-overview" aria-label="Loaded enquiry overview">
+          <div>
+            <dt>Loaded requests</dt>
+            <dd>{orders.length}</dd>
+          </div>
+          <div>
+            <dt>Awaiting confirmation</dt>
+            <dd>
+              {
+                orders.filter((o) =>
+                  ["enquiry_initiated", "awaiting_confirmation"].includes(
+                    o.status,
+                  ),
+                ).length
+              }
+            </dd>
+          </div>
+          <div>
+            <dt>Confirmed / in progress</dt>
+            <dd>
+              {
+                orders.filter((o) =>
+                  ["confirmed", "preparing", "dispatched"].includes(o.status),
+                ).length
+              }
+            </dd>
+          </div>
+          <div>
+            <dt>Delivered</dt>
+            <dd>{orders.filter((o) => o.status === "delivered").length}</dd>
+          </div>
+        </dl>
+      )}
+      {orders !== null && (
+        <p>
+          Counts reflect the currently loaded, filtered list (up to 100
+          requests), not all-time sales.
+        </p>
+      )}
       <div className="filters">
         <button
           className={tab === "orders" ? "active" : ""}

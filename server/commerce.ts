@@ -9,6 +9,7 @@ import {
   plain,
   snapshotItems,
   orderMessage,
+  deliveryQuote,
   validateAddress,
   validateSettings,
   uuid,
@@ -143,23 +144,25 @@ export async function createEnquiry(
   const items = checked(() => snapshotItems(data.items as CartItems, products));
   const subtotal =
     Math.round(items.reduce((n, i) => n + i.price * i.quantity, 0) * 100) / 100;
+  const { settings } = await publicSettings();
+  const quote = deliveryQuote(settings, customer.pin, subtotal);
   const reference = `TF-${randomUUID().slice(0, 8).toUpperCase()}`;
   // ON CONFLICT never exposes someone else's enquiry. Compare request payload and ownership.
   const rows =
-    await db()`INSERT INTO tf_orders(reference,request_id,customer_id,customer,items,subtotal,history)
- VALUES(${reference},${data.requestId}::uuid,${customerId}::uuid,${JSON.stringify(customer)}::jsonb,${JSON.stringify(items)}::jsonb,${subtotal},${JSON.stringify([{ status: "enquiry_initiated", at: new Date().toISOString() }])}::jsonb)
+    await db()`INSERT INTO tf_orders(reference,request_id,customer_id,customer,items,subtotal,delivery,total,history)
+ VALUES(${reference},${data.requestId}::uuid,${customerId}::uuid,${JSON.stringify(customer)}::jsonb,${JSON.stringify(items)}::jsonb,${subtotal},${quote.delivery},${quote.total},${JSON.stringify([{ status: "enquiry_initiated", at: new Date().toISOString() }])}::jsonb)
  ON CONFLICT(request_id) DO UPDATE SET request_id=tf_orders.request_id
  WHERE tf_orders.customer_id IS NOT DISTINCT FROM ${customerId}::uuid AND tf_orders.customer=${JSON.stringify(customer)}::jsonb AND tf_orders.items=${JSON.stringify(items)}::jsonb
- RETURNING reference,customer,items,subtotal`;
+ RETURNING reference,customer,items,subtotal,delivery,total`;
   if (!rows.length)
     throw new ApiError(409, "The enquiry details changed. Review them again.");
   const row = rows[0];
-  const { settings } = await publicSettings();
   const message = orderMessage({
     reference: row.reference,
     customer: row.customer as Address,
     items: row.items,
     subtotal: Number(row.subtotal),
+    delivery: row.delivery === null ? null : Number(row.delivery),
   });
   const url = /^91[6-9]\d{9}$/.test(settings.whatsapp)
     ? `https://wa.me/${settings.whatsapp}?text=${encodeURIComponent(message)}`
@@ -170,8 +173,8 @@ export async function createEnquiry(
     url,
     subtotal: Number(row.subtotal),
     items: row.items,
-    delivery: null,
-    total: null,
+    delivery: row.delivery === null ? null : Number(row.delivery),
+    total: row.total === null ? null : Number(row.total),
     status: "enquiry_initiated",
   };
 }

@@ -1,3 +1,5 @@
+> **Latest V4 update (25 October 2026):** See [V4_IMPLEMENTATION.md](V4_IMPLEMENTATION.md) for the current audit, recovery/cart/mobile improvements and owner-confirmed ₹150 standard delivery. Historical release notes below describe earlier versions.
+
 # Live release — 25 October 2026
 
 - Site: https://fruty-fawn.vercel.app

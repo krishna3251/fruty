@@ -27,6 +27,7 @@ export default function EnquiryReview({
   const [address, setAddress] = useState<Address>({ ...emptyAddress });
   const [addresses, setAddresses] = useState<Address[]>([]);
   const [error, setError] = useState("");
+  const [copyStatus, setCopyStatus] = useState("");
   const [busy, setBusy] = useState(false);
   const pending = useRef(false);
   const [result, setResult] = useState<{
@@ -34,6 +35,8 @@ export default function EnquiryReview({
     message: string;
     url: string | null;
     subtotal: number;
+    delivery: number | null;
+    total: number | null;
   } | null>(null);
   const requestId = useRef("");
   const signatures = JSON.stringify({
@@ -70,13 +73,14 @@ export default function EnquiryReview({
     customer: address,
     items: lines,
     subtotal,
+    delivery: quote.delivery,
   });
   if (step === "cart")
     return (
       <div className="review-entry">
         <p>
-          Your prices are shown above. Delivery and final payable amount are
-          confirmed by location.
+          ₹150 standard delivery is included in the estimate above. Confirm
+          coverage and the final amount with the seller.
         </p>
         <button className="button primary" onClick={() => setStep("details")}>
           Review & enquire on WhatsApp ↗
@@ -159,12 +163,19 @@ export default function EnquiryReview({
               ? "To be confirmed"
               : `${money(quote.delivery)} configured estimate — confirm in chat`}
             <br />
-            Final payable amount: To be confirmed
+            Estimated total:{" "}
+            {quote.total === null ? "To be confirmed" : money(quote.total)}
           </p>
           {settings.deliveryEstimate && quote.coverage === "configured" && (
             <p>
               Estimated delivery: {settings.deliveryEstimate}. Confirm timing
               with the business.
+            </p>
+          )}
+          {!settings.whatsapp && (
+            <p role="alert">
+              WhatsApp ordering is unavailable. Contact the business by email or
+              try again later.
             </p>
           )}
           {!result ? (
@@ -205,8 +216,15 @@ export default function EnquiryReview({
               <strong>Enquiry {result.reference} saved for review.</strong>
               <p>
                 Current server-verified products subtotal:{" "}
-                {money(result.subtotal)}. Delivery and final payable amount
-                remain to be confirmed.
+                {money(result.subtotal)}. Delivery:{" "}
+                {result.delivery === null
+                  ? "To be confirmed"
+                  : money(result.delivery)}
+                . Estimated total:{" "}
+                {result.total === null
+                  ? "To be confirmed"
+                  : money(result.total)}
+                . The seller must confirm availability and coverage.
               </p>
               <details>
                 <summary>Review the exact message</summary>
@@ -233,6 +251,24 @@ export default function EnquiryReview({
               ) : (
                 <p>WhatsApp ordering is temporarily unavailable.</p>
               )}
+              <button
+                className="text-link"
+                onClick={async () => {
+                  try {
+                    await navigator.clipboard.writeText(result.message);
+                    setCopyStatus(
+                      "Enquiry copied. Review and send it yourself.",
+                    );
+                  } catch {
+                    setCopyStatus(
+                      "Copy unavailable. Select the exact message above and copy it manually.",
+                    );
+                  }
+                }}
+              >
+                Copy order request
+              </button>
+              <p role="status">{copyStatus}</p>
               <EmailEnquiry
                 message={result.message}
                 label="Email enquiry instead"

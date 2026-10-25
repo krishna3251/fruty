@@ -98,7 +98,7 @@
       "dest": "/products/$1/index.html"
     },
     {
-      "src": "/(privacy|terms|contact|thank-you)/?",
+      "src": "/(privacy|terms|contact|thank-you|shipping|returns)/?",
       "dest": "/$1/index.html"
     },
     {

@@ -99,7 +99,7 @@ test.after(async () => {
   else process.env.DATABASE_URL = previousUrl;
   await engine.close();
 });
-test("new confirmed catalogue and business configuration exclude invented stock or universal delivery", () => {
+test("new confirmed catalogue and business configuration keep unknown stock and use owner-confirmed standard delivery", () => {
   for (const p of pickleProducts) {
     assert.equal(p.price, 149);
     assert.equal(p.jarSize, "200 g");
@@ -108,8 +108,8 @@ test("new confirmed catalogue and business configuration exclude invented stock 
   }
   assert.equal(businessDefaults.email, "tropicalfeast7@gmail.com");
   assert.deepEqual(deliveryQuote(businessDefaults, "500001", 298), {
-    delivery: null,
-    total: null,
+    delivery: 150,
+    total: 448,
     coverage: "unconfirmed",
   });
   const s = validateSettings({
@@ -119,7 +119,7 @@ test("new confirmed catalogue and business configuration exclude invented stock 
   });
   assert.equal(deliveryQuote(s, "500001", 298).total, 348);
   assert.equal(deliveryQuote(s, "500001", 500).delivery, 0);
-  assert.equal(deliveryQuote(s, "500002", 1000).delivery, null);
+  assert.equal(deliveryQuote(s, "500002", 1000).delivery, 150);
   assert.throws(() => validateSettings({ ...s, whatsapp: "javascript:bad" }));
   assert.throws(() =>
     validateSettings({
@@ -242,7 +242,7 @@ test("saved addresses are scoped by customer, default changes are atomic, and de
   await deleteAddress(a.id, first.id);
   assert.equal((await accountData(a.id)).addresses.length, 1);
 });
-test("enquiries snapshot authoritative prices, never confirm WhatsApp delivery or a payable total, and deduplicate retries", async () => {
+test("enquiries snapshot authoritative prices, calculate delivery estimates without confirming an order, and deduplicate retries", async () => {
   const a = await customerRecord({ userId: "order-a", name: "A", email: null });
   const b = await customerRecord({ userId: "order-b", name: "B", email: null });
   const request = {
@@ -258,12 +258,12 @@ test("enquiries snapshot authoritative prices, never confirm WhatsApp delivery o
   const second = await createEnquiry(request, a.id, pickleProducts);
   assert.equal(first.reference, second.reference);
   assert.equal(first.subtotal, 298);
-  assert.equal(first.delivery, null);
-  assert.equal(first.total, null);
+  assert.equal(first.delivery, 150);
+  assert.equal(first.total, 448);
   assert.equal(first.status, "enquiry_initiated");
   assert.equal(first.items[0].price, 149);
   assert.match(first.message, /200 g/);
-  assert.match(first.message, /Final payable amount: To be confirmed/);
+  assert.match(first.message, /Estimated total: ₹448/);
   assert.equal(new URL(first.url!).searchParams.get("text"), first.message);
   assert.equal((await accountData(a.id)).orders.length, 1);
   assert.equal((await accountData(b.id)).orders.length, 0);
@@ -449,4 +449,37 @@ test("only the protected business workflow can set a confirmed amount; updates k
   );
   assert.equal(delivered.history.length, 3);
   assert.equal(delivered.status, "delivered");
+});
+
+test("delivery instructions are bounded and server snapshots retain estimated delivery without confirming purchase", async () => {
+  assert.throws(
+    () => validateAddress({ ...address, instructions: "<script>" }),
+    /instructions/,
+  );
+  assert.throws(
+    () => validateAddress({ ...address, instructions: "x".repeat(301) }),
+    /instructions/,
+  );
+  const request = {
+    requestId: randomUUID(),
+    customer: { ...address, instructions: "Call at the gate" },
+    items: { [pickleProducts[0].id]: 1 },
+    delivery: 0,
+    total: 1,
+  };
+  const created = await createEnquiry(request, null, pickleProducts);
+  assert.equal(created.delivery, 150);
+  assert.equal(created.total, 299);
+  assert.match(created.message, /Line total ₹149/);
+  assert.match(created.message, /Delivery instructions: Call at the gate/);
+  assert.equal(created.status, "enquiry_initiated");
+  const row = (
+    await engine.query<any>(
+      "SELECT delivery,total,status,payment_status FROM tf_orders WHERE reference=$1",
+      [created.reference],
+    )
+  ).rows[0];
+  assert.equal(Number(row.delivery), 150);
+  assert.equal(Number(row.total), 299);
+  assert.equal(row.payment_status, "unpaid");
 });

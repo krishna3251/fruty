@@ -1,5 +1,6 @@
 import { pickleProducts, type PickleProduct } from "../data/pickles.js";
-export const DELIVERY_CHARGE: number | null = null; // Confirmed by location, never a universal fee.
+import { STANDARD_DELIVERY_CHARGE } from "./business.js";
+export const DELIVERY_CHARGE = STANDARD_DELIVERY_CHARGE;
 export function cartTotals(
   products: PickleProduct[],
   quantities: Record<string, number>,

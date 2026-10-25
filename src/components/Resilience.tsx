@@ -24,7 +24,7 @@ export class ErrorBoundary extends Component<
     return this.state.failed ? (
       <div className="recovery-page">
         <a href="/" className="logo">
-          furity<span>✳</span>
+          Tropical Feast
         </a>
         <div className="recovery-symbol">
           <Leaf size={70} />
@@ -35,8 +35,9 @@ export class ErrorBoundary extends Component<
           <em>fresh start.</em>
         </h1>
         <p>
-          Something didn’t load correctly. Your saved lists are still on this
-          device.
+          Something didn’t load correctly. Your guest cart stays on this device
+          where storage is available. Sign in again to restore your saved
+          account cart.
         </p>
         <button
           className="button primary"
@@ -105,7 +106,7 @@ export function NotFound() {
   return (
     <div className="recovery-page not-found">
       <a href="/" className="logo">
-        furity<span>✳</span>
+        Tropical Feast
       </a>
       <div className="lost-fruit">
         <span>4</span>

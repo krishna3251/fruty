@@ -15,6 +15,8 @@ export const publicPaths = [
   "/privacy",
   "/terms",
   "/contact",
+  "/shipping",
+  "/returns",
 ];
 export const accountPaths = ["/account", "/sign-in", "/sign-up"];
 export const archivePaths = [
@@ -104,6 +106,16 @@ export function pageMeta(
       title: "How to Order & Enquire | Tropical Feast",
       description:
         "Learn how to save a pickle enquiry list, check supplier channel availability and confirm prices, ingredients and delivery. Hyderabad-only applies to Tropical Feast.",
+    },
+    "/shipping": {
+      title: "Shipping & Delivery | Tropical Feast",
+      description:
+        "₹150 standard delivery per order. Check Hyderabad coverage, address-based estimates and how to confirm timing before ordering.",
+    },
+    "/returns": {
+      title: "Cancellations & Order Support | Tropical Feast",
+      description:
+        "Contact Tropical Feast about cancellations, damaged jars and order enquiries. Confirm return and refund terms with the seller before ordering.",
     },
     "/privacy": {
       title: "Privacy & Browser Storage | Tropical Feast",

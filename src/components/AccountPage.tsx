@@ -7,7 +7,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { useSession } from "../context/Session";
+import { useSession, rememberGuest } from "../context/Session";
 import { ArrowUpRight, ShieldCheck } from "lucide-react";
 import {
   clerkPublishableKey,
@@ -88,8 +88,17 @@ export default function AccountPage({ mode }: { mode: AccountMode }) {
         <span className="account-trust">
           <ShieldCheck size={17} /> Authentication powered by Clerk
         </span>
-        <a className="text-link" href="/shop">
-          Back to the pantry <ArrowUpRight size={16} />
+        <a
+          className="text-link"
+          href="/shop"
+          onClick={() => {
+            if (session.status !== "signed-in") rememberGuest();
+          }}
+        >
+          {session.status === "signed-in"
+            ? "Back to the pantry"
+            : "Continue as a guest"}{" "}
+          <ArrowUpRight size={16} />
         </a>
       </div>
       <div className="account-surface">

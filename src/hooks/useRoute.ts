@@ -25,6 +25,13 @@ export function useRoute() {
       if (!anchor || anchor.target || anchor.hasAttribute("download")) return;
       const url = new URL(anchor.href, window.location.href);
       if (url.origin !== window.location.origin) return;
+      // Clerk owns its hash-based verification and recovery routes.
+      if (
+        url.pathname === window.location.pathname &&
+        url.hash &&
+        anchor.closest(".cl-rootBox,.cl-cardBox")
+      )
+        return;
       if (url.pathname === window.location.pathname) {
         if (
           url.hash &&

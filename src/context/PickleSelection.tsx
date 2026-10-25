@@ -7,6 +7,7 @@ import {
   useCallback,
   type ReactNode,
 } from "react";
+import { useNotify } from "./Notifications";
 import { useCatalogue } from "./Catalogue";
 import { useSession } from "./Session";
 import { customerApi, CustomerApiError } from "../lib/customerApi";
@@ -109,6 +110,7 @@ export function PickleSelectionProvider({ children }: { children: ReactNode }) {
     error: catalogueError,
   } = useCatalogue();
   const session = useSession();
+  const notify = useNotify();
   const [syncStatus, setSyncStatus] = useState("");
   const [reload, setReload] = useState(0);
   const reloadSaved = useCallback(() => setReload((v) => v + 1), []);
@@ -340,8 +342,19 @@ export function PickleSelectionProvider({ children }: { children: ReactNode }) {
           p.availability !== "unavailable" &&
           p.stockQuantity !== 0,
       )
-    )
+    ) {
+      notify(
+        "This jar is unavailable. Choose another flavour or ask us for help.",
+        "warning",
+      );
       return;
+    }
+    if (!basket.ids.includes(id))
+      notify(
+        `${products.find((p) => p.id === id)?.name} added to your cart.`,
+        "success",
+        true,
+      );
     setBasket((current) =>
       current.ids.includes(id)
         ? current
@@ -358,8 +371,13 @@ export function PickleSelectionProvider({ children }: { children: ReactNode }) {
       quantity < 1 ||
       quantity > MAX_ENQUIRY_QUANTITY ||
       quantity > (products.find((p) => p.id === id)?.stockQuantity ?? 99)
-    )
+    ) {
+      notify(
+        "Check the quantity against current availability (maximum 99 jars).",
+        "warning",
+      );
       return;
+    }
     setBasket((current) =>
       current.ids.includes(id)
         ? { ...current, quantities: { ...current.quantities, [id]: quantity } }

@@ -11,5 +11,6 @@ export const businessDefaults = {
   deliveryEstimate: "", // No unverified delivery promise.
 };
 export type BusinessSettings = typeof businessDefaults;
+export const STANDARD_DELIVERY_CHARGE = 150;
 export const DELIVERY_NOTICE =
-  "Delivery charges will be confirmed on WhatsApp.";
+  "₹150 standard delivery per order. Hyderabad coverage and timing confirmed in chat.";

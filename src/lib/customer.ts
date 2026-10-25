@@ -1,5 +1,9 @@
 import type { PickleProduct } from "../data/pickles.js";
-import { businessDefaults, type BusinessSettings } from "./business.js";
+import {
+  businessDefaults,
+  STANDARD_DELIVERY_CHARGE,
+  type BusinessSettings,
+} from "./business.js";
 export const orderStatuses = [
   "enquiry_initiated",
   "awaiting_confirmation",
@@ -22,6 +26,7 @@ export type Address = {
   state: string;
   pin: string;
   isDefault: boolean;
+  instructions?: string;
 };
 export const emptyAddress: Address = {
   label: "Home",
@@ -83,6 +88,9 @@ export function validateAddress(value: unknown): Address {
     state: "Telangana",
     pin,
     isDefault: a.isDefault === true,
+    ...(a.instructions
+      ? { instructions: plain(a.instructions, "delivery instructions", 1, 300) }
+      : {}),
   };
 }
 export function validateCart(
@@ -181,12 +189,16 @@ export function deliveryQuote(
 ) {
   const area = settings.areas.find((a) => a.pins.includes(pin));
   if (!area)
-    return { delivery: null, total: null, coverage: "unconfirmed" as const };
+    return {
+      delivery: STANDARD_DELIVERY_CHARGE,
+      total: Math.round((subtotal + STANDARD_DELIVERY_CHARGE) * 100) / 100,
+      coverage: "unconfirmed" as const,
+    };
   const delivery =
     settings.freeDeliveryThreshold !== null &&
     subtotal >= settings.freeDeliveryThreshold
       ? 0
-      : area.rate;
+      : (area.rate ?? STANDARD_DELIVERY_CHARGE);
   return {
     delivery,
     total:
@@ -208,22 +220,24 @@ export function orderMessage(order: {
   customer: Address;
   items: ReturnType<typeof snapshotItems>;
   subtotal: number;
+  delivery?: number | null;
 }) {
   const a = order.customer;
   return [
-    `Hello Tropical Feast! I’d like to enquire about:`,
+    "TROPICAL FEAST — NEW ORDER REQUEST",
     ...order.items.map(
       (i) =>
-        `• ${i.quantity} × ${i.name} (${i.jarSize || "size to confirm"}) — ₹${i.price} each`,
+        `• ${i.quantity} × ${i.name} (${i.jarSize || "size to confirm"}) — ₹${i.price} each · Line total ₹${Math.round(i.price * i.quantity * 100) / 100}`,
     ),
     `Products subtotal: ₹${order.subtotal}`,
     `Name: ${a.recipient}`,
     `Phone: ${a.phone}`,
     `Delivery location: ${a.street}, ${a.locality}, ${a.city}, ${a.state} ${a.pin}`,
-    "Delivery charge: To be confirmed",
-    "Final payable amount: To be confirmed",
+    `Delivery: ₹${order.delivery ?? STANDARD_DELIVERY_CHARGE}`,
+    `Estimated total: ₹${Math.round((order.subtotal + (order.delivery ?? STANDARD_DELIVERY_CHARGE)) * 100) / 100}`,
+    ...(a.instructions ? [`Delivery instructions: ${a.instructions}`] : []),
     `Enquiry reference: ${order.reference}`,
-    "Please confirm availability, ingredients/allergens, delivery coverage and the final amount. This enquiry is not a confirmed order.",
+    "Please confirm availability, ingredients/allergens, delivery coverage, the final amount and how payment should be completed. This enquiry is not a confirmed order.",
   ].join("\n");
 }
 export type OrderItem = ReturnType<typeof snapshotItems>[number];

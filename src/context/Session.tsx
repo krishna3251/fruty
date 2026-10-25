@@ -7,6 +7,7 @@ import {
   Component,
   type ReactNode,
 } from "react";
+import { useNotify } from "./Notifications";
 import { ClerkProvider, useAuth } from "@clerk/react";
 import {
   clerkPublishableKey,
@@ -26,6 +27,19 @@ export const SessionContext = createContext<Session>(guest);
 function Bridge({ children }: { children: ReactNode }) {
   const { isLoaded, isSignedIn, userId, getToken } = useAuth();
   const [slow, setSlow] = useState(false);
+  const notify = useNotify();
+  const previous = useRef<boolean | undefined>(undefined);
+  useEffect(() => {
+    if (!isLoaded) return;
+    if (previous.current === false && isSignedIn)
+      notify("Signed in securely. Welcome to your pantry.", "success");
+    if (previous.current === true && !isSignedIn)
+      notify(
+        "You’re signed out. Continue as a guest or sign in again.",
+        "info",
+      );
+    previous.current = !!isSignedIn;
+  }, [isLoaded, isSignedIn, notify]);
   useEffect(() => {
     const id = window.setTimeout(() => setSlow(true), 15000);
     return () => clearTimeout(id);

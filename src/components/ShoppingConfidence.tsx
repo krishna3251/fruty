@@ -19,8 +19,11 @@ export default function ShoppingConfidence() {
       <div>
         <Truck size={21} />
         <span>
-          <strong>Delivery by location. Confirmed in chat.</strong>
-          <small>Delivery charges will be confirmed on WhatsApp.</small>
+          <strong>₹150 standard delivery. One order, one fee.</strong>
+          <small>
+            Standard delivery is ₹150 per order. Confirm coverage and timing on
+            WhatsApp.
+          </small>
         </span>
       </div>
       <div>

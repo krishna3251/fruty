@@ -1,3 +1,5 @@
+> **Latest V4 update (25 October 2026):** See [V4_IMPLEMENTATION.md](V4_IMPLEMENTATION.md) for the current audit, recovery/cart/mobile improvements and owner-confirmed ₹150 standard delivery. Historical release notes below describe earlier versions.
+
 > **25 October update:** See [UPGRADE_REPORT.md](UPGRADE_REPORT.md) for the prepared Tropical Feast account/Neon/WhatsApp upgrade, verified ₹149 / 200 g defaults, location-based delivery, migration instructions and actual test limits. Older entries below describe earlier deployments. The upgrade and login recovery fix are published; see [LIVE_RELEASE.md](LIVE_RELEASE.md) for deployment checks and remaining limits.
 
 # Customer accounts — Clerk / React + Vite

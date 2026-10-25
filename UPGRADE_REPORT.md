@@ -1,3 +1,5 @@
+> **Latest V4 update (25 October 2026):** See [V4_IMPLEMENTATION.md](V4_IMPLEMENTATION.md) for the current audit, recovery/cart/mobile improvements and owner-confirmed ₹150 standard delivery. Historical release notes below describe earlier versions.
+
 # Tropical Feast customer accounts and WhatsApp commerce
 
 Local implementation prepared 25 October 2026 in the existing `krishna3251/fruty` project. Review branch: `feature/tropical-feast-neon-commerce`. **Published to GitHub main and Vercel after explicit user approval.** See [LIVE_RELEASE.md](LIVE_RELEASE.md) for the live verification and migration execution record. This report supersedes older price, delivery and account-scope statements in historical project notes.

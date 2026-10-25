@@ -44,7 +44,7 @@ export function productHtml(
       : {}),
   };
   const schema = `<script id="page-structured-data" type="application/ld+json">${JSON.stringify(graph).replace(/</g, "\\u003c")}</script>`;
-  const fallback = `<noscript><main class="pantry-store information-page section-pad"><a href="/shop">Back to the pantry</a><h1>${safe(product.name)}</h1><img src="${safe(product.image)}" alt="${safe(product.imageAlt)}" width="300" height="200"><p>${safe(product.description)}</p><p>${product.price === null ? "Price on enquiry" : `₹${product.price}`} · Delivery charges confirmed on WhatsApp · Hyderabad only.</p><p>${product.availability === "unavailable" ? "Currently unavailable." : "Confirm stock, jar size, ingredients and allergens before ordering."}</p><a href="/ordering">Ordering information</a></main></noscript>`;
+  const fallback = `<noscript><main class="pantry-store information-page section-pad"><a href="/shop">Back to the pantry</a><h1>${safe(product.name)}</h1><img src="${safe(product.image)}" alt="${safe(product.imageAlt)}" width="300" height="200"><p>${safe(product.description)}</p><p>${product.price === null ? "Price on enquiry" : `₹${product.price}`} · ₹150 standard delivery · coverage confirmed on WhatsApp · Hyderabad only.</p><p>${product.availability === "unavailable" ? "Currently unavailable." : "Confirm stock, jar size, ingredients and allergens before ordering."}</p><a href="/ordering">Ordering information</a></main></noscript>`;
   return cleaned
     .replace("</head>", tags + schema + "</head>")
     .replace("</body>", fallback + "</body>");

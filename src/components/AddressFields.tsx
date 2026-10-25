@@ -50,6 +50,16 @@ export default function AddressFields({
           </label>
         );
       })}
+      <label>
+        Delivery instructions (optional)
+        <textarea
+          value={value.instructions || ""}
+          maxLength={300}
+          rows={2}
+          onChange={(e) => onChange({ ...value, instructions: e.target.value })}
+          autoComplete="off"
+        />
+      </label>
       <p>
         Hyderabad, Telangana only. A valid PIN format does not confirm delivery
         coverage.

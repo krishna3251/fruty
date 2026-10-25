@@ -53,6 +53,7 @@ import { siteConfig } from "./lib/config";
 import Newsletter from "./components/Newsletter";
 import PageMetadata from "./components/PageMetadata";
 import PrivacyControls from "./components/PrivacyControls";
+import ServicePolicy from "./components/ServicePolicy";
 import InformationPage from "./components/InformationPage";
 import MobileShopCTA from "./components/MobileShopCTA";
 import { OfflineNotice } from "./components/Resilience";
@@ -82,7 +83,7 @@ function PantryQuestions() {
           ],
           [
             "What are the prices and jar sizes?",
-            `Current prices: ${products.map((p) => `${p.name}: ₹${p.price ?? "on enquiry"}`).join("; ")}. Each initial flavour is a 200 g jar. Delivery charges depend on your location and are confirmed on WhatsApp. Confirm availability, ingredients/allergens and final amount before ordering.`,
+            `Current prices: ${products.map((p) => `${p.name}: ₹${p.price ?? "on enquiry"}`).join("; ")}. Each initial flavour is a 200 g jar. Standard delivery is ₹150 per order. Coverage and timing are confirmed on WhatsApp. Confirm availability, ingredients/allergens and final amount before ordering.`,
           ],
           [
             "Which flavours do you offer?",
@@ -381,11 +382,13 @@ function PantryShell({ path }: { path: string }) {
                   details.
                 </li>
                 <li>
-                  <strong>Save.</strong> Build a device-local enquiry list.
+                  <strong>Add to cart.</strong> Review products, jar sizes and
+                  the ₹150 standard delivery charge.
                 </li>
                 <li>
-                  <strong>Confirm.</strong> Ask about price, size, ingredients,
-                  stock and delivery.
+                  <strong>Enquire.</strong> Enter your delivery details, review
+                  the draft and send it on WhatsApp. The seller confirms stock,
+                  coverage and payment arrangements.
                 </li>
               </ol>
               <div
@@ -421,6 +424,8 @@ function PantryShell({ path }: { path: string }) {
             <TropicalOrdering />
             <PantryQuestions />
           </>
+        ) : ["/shipping", "/returns"].includes(path) ? (
+          <ServicePolicy returns={path === "/returns"} />
         ) : info ? (
           <InformationPage path={path} />
         ) : (
@@ -468,7 +473,10 @@ function PantryShell({ path }: { path: string }) {
           </div>
           <div>
             <span className="eyebrow">EXPLORE</span>
+            <a href="/">Home</a>
             <a href="/shop">All pickles</a>
+            <a href="/#pantry-story">Our story</a>
+            <a href="/#questions">FAQs</a>
             <a href="/#jar-lab">Play in the Jar Lab</a>
             <a href="/products/tropical-pineapple-pickle">Pineapple Pickle</a>
             <a href="/products/tropical-cucumber-pickle">Cucumber Pickle</a>
@@ -510,6 +518,8 @@ function PantryShell({ path }: { path: string }) {
             </a>
             <a href="/privacy">Privacy & storage</a>
             <a href="/terms">Website terms</a>
+            <a href="/shipping">Shipping & delivery</a>
+            <a href="/returns">Cancellations & order support</a>
           </div>
           <div>
             <span className="eyebrow">YOUR NEXT JAR</span>
@@ -522,6 +532,8 @@ function PantryShell({ path }: { path: string }) {
               Confirm commercial details
               <br />
               with Tropical Feast.
+              <br />
+              {business.hours}
             </p>
           </div>
         </div>

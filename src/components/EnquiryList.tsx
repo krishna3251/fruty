@@ -1,3 +1,4 @@
+import { deliveryQuote } from "../lib/customer";
 import { useBusiness } from "../context/Business";
 import { useCatalogue } from "../context/Catalogue";
 import EnquiryReview from "./EnquiryReview";
@@ -43,6 +44,7 @@ export default function EnquiryList({
       (p.stockQuantity != null &&
         (selection.quantities[p.id] || 1) > p.stockQuantity),
   );
+  const quote = deliveryQuote(business, "", subtotal);
   const message = [
     "Hello, I’d like to enquire about:",
     ...selected.map(
@@ -50,8 +52,8 @@ export default function EnquiryList({
         `• ${selection.quantities[p.id] || 1} × ${p.name} — ${collectionFor(p).name} — ${money(p.price!)} each`,
     ),
     `Products subtotal: ${money(subtotal)}`,
-    "Delivery charge: To be confirmed",
-    "Final payable amount: To be confirmed",
+    `Standard delivery: ${money(quote.delivery!)}`,
+    `Estimated total: ${money(quote.total!)}`,
     "Please confirm jar sizes, ingredients/allergens, stock, delivery details and the final total before I order.",
   ].join("\n");
   const dm = enquiryWhatsApp(message, `https://wa.me/${business.whatsapp}`);
@@ -61,7 +63,7 @@ export default function EnquiryList({
     >
       <p className="basket-intro">
         Pick your jars. We’ll help with the rest.{" "}
-        <span>Delivery confirmed by location · Hyderabad enquiries</span>
+        <span>₹150 standard delivery per order · Hyderabad enquiries</span>
       </p>
       {catalogueError && <p role="status">{catalogueError}</p>}
       {missing.length > 0 && (
@@ -166,9 +168,19 @@ export default function EnquiryList({
                             : ""}
                         </small>
                         <strong className="basket-unit-price">
-                          {money(p.price!)}{" "}
+                          {p.price === null
+                            ? "Price on enquiry"
+                            : money(p.price)}{" "}
                           <span>/ jar · {p.jarSize || "size to confirm"}</span>
                         </strong>
+                        <span className="basket-line-total">
+                          Line total{" "}
+                          {p.price === null
+                            ? "Unavailable"
+                            : money(
+                                p.price * (selection.quantities[p.id] || 1),
+                              )}
+                        </span>
                         <div
                           className="enquiry-quantity"
                           aria-label={`${p.name} quantity controls`}
@@ -240,11 +252,11 @@ export default function EnquiryList({
             </div>
             <div className="cart-total-row">
               <span>Delivery</span>
-              <strong>To be confirmed</strong>
+              <strong>{money(quote.delivery!)}</strong>
             </div>
             <div className="cart-total-row cart-grand-total">
-              <span>Final payable amount</span>
-              <strong>To be confirmed</strong>
+              <span>Estimated total</span>
+              <strong>{money(quote.total!)}</strong>
             </div>
             <a
               className="cart-account-link"

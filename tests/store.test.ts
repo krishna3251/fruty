@@ -946,15 +946,10 @@ test("enquiry basket quantities, subtotal and both email routes persist and stay
   assert.equal(web.origin, "https://mail.google.com");
   assert.match(web.searchParams.get("body")!, /2 × Pineapple Pickle/);
   assert.match(web.searchParams.get("body")!, /Products subtotal: ₹298/);
-  assert.match(
-    web.searchParams.get("body")!,
-    /Delivery charge: To be confirmed/,
-  );
-  assert.match(
-    web.searchParams.get("body")!,
-    /Final payable amount: To be confirmed/,
-  );
-  assert.equal(dialog.getAllByText("To be confirmed").length, 2);
+  assert.match(web.searchParams.get("body")!, /Standard delivery: ₹150/);
+  assert.match(web.searchParams.get("body")!, /Estimated total: ₹[0-9]+/);
+  assert.ok(dialog.getByText("₹150"));
+  assert.ok(dialog.getByText("₹448"));
   assert.equal(gmail.getAttribute("target"), "_blank");
   fireEvent.click(dialog.getByText("Preview or copy your enquiry"));
   assert.match(
@@ -1231,7 +1226,7 @@ test("live products, edited prices and saved dynamic carts are shared across cat
           .getByRole("link", { name: "Email", exact: true })
           .getAttribute("href")!,
       ).searchParams.get("body")!,
-      /Final payable amount: To be confirmed/,
+      /Estimated total: ₹[0-9]+/,
     );
     cleanup();
   } finally {
@@ -1451,7 +1446,7 @@ test("Jar Lab supports reversible pointer and slider controls without loading vi
   assert.equal(slider.value, "0");
   cleanup();
 });
-test("product quick look zooms and restores focus; the pair action opens an accurate guest cart with delivery unconfirmed", async () => {
+test("product quick look zooms and restores focus; the pair action opens an accurate guest cart with standard delivery and seller confirmation required", async () => {
   const { pickleProducts } = await import("../src/data/pickles.ts");
   const { default: ProductGallery } =
     await import("../src/components/ProductGallery.tsx");
@@ -1485,7 +1480,7 @@ test("product quick look zooms and restores focus; the pair action opens an accu
         .getByRole("link", { name: "WhatsApp", exact: true })
         .getAttribute("href")!,
     ).searchParams.get("text")!,
-    /Delivery charge: To be confirmed/,
+    /Standard delivery: ₹150/,
   );
   cleanup();
   window.history.replaceState({}, "", "/");
@@ -1703,6 +1698,8 @@ test("enquiry review validates delivery details, preserves failure, and shows on
     return Response.json({
       reference: "TF-UNIT",
       subtotal: 149,
+      delivery: 150,
+      total: 299,
       message: "Verified draft",
       url: "https://wa.me/919398152226?text=Verified%20draft",
     });
@@ -1943,4 +1940,155 @@ test("real sign-out overrides stale guest dismissal after Clerk's intermediate l
   );
   cleanup();
   sessionStorage.clear();
+});
+
+test("password recovery validates, prevents duplicates, verifies codes and only confirms provider success", async () => {
+  const { RecoveryForm } =
+    await import("../src/components/PasswordRecovery.tsx");
+  let calls = 0;
+  let verified = false;
+  let accept = false;
+  let submitted = "";
+  const client: any = {
+    status: "needs_identifier",
+    create: async ({ identifier }: any) => {
+      calls++;
+      assert.equal(identifier, "buyer@example.test");
+      return { error: null };
+    },
+    reset: async () => {
+      client.status = "needs_identifier";
+      return { error: null };
+    },
+    resetPasswordEmailCode: {
+      sendCode: async () => ({ error: null }),
+      verifyCode: async ({ code }: any) => {
+        assert.equal(code, "123456");
+        if (verified) client.status = "needs_new_password";
+        return { error: verified ? null : { message: "expired" } };
+      },
+      submitPassword: async (params: any) => {
+        submitted = params.password;
+        assert.equal(params.signOutOfOtherSessions, true);
+        if (accept) client.status = "complete";
+        return { error: accept ? null : { message: "weak" } };
+      },
+    },
+  };
+  let returned = false;
+  render(
+    React.createElement(RecoveryForm, {
+      client,
+      initialEmail: "buyer@example.test",
+      onBack: () => {
+        returned = true;
+      },
+    }),
+  );
+  assert.equal(
+    (screen.getByLabelText("Account email") as HTMLInputElement).value,
+    "buyer@example.test",
+  );
+  const request = screen.getByRole("button", { name: "Request recovery code" });
+  fireEvent.click(request);
+  fireEvent.click(request);
+  await screen.findByLabelText("Email recovery code");
+  assert.equal(calls, 1);
+  fireEvent.change(screen.getByLabelText("Email recovery code"), {
+    target: { value: "123456" },
+  });
+  fireEvent.click(screen.getByRole("button", { name: "Verify recovery code" }));
+  await screen.findByText(/code is invalid or expired/);
+  assert.equal(screen.queryByLabelText("New password"), null);
+  verified = true;
+  fireEvent.click(screen.getByRole("button", { name: "Verify recovery code" }));
+  const password = await screen.findByLabelText("New password");
+  assert.equal(password.getAttribute("autocomplete"), "new-password");
+  fireEvent.change(password, {
+    target: { value: "local-unit-passphrase-only" },
+  });
+  fireEvent.click(screen.getByRole("button", { name: "Show new password" }));
+  assert.equal(password.getAttribute("type"), "text");
+  fireEvent.click(screen.getByRole("button", { name: "Update password" }));
+  await screen.findByText(/password could not be accepted/);
+  assert.equal(screen.queryByText("Password updated."), null);
+  accept = true;
+  fireEvent.click(screen.getByRole("button", { name: "Update password" }));
+  await screen.findByText("Password updated.");
+  assert.equal(submitted, "local-unit-passphrase-only");
+  fireEvent.click(screen.getByRole("button", { name: "Return to sign in" }));
+  assert.equal(returned, true);
+});
+
+test("password recovery does not pretend a network failure sent an email and keeps input", async () => {
+  const { RecoveryForm } =
+    await import("../src/components/PasswordRecovery.tsx");
+  const client: any = {
+    create: async () => {
+      throw Error("Connection failed. Retry later.");
+    },
+  };
+  render(
+    React.createElement(RecoveryForm, {
+      client,
+      initialEmail: "buyer@example.test",
+      onBack() {},
+    }),
+  );
+  fireEvent.click(
+    screen.getByRole("button", { name: "Request recovery code" }),
+  );
+  await screen.findByText("Connection failed. Retry later.");
+  assert.equal(
+    (screen.getByLabelText("Account email") as HTMLInputElement).value,
+    "buyer@example.test",
+  );
+  assert.equal(screen.queryByLabelText("Email recovery code"), null);
+});
+
+test("notifications deduplicate, cap the stack, expose severity and provide a working cart action", async () => {
+  const { NotificationProvider, useNotify } =
+    await import("../src/context/Notifications.tsx");
+  function Controls() {
+    const notify = useNotify();
+    return React.createElement(
+      "button",
+      {
+        onClick: () => {
+          notify("Added jar", "success", true);
+          notify("Added jar", "success", true);
+          notify("Connection failed", "error");
+        },
+      },
+      "Notify",
+    );
+  }
+  let opened = 0;
+  const open = () => opened++;
+  window.addEventListener("pantry:open-cart", open);
+  try {
+    render(
+      React.createElement(
+        NotificationProvider,
+        null,
+        React.createElement(Controls),
+      ),
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Notify" }));
+    assert.equal(screen.getAllByText("Added jar").length, 1);
+    assert.equal(
+      screen.getAllByRole("button", { name: "Dismiss notification" }).length,
+      2,
+    );
+    assert.equal(screen.getByRole("alert").textContent, "Connection failed");
+    fireEvent.click(screen.getByRole("button", { name: "View cart ↗" }));
+    assert.equal(opened, 1);
+    assert.equal(screen.queryByText("Added jar"), null);
+    fireEvent.click(
+      screen.getByRole("button", { name: "Dismiss notification" }),
+    );
+    assert.equal(screen.queryByText("Connection failed"), null);
+  } finally {
+    window.removeEventListener("pantry:open-cart", open);
+  }
 });

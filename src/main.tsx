@@ -1,6 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
+import { NotificationProvider } from "./context/Notifications";
 import { ErrorBoundary } from "./components/Resilience";
 import { CartProvider } from "./context/CartContext";
 import "lenis/dist/lenis.css";
@@ -15,7 +16,9 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <ErrorBoundary>
       <CartProvider>
-        <App />
+        <NotificationProvider>
+          <App />
+        </NotificationProvider>
       </CartProvider>
     </ErrorBoundary>
   </React.StrictMode>,

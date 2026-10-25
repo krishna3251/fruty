@@ -166,7 +166,8 @@ export function ProductManager({
           <strong>{catalogue.products.length}</strong> Products
         </span>
         <span>
-          <strong>By location</strong> Delivery confirmed in chat
+          <strong>₹150 standard</strong> Delivery per order; area rules may
+          override
         </span>
         <span>
           <ShoppingBag size={20} /> Enquiry-based store

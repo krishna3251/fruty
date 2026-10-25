@@ -196,7 +196,7 @@ export default function InformationPage({ path }: { path: string }) {
           </p>
           <h2>Delivery</h2>
           <p>
-            Delivery charges depend on location and will be confirmed on
+            Standard delivery is ₹150 per order. Confirm coverage and timing on
             WhatsApp. Configured area rates, any eligible free-delivery
             threshold and delivery timing are estimates until the business
             confirms them. A valid PIN format alone does not establish service
@@ -263,8 +263,9 @@ export default function InformationPage({ path }: { path: string }) {
             </dd>
           </dl>
           <p>
-            Delivery charges will be confirmed on WhatsApp. Enquiries need
-            direct business confirmation before an order is accepted.
+            Standard delivery is ₹150 per order. Confirm coverage and timing on
+            WhatsApp. Enquiries need direct business confirmation before an
+            order is accepted.
           </p>
           <h2>Owner details to complete</h2>
           <p>

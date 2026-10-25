@@ -108,14 +108,14 @@ test("product validation rejects script content, external photos, invalid prices
     "INR",
   );
 });
-test("delivery remains unconfirmed for nonempty carts and empty carts have zero total", () => {
+test("standard delivery is included for nonempty carts and empty carts have zero total", () => {
   assert.deepEqual(cartTotals([], {}), { subtotal: 0, delivery: 0, total: 0 });
   assert.deepEqual(
     cartTotals(pickleProducts, {
       [pickleProducts[0].id]: 2,
       [pickleProducts[1].id]: 1,
     }),
-    { subtotal: 447, delivery: null, total: null },
+    { subtotal: 447, delivery: 150, total: 597 },
   );
 });
 test("image validation excludes SVG and executable uploads", () => {
@@ -142,5 +142,5 @@ test("live product HTML replaces stale metadata and escapes owner content withou
   assert.match(html, /"price":250/);
   assert.ok(!html.includes("aggregateRating"));
   assert.ok(!html.includes('"availability"'));
-  assert.match(html, /Delivery charges confirmed on WhatsApp/);
+  assert.match(html, /₹150 standard delivery/);
 });
