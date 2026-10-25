@@ -41,6 +41,8 @@ import { enquiryGmail, enquiryWhatsApp } from "./lib/contact";
 import CinematicHero from "./components/CinematicHero";
 import EnquiryList from "./components/EnquiryList";
 import Modal from "./components/Modal";
+import ShoppingConfidence from "./components/ShoppingConfidence";
+import { siteConfig } from "./lib/config";
 import Newsletter from "./components/Newsletter";
 import PageMetadata from "./components/PageMetadata";
 import PrivacyControls from "./components/PrivacyControls";
@@ -183,6 +185,9 @@ function PantryShell({ path }: { path: string }) {
           <a href="/#collections" onClick={() => setMenu(false)}>
             Our flavours
           </a>
+          <a href="/#jar-lab" onClick={() => setMenu(false)}>
+            Jar Lab
+          </a>
           <a href="/#pantry-story" onClick={() => setMenu(false)}>
             Our story
           </a>
@@ -258,7 +263,8 @@ function PantryShell({ path }: { path: string }) {
               <i aria-hidden="true">✳</i>
               <span>Cucumber Pickle</span>
             </div>
-            <PickleHome />
+            <ShoppingConfidence />
+            <PickleHome paused={paused} />
             <section className="pantry-story section-pad" id="pantry-story">
               <span className="eyebrow">THE TROPICAL FEAST STORY</span>
               <h2>
@@ -280,21 +286,23 @@ function PantryShell({ path }: { path: string }) {
               </a>
             </section>
             <PantryQuestions />
-            <section className="newsletter section-pad pantry-newsletter">
-              <div>
-                <span className="eyebrow">NOTES FROM THE PANTRY</span>
-                <h2>
-                  A little tang
-                  <br />
-                  <em>in your inbox.</em>
-                </h2>
-                <p>
-                  Flavour notes and updates, when newsletter signup is
-                  connected.
-                </p>
-              </div>
-              <Newsletter />
-            </section>
+            {siteConfig.newsletterEndpoint && (
+              <section className="newsletter section-pad pantry-newsletter">
+                <div>
+                  <span className="eyebrow">NOTES FROM THE PANTRY</span>
+                  <h2>
+                    A little tang
+                    <br />
+                    <em>in your inbox.</em>
+                  </h2>
+                  <p>
+                    Flavour notes and updates, when newsletter signup is
+                    connected.
+                  </p>
+                </div>
+                <Newsletter />
+              </section>
+            )}
           </>
         ) : ["/account", "/sign-in", "/sign-up", "/admin"].includes(path) ? (
           <Suspense
@@ -440,6 +448,7 @@ function PantryShell({ path }: { path: string }) {
           <div>
             <span className="eyebrow">EXPLORE</span>
             <a href="/shop">All pickles</a>
+            <a href="/#jar-lab">Play in the Jar Lab</a>
             <a href="/products/tropical-pineapple-pickle">Pineapple Pickle</a>
             <a href="/products/tropical-cucumber-pickle">Cucumber Pickle</a>
           </div>

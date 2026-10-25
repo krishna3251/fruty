@@ -467,7 +467,7 @@ test("pickle catalogue filters by collection, searches both flavours and recover
   fireEvent.click(main.getByRole("button", { name: "Reset search" }));
   assert.equal(main.getAllByRole("article").length, 2);
   fireEvent.click(
-    main.getByRole("link", { name: "View Pineapple Pickle — Tropical Feast" }),
+    main.getByRole("link", { name: "Pineapple Pickle", exact: true }),
   );
   await waitFor(() =>
     assert.ok(
@@ -475,7 +475,7 @@ test("pickle catalogue filters by collection, searches both flavours and recover
     ),
   );
   assert.equal(window.location.pathname, "/products/tropical-pineapple-pickle");
-  assert.ok(main.getByText("Hyderabad only"));
+  assert.ok(main.getAllByText("Hyderabad only").length > 0);
   assert.equal(main.queryByRole("button", { name: /add.*bag/i }), null);
   assert.ok(main.getByRole("link", { name: "WhatsApp enquiry" }));
   assert.ok(main.getByRole("link", { name: "Email enquiry" }));
@@ -492,7 +492,7 @@ test("all pickle routes render, preserve null commercial fields and scope Hydera
     assert.ok(main.getByRole("heading", { level: 1, name: p.name }));
     assert.ok(main.getByText("Not supplied — confirm before ordering"));
     assert.equal(
-      main.queryByText("Hyderabad only") !== null,
+      main.queryAllByText("Hyderabad only").length > 0,
       p.collectionId === "tropical-feast",
     );
     assert.equal(main.queryByRole("button", { name: /add.*bag/i }), null);
@@ -687,7 +687,7 @@ test("primary product details save priced pickles while archived fruit cart rema
     }),
   );
   assert.equal(screen.queryByRole("button", { name: /add.*bag/i }), null);
-  assert.ok(screen.getByText("Hyderabad only"));
+  assert.ok(screen.getAllByText("Hyderabad only").length > 0);
   cleanup();
   window.history.replaceState({}, "", "/fruit-demo");
   mountPantry();
@@ -1404,4 +1404,86 @@ test("owner editor uploads a photo and publishes a new product with verified inp
     else Reflect.deleteProperty(globalThis, "FileReader");
     cleanup();
   }
+});
+
+test("Jar Lab supports reversible pointer and slider controls without loading video in reduced motion", async () => {
+  const { default: JarLab } = await import("../src/components/JarLab.tsx");
+  render(React.createElement(JarLab));
+  assert.equal(document.querySelectorAll(".jar-lab video").length, 0);
+  const slider = screen.getByRole("slider", {
+    name: "Jar lid openness",
+  }) as HTMLInputElement;
+  assert.equal(slider.disabled, true);
+  fireEvent.click(screen.getByRole("button", { name: "Try the jar" }));
+  assert.equal(slider.disabled, false);
+  fireEvent.change(slider, { target: { value: "45" } });
+  assert.equal(slider.value, "45");
+  const stage = document.querySelector(".jar-lab-stage")!;
+  const pointer = (type: string, y: number) => {
+    const e = new dom.window.Event(type, { bubbles: true });
+    Object.defineProperties(e, {
+      pointerId: { value: 1 },
+      clientY: { value: y },
+      button: { value: 0 },
+    });
+    fireEvent(stage, e);
+  };
+  pointer("pointerdown", 180);
+  pointer("pointermove", 45);
+  pointer("pointerup", 45);
+  assert.equal(slider.value, "100");
+  assert.ok(screen.getByRole("button", { name: "Close the jar" }));
+  pointer("pointerdown", 45);
+  pointer("pointermove", 180);
+  pointer("pointerup", 180);
+  assert.equal(slider.value, "0");
+  fireEvent.click(screen.getByRole("button", { name: "Open the jar" }));
+  assert.equal(slider.value, "100");
+  assert.equal(document.querySelectorAll(".jar-lab video").length, 0);
+  assert.match(
+    document.querySelector<HTMLImageElement>(".jar-lab-poster")!.src,
+    /jar-lifted.webp/,
+  );
+  fireEvent.click(screen.getByRole("button", { name: "Reset" }));
+  assert.equal(slider.value, "0");
+  cleanup();
+});
+test("product quick look zooms and restores focus; the pair action opens a delivery-inclusive guest cart", async () => {
+  const { pickleProducts } = await import("../src/data/pickles.ts");
+  const { default: ProductGallery } =
+    await import("../src/components/ProductGallery.tsx");
+  render(
+    React.createElement(ProductGallery, {
+      product: pickleProducts[0],
+      compact: true,
+    }),
+  );
+  const opener = screen.getByRole("button", {
+    name: "Enlarge Pineapple Pickle photo",
+  });
+  await React.act(async () => opener.focus());
+  fireEvent.click(opener);
+  const dialog = within(screen.getByRole("dialog"));
+  fireEvent.click(dialog.getByRole("button", { name: "Zoom in" }));
+  assert.ok(document.querySelector(".product-photo-viewer.is-zoomed"));
+  fireEvent.click(dialog.getByRole("button", { name: "Back to shopping" }));
+  assert.ok(document.activeElement === opener);
+  cleanup();
+  localStorage.clear();
+  window.history.replaceState({}, "", "/shop");
+  mountPantry();
+  fireEvent.click(screen.getByRole("button", { name: "Add both to cart" }));
+  const cart = within(screen.getByRole("dialog"));
+  assert.ok(cart.getByText("₹550"));
+  assert.equal(cart.getAllByRole("img").length, 2);
+  assert.match(
+    new URL(
+      cart
+        .getByRole("link", { name: "WhatsApp", exact: true })
+        .getAttribute("href")!,
+    ).searchParams.get("text")!,
+    /Delivery: ₹150/,
+  );
+  cleanup();
+  window.history.replaceState({}, "", "/");
 });

@@ -1,6 +1,9 @@
+import ProductGallery from "./ProductGallery";
+import JarLab from "./JarLab";
+import ShoppingConfidence from "./ShoppingConfidence";
 import { useCatalogue } from "../context/Catalogue";
 import { DELIVERY_CHARGE } from "../lib/catalogue";
-import { useState } from "react";
+import { useRef, useState, type PointerEvent } from "react";
 import {
   ArrowUpRight,
   ArrowRight,
@@ -48,7 +51,7 @@ export function PickleHero() {
           </a>
         </div>
         <div className="pickle-hero-note">
-          <span>TROPICAL FEAST</span>
+          <span>Tropical Feast</span>
           <span>{pickleCollections[0].tagline}</span>
         </div>
       </div>
@@ -84,7 +87,7 @@ function SavePickle({
       className={`button primary product-add ${detail ? "pickle-save-detail" : ""}`}
       disabled={unavailable}
       onClick={() => {
-        if (saved) window.dispatchEvent(new Event("pantry:open-cart"));
+        if (saved) window.dispatchEvent(new window.Event("pantry:open-cart"));
         else selection.add(p.id);
       }}
       aria-label={`${unavailable ? "Unavailable" : saved ? "View cart for" : "Add to cart:"} ${p.name}`}
@@ -100,34 +103,65 @@ function SavePickle({
 }
 
 function PickleCard({ product: p }: { product: PickleProduct }) {
+  const card = useRef<HTMLElement>(null);
+  const tilt = (e: PointerEvent<HTMLElement>) => {
+    if (
+      e.pointerType !== "mouse" ||
+      !window.matchMedia(
+        "(hover:hover) and (pointer:fine) and (prefers-reduced-motion: no-preference)",
+      ).matches ||
+      card.current?.closest(".motion-paused")
+    )
+      return;
+    const box = e.currentTarget.getBoundingClientRect();
+    card.current?.style.setProperty(
+      "--card-x",
+      `${((e.clientX - box.left) / box.width - 0.5) * 5}deg`,
+    );
+    card.current?.style.setProperty(
+      "--card-y",
+      `${-((e.clientY - box.top) / box.height - 0.5) * 5}deg`,
+    );
+  };
   return (
-    <article className={`pickle-card ${p.collectionId}`}>
-      <a
-        href={`/products/${p.id}`}
-        className="pickle-card-image"
-        aria-label={`View ${p.name} — Tropical Feast`}
-      >
-        <FruitImage
-          src={p.image}
-          alt={p.imageAlt}
-          width="1200"
-          height="800"
-          loading="lazy"
-        />
-        <span className="pickle-card-arrow" aria-hidden="true">
-          <ArrowUpRight size={20} />
+    <article
+      ref={card}
+      onPointerMove={tilt}
+      onPointerLeave={() => {
+        card.current?.style.setProperty("--card-x", "0deg");
+        card.current?.style.setProperty("--card-y", "0deg");
+      }}
+      className={`pickle-card pantry-product-card ${p.collectionId} ${p.id.includes("pineapple") ? "flavour-gold" : "flavour-green"}`}
+    >
+      <div className="product-card-topline">
+        <span>Tropical Feast</span>
+        <span>
+          {p.availability === "unavailable"
+            ? "CURRENTLY UNAVAILABLE"
+            : "THE PICKLE EDIT"}
         </span>
-      </a>
+      </div>
+      <div className="pickle-card-image">
+        <ProductGallery product={p} compact />
+      </div>
       <div className="pickle-card-copy">
-        <span className="eyebrow">Tropical Feast</span>
-        <h3>
-          <a href={`/products/${p.id}`}>{p.name}</a>
-        </h3>
+        <div className="product-card-name">
+          <h3>
+            <a href={`/products/${p.id}`}>{p.name}</a>
+          </h3>
+          <span className="product-colour-dot" aria-hidden="true" />
+        </div>
         <p className="pickle-descriptors">{p.flavourDescriptors.join(" · ")}</p>
-        <p className="pickle-card-pending">
-          {p.price === null ? "Price awaiting confirmation" : money(p.price)} ·{" "}
-          {p.jarSize || "Jar size awaiting confirmation"}
-        </p>
+        <div className="product-card-price">
+          <strong>{p.price === null ? "On enquiry" : money(p.price)}</strong>
+          <span>{p.jarSize || "per jar · size to confirm"}</span>
+        </div>
+        {p.price !== null && (
+          <p className="product-delivered-price">
+            1 jar + delivery: <b>{money(p.price + DELIVERY_CHARGE)}</b>
+            <span>Hyderabad only</span>
+          </p>
+        )}
         <SavePickle product={p} />
         <a className="text-link" href={`/products/${p.id}`}>
           Product details <ArrowUpRight size={16} />
@@ -136,6 +170,49 @@ function PickleCard({ product: p }: { product: PickleProduct }) {
     </article>
   );
 }
+function PairPick() {
+  const { products } = useCatalogue();
+  const selection = usePickleSelection();
+  const pair = ["tropical-pineapple-pickle", "tropical-cucumber-pickle"].map(
+    (id) => products.find((p) => p.id === id),
+  );
+  if (
+    !selection ||
+    pair.some((p) => !p || p.price === null || p.availability === "unavailable")
+  )
+    return null;
+  const total = pair.reduce((n, p) => n + (p?.price || 0), 0) + DELIVERY_CHARGE;
+  return (
+    <aside className="pair-pick">
+      <div>
+        <span className="eyebrow">CAN’T PICK A SIDE?</span>
+        <h3>Two jars. One delivery.</h3>
+        <p>
+          One pineapple + one cucumber. Keep both sides of your plate happy.
+        </p>
+      </div>
+      <div className="pair-pick-action">
+        <strong>
+          {money(total)}
+          <small>for the pair, including ₹{DELIVERY_CHARGE} delivery</small>
+        </strong>
+        <button
+          className="button primary"
+          onClick={() => {
+            pair.forEach((p) => selection.add(p!.id));
+            window.dispatchEvent(new window.Event("pantry:open-cart"));
+          }}
+        >
+          Add both to cart <ArrowUpRight size={17} />
+        </button>
+        <small>
+          If a flavour is already in your cart, its quantity stays as selected.
+        </small>
+      </div>
+    </aside>
+  );
+}
+
 function FlavourFeature({
   product: p,
   index,
@@ -278,30 +355,18 @@ export function TropicalOrdering({
     </section>
   );
 }
-export function PickleHome() {
+export function PickleHome({ paused = false }: { paused?: boolean }) {
   const { products: pickleProducts } = useCatalogue();
   return (
     <div className="pickle-home" id="collections">
-      <div className="pickle-intro section-pad">
-        <span className="eyebrow">THE TROPICAL FEAST PAIR</span>
-        <h2>
-          Just two flavours.
-          <br />
-          <em>Plenty of personality.</em>
-        </h2>
-        <p>
-          Pineapple Pickle and Cucumber Pickle. Meet the complete Tropical Feast
-          range.
-        </p>
-      </div>
-      {pickleProducts.map((p, i) => (
-        <FlavourFeature key={p.id} product={p} index={i} />
-      ))}
-      <section className="section-pad" id="pickle-grid">
+      <section className="section-pad homepage-picks" id="pickle-grid">
         <div className="section-heading">
-          <h2>Pick your flavour.</h2>
+          <div>
+            <span className="eyebrow">YOUR NEXT MEAL’S PLUS ONE</span>
+            <h2>Pick your flavour.</h2>
+          </div>
           <a className="text-link" href="/shop">
-            Shop both flavours <ArrowUpRight size={16} />
+            Explore the pantry <ArrowUpRight size={16} />
           </a>
         </div>
         <div className="pickle-grid">
@@ -309,11 +374,35 @@ export function PickleHome() {
             <PickleCard key={p.id} product={p} />
           ))}
         </div>
+        <PairPick />
       </section>
+      <JarLab paused={paused} />
+      <div className="pickle-intro section-pad">
+        <span className="eyebrow">A LITTLE MORE CHARACTER</span>
+        <h2>
+          Good food.
+          <br />
+          <em>Great company.</em>
+        </h2>
+        <p>
+          Meet the original Tropical Feast pair: golden pineapple and green
+          cucumber.
+        </p>
+      </div>
+      {pickleProducts
+        .filter((p) =>
+          ["tropical-pineapple-pickle", "tropical-cucumber-pickle"].includes(
+            p.id,
+          ),
+        )
+        .map((p, i) => (
+          <FlavourFeature key={p.id} product={p} index={i} />
+        ))}
       <TropicalOrdering />
     </div>
   );
 }
+
 export function PickleCatalogue({
   collection,
   cataloguePath = "/pickles",
@@ -424,6 +513,8 @@ export function PickleCatalogue({
           </div>
         )}
       </section>
+      <PairPick />
+      <ShoppingConfidence />
       <TropicalOrdering />
     </div>
   );
@@ -442,13 +533,7 @@ export function PickleProductPage({ product: p }: { product: PickleProduct }) {
       </nav>
       <section className="pickle-detail section-pad">
         <figure className="pickle-detail-image">
-          <FruitImage
-            src={p.image}
-            alt={p.imageAlt}
-            width="1200"
-            height="800"
-            fetchPriority="high"
-          />
+          <ProductGallery product={p} />
           <figcaption>Product image supplied by the owner</figcaption>
         </figure>
         <div className="pickle-detail-copy">
@@ -502,6 +587,16 @@ export function PickleProductPage({ product: p }: { product: PickleProduct }) {
           <p className="delivery-note">
             ₹{DELIVERY_CHARGE} delivery per enquiry · Hyderabad only
           </p>
+          {p.price !== null && (
+            <div className="product-one-jar-total">
+              <span>One jar, with delivery</span>
+              <strong>{money(p.price + DELIVERY_CHARGE)}</strong>
+              <small>
+                {money(p.price)} product + ₹{DELIVERY_CHARGE} delivery · confirm
+                availability before ordering
+              </small>
+            </div>
+          )}
           <SavePickle product={p} detail />
           <a
             className="text-link pickle-detail-enquiry"

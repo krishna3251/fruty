@@ -21,7 +21,15 @@ const env = {
 const origin = safeOrigin(
   env.VITE_PUBLIC_SITE_URL || "https://fruty-fawn.vercel.app",
 );
-const base = readFileSync("dist/index.html", "utf8");
+// Keep repeated metadata generation idempotent (also safe after a previous build).
+const base = readFileSync("dist/index.html", "utf8")
+  .replace(
+    /<meta\s+(?:name="(?:robots|twitter:[^"]+)"|property="og:[^"]+")[^>]*>/g,
+    "",
+  )
+  .replace(/<link rel="canonical"[^>]*>/g, "")
+  .replace(/<script id="page-structured-data"[^>]*>.*?<\/script>/gs, "")
+  .replace(/<noscript>.*?<\/noscript>/gs, "");
 const escape = (s: string) =>
   s
     .replaceAll("&", "&amp;")

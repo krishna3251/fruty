@@ -1,3 +1,6 @@
+import { useCatalogue } from "../context/Catalogue";
+import { money } from "../data/products";
+import { DELIVERY_CHARGE } from "../lib/catalogue";
 import { useEffect, useRef, useState } from "react";
 import {
   ArrowDown,
@@ -20,6 +23,11 @@ export default function CinematicHero({
 }: {
   paused?: boolean;
 }) {
+  const { products } = useCatalogue();
+  const prices = products
+    .map((p) => p.price)
+    .filter((p): p is number => p !== null && p > 0);
+  const fromPrice = prices.length ? Math.min(...prices) : null;
   const video = useRef<HTMLVideoElement>(null);
   const range = useRef<HTMLInputElement>(null);
   const seek = useRef<(time: number) => void>(() => {});
@@ -202,17 +210,25 @@ export default function CinematicHero({
         <div className="cinema-intro">
           <span className="eyebrow">FERMENTED PICKLES / A PINEAPPLE STORY</span>
           <h1 id="cinema-title">
-            Tradition,
-            <br /> <em>preserved</em>
-            <br /> in every bite.
+            Your plate’s
+            <br /> <em>plot twist.</em>
           </h1>
           <p>
-            Bold flavours. A little character. Discover the golden side of
-            Tropical Feast.
+            Pineapple or cucumber. Crisp, spicy, tangy pickles for the meals you
+            love. Small jar. Big personality.
           </p>
           <a href="/shop" className="button primary">
-            Discover our pickles <ArrowUpRight size={17} />
+            Pick your jar <ArrowUpRight size={17} />
           </a>
+          <a href="#jar-lab" className="hero-lab-link">
+            Play with the jar <ArrowUpRight size={15} />
+          </a>
+          <div className="hero-shopping-note">
+            {fromPrice !== null && (
+              <strong>From {money(fromPrice)} / jar</strong>
+            )}
+            <span>Hyderabad only · ₹{DELIVERY_CHARGE} delivery</span>
+          </div>
         </div>
       </div>
       <p id="cinema-description" className="sr-only">

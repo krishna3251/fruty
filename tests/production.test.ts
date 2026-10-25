@@ -18,6 +18,8 @@ test("all public pages have unique titles, descriptions and build-time sharing/c
     descriptions.add(m.description);
     const file = path === "/" ? "dist/index.html" : `dist${path}/index.html`;
     const html = readFileSync(file, "utf8");
+    assert.equal((html.match(/rel="canonical"/g) || []).length, 1);
+    assert.equal((html.match(/id="page-structured-data"/g) || []).length, 1);
     assert.equal((html.match(/<title>/g) || []).length, 1);
     assert.ok(
       html.includes(
