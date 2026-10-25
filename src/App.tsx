@@ -593,7 +593,7 @@ function PantryShell({ path }: { path: string }) {
                 Continue browsing as a guest
               </button>
               <p className="account-privacy">
-                Sign-in uses essential cookies.{" "}
+                Sign-in uses essential authentication storage.{" "}
                 <a href="/privacy">Privacy & storage</a>
               </p>
             </div>

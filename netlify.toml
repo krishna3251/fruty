@@ -1,0 +1,60 @@
+[build]
+  command = "node --import tsx scripts/netlify-build.ts"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+  VITE_AUTH_PROVIDER = "firebase"
+
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+  external_node_modules = ["sharp", "firebase-admin"]
+  included_files = ["dist/**/*.html"]
+
+[[redirects]]
+  from = "/api/:endpoint"
+  to = "/.netlify/functions/storefront?endpoint=:endpoint"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/sitemap.xml"
+  to = "/.netlify/functions/storefront?endpoint=sitemap"
+  status = 200
+  force = true
+
+
+[[redirects]]
+  from = "/pickles"
+  to = "/shop"
+  status = 301
+
+[[redirects]]
+  from = "/collections/fermented-pickles"
+  to = "/shop"
+  status = 301
+
+[[redirects]]
+  from = "/products/fermented-cucumber-pickle"
+  to = "/products/tropical-cucumber-pickle"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/products/fermented-pale-vegetable-pickle"
+  to = "/.netlify/functions/storefront?endpoint=gone"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/products/:slug"
+  to = "/.netlify/functions/storefront?endpoint=product-page&slug=:slug"
+  status = 200
+  force = true
+
+
+[[redirects]]
+  from = "/*"
+  to = "/404.html"
+  status = 404

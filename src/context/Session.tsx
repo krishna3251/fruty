@@ -1,5 +1,8 @@
+import { authProvider, firebaseConfigured } from "../lib/firebaseConfig";
 import {
   createContext,
+  lazy,
+  Suspense,
   useContext,
   useEffect,
   useState,
@@ -13,7 +16,7 @@ import {
   clerkPublishableKey,
   validClerkPublishableKey,
 } from "../lib/authConfig";
-type Session = {
+export type Session = {
   status: "loading" | "guest" | "signed-in" | "unavailable";
   userId: string | null;
   getToken: () => Promise<string | null>;
@@ -74,7 +77,35 @@ class SessionBoundary extends Component<
     return this.state.failed ? this.props.fallback : this.props.children;
   }
 }
+const FirebaseSession = lazy(() => import("./FirebaseSession"));
 export function SessionProvider({ children }: { children: ReactNode }) {
+  if (authProvider === "firebase") {
+    if (!firebaseConfigured)
+      return (
+        <SessionContext.Provider value={guest}>
+          {children}
+        </SessionContext.Provider>
+      );
+    return (
+      <SessionBoundary
+        fallback={
+          <SessionContext.Provider value={guest}>
+            {children}
+          </SessionContext.Provider>
+        }
+      >
+        <Suspense
+          fallback={
+            <SessionContext.Provider value={{ ...guest, status: "loading" }}>
+              {children}
+            </SessionContext.Provider>
+          }
+        >
+          <FirebaseSession>{children}</FirebaseSession>
+        </Suspense>
+      </SessionBoundary>
+    );
+  }
   if (!validClerkPublishableKey(clerkPublishableKey))
     return (
       <SessionContext.Provider value={guest}>

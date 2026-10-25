@@ -451,3 +451,75 @@
   white-space: normal;
   margin: 8px 0;
 }
+.firebase-auth h2 {
+  font:
+    32px Georgia,
+    serif;
+  margin: 14px 0;
+}
+.firebase-auth p,
+.firebase-security p {
+  font-size: 13px;
+  line-height: 1.7;
+  margin: 12px 0;
+}
+.firebase-auth form,
+.firebase-auth label,
+.firebase-security form,
+.firebase-security label {
+  display: grid;
+  gap: 10px;
+}
+.firebase-auth label,
+.firebase-security label {
+  font-size: 13px;
+  font-weight: 600;
+}
+.firebase-auth input,
+.firebase-security input {
+  width: 100%;
+  min-width: 0;
+  min-height: 48px;
+  border: 1px solid #b9bea9;
+  padding: 12px;
+  border-radius: 6px;
+  background: #fffdf7;
+  color: #183d25;
+  font:
+    16px Manrope,
+    sans-serif;
+}
+.firebase-auth .button {
+  width: 100%;
+  min-height: 48px;
+}
+.firebase-auth .text-link,
+.firebase-security .text-link {
+  min-height: 44px;
+  margin: 10px 0;
+}
+.firebase-auth .google-signin {
+  justify-content: center;
+  gap: 14px;
+}
+.google-signin > span {
+  font-weight: 800;
+  font-size: 20px;
+}
+.firebase-auth .auth-divider {
+  text-align: center;
+  font-size: 11px;
+  color: #586250;
+}
+.firebase-security {
+  margin-top: 28px;
+  border-top: 1px solid #cbd1bd;
+  padding-top: 20px;
+}
+.firebase-security summary {
+  cursor: pointer;
+  min-height: 44px;
+}
+.firebase-security form {
+  margin: 18px 0;
+}

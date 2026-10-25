@@ -44,7 +44,10 @@ export async function rateLimit(key: string, max = 30) {
 }
 export function requestRateKey(request: Request) {
   // Vercel supplies this header; local fallback is shared, never trust client customer IDs.
-  const ip = request.headers.get("x-vercel-forwarded-for") || "shared";
+  const ip =
+    process.env.HOST_PLATFORM === "netlify"
+      ? request.headers.get("x-nf-client-connection-ip") || "shared"
+      : request.headers.get("x-vercel-forwarded-for") || "shared";
   return createHash("sha256")
     .update(ip + new Date().toISOString().slice(0, 10))
     .digest("hex");

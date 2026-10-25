@@ -13,6 +13,8 @@ import {
   clerkPublishableKey,
   validClerkPublishableKey,
 } from "../lib/authConfig";
+import { authProvider, firebaseConfigured } from "../lib/firebaseConfig";
+const FirebaseAccount = lazy(() => import("./FirebaseAccount"));
 const ClerkAccount = lazy(() => import("./ClerkAccount"));
 export type AccountMode = "sign-in" | "sign-up" | "account" | "admin";
 class AccountBoundary extends Component<
@@ -59,12 +61,20 @@ function AccountConnection({ mode }: { mode: AccountMode }) {
   if (timedOut) return <AccountUnavailable />;
   return (
     <Suspense fallback={<p role="status">Connecting securely…</p>}>
-      <ClerkAccount mode={mode} onReady={onReady} />
+      {authProvider === "firebase" ? (
+        <FirebaseAccount mode={mode} onReady={onReady} />
+      ) : (
+        <ClerkAccount mode={mode} onReady={onReady} />
+      )}
     </Suspense>
   );
 }
 export default function AccountPage({ mode }: { mode: AccountMode }) {
   const session = useSession();
+  const configured =
+    authProvider === "firebase"
+      ? firebaseConfigured
+      : validClerkPublishableKey(clerkPublishableKey);
   return (
     <section
       className={`account-page section-pad ${mode === "admin" ? "admin-page" : ""}`}
@@ -86,7 +96,8 @@ export default function AccountPage({ mode }: { mode: AccountMode }) {
             : "Sign in to manage your profile. Browsing and enquiries are always available to guests."}
         </p>
         <span className="account-trust">
-          <ShieldCheck size={17} /> Authentication powered by Clerk
+          <ShieldCheck size={17} /> Authentication powered by{" "}
+          {authProvider === "firebase" ? "Firebase" : "Clerk"}
         </span>
         <a
           className="text-link"
@@ -102,12 +113,11 @@ export default function AccountPage({ mode }: { mode: AccountMode }) {
         </a>
       </div>
       <div className="account-surface">
-        {validClerkPublishableKey(clerkPublishableKey) &&
-        session.status !== "unavailable" ? (
+        {configured && session.status !== "unavailable" ? (
           <AccountBoundary>
             <AccountConnection mode={mode} />
           </AccountBoundary>
-        ) : validClerkPublishableKey(clerkPublishableKey) ? (
+        ) : configured ? (
           <AccountUnavailable />
         ) : (
           <div className="account-unavailable" role="status">
@@ -122,14 +132,19 @@ export default function AccountPage({ mode }: { mode: AccountMode }) {
           </div>
         )}
       </div>
-      {clerkPublishableKey.startsWith("pk_test_") && (
-        <p className="account-environment" role="status">
-          Account sign-in is in testing while production setup is completed.
-        </p>
-      )}
+      {authProvider === "clerk" &&
+        clerkPublishableKey.startsWith("pk_test_") && (
+          <p className="account-environment" role="status">
+            Account sign-in is in testing while production setup is completed.
+          </p>
+        )}
       <p className="account-privacy">
-        Signing in uses essential session cookies. Optional analytics
-        preferences stay separate. <a href="/privacy">Privacy & storage</a>
+        Signing in uses{" "}
+        {authProvider === "firebase"
+          ? "essential authentication storage"
+          : "essential session cookies"}
+        . Optional analytics preferences stay separate.{" "}
+        <a href="/privacy">Privacy & storage</a>
       </p>
     </section>
   );

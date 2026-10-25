@@ -175,9 +175,9 @@ export default function CustomerDashboard() {
             <summary>Delete my store data</summary>
             <p>
               Deletes your saved addresses, account cart and linked store
-              enquiries. This does not delete your Clerk sign-in account or
-              messages already sent on WhatsApp/email. Manage your Clerk account
-              in security controls below. This action cannot be undone.
+              enquiries. This does not delete your sign-in account or messages
+              already sent on WhatsApp/email. Manage your sign-in account in
+              security controls below. This action cannot be undone.
             </p>
             <label>
               Type DELETE MY STORE DATA
@@ -205,7 +205,7 @@ export default function CustomerDashboard() {
                   setAddress({ ...emptyAddress });
                   window.dispatchEvent(new Event("pantry:store-data-deleted"));
                   setStatus(
-                    "Store data deleted. Your sign-in account remains with Clerk.",
+                    "Store data deleted. Your sign-in account remains with your authentication provider.",
                   );
                 } catch (e) {
                   setError((e as Error).message);

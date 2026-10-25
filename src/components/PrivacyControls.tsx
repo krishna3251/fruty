@@ -150,10 +150,10 @@ export default function PrivacyControls({
             <p>
               Guest baskets and the guest-popup preference stay on this device.
               Signed-in account carts, saved addresses and enquiries use Neon
-              when configured. Clerk checks essential session cookies
-              independently of optional analytics. The archived fruit demo
-              retains its local sample data. No optional tracking is needed to
-              shop.
+              when configured. The authentication provider checks essential
+              session storage independently of optional analytics. The archived
+              fruit demo retains its local sample data. No optional tracking is
+              needed to shop.
             </p>
             <div className="cookie-category-header">
               <h3>Analytics</h3>

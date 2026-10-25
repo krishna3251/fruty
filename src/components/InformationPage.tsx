@@ -1,3 +1,4 @@
+import { authProvider } from "../lib/firebaseConfig";
 import { useState } from "react";
 import { siteConfig } from "../lib/config";
 import { useBusiness } from "../context/Business";
@@ -65,21 +66,26 @@ export default function InformationPage({ path }: { path: string }) {
             removed or site data is cleared. The guest-login dismissal is a
             non-sensitive sessionStorage preference (tf-guest-session-v1), not
             an authenticated session. A random cart-merge identifier may be held
-            in sessionStorage to prevent duplicate merges. Personal names, phone
-            numbers and delivery addresses are not stored in localStorage.
+            in sessionStorage to prevent duplicate merges. The store does not
+            put delivery names, phone numbers or addresses in its guest-cart
+            storage. Firebase may retain basic account profile details with its
+            essential sign-in state.
           </p>
           <h2>Sign-in and saved account data</h2>
           <p>
-            Clerk checks your session on storefront visits and provides
-            registration, sign-in and profile/security management. Google
-            processes authentication if you choose Google login; we never
-            receive your Google password. Essential session cookies work
-            independently of optional analytics. Clerk SDK telemetry is
-            disabled. After real authentication, the store uses Neon PostgreSQL
-            for your Clerk user reference, name, verified email, optional phone,
-            saved addresses, cart and enquiry history. Server endpoints scope
-            these records to the verified session. Guest browsing and ordering
-            remain available.
+            {authProvider === "firebase" ? "Firebase" : "Clerk"} checks your
+            session on storefront visits and provides registration, sign-in and
+            profile/security management. Google processes authentication if you
+            choose Google login; we never receive your Google password.
+            Essential sign-in storage works independently of optional analytics.
+            The Firebase deployment uses essential IndexedDB/session storage for
+            authentication state and a cached basic account profile. The Clerk
+            deployment disables Clerk SDK telemetry. After real authentication,
+            the store uses Neon PostgreSQL for your verified
+            authentication-provider reference, name, verified email, optional
+            phone, saved addresses, cart and enquiry history. Server endpoints
+            scope these records to the verified session. Guest browsing and
+            ordering remain available.
           </p>
           <h2>Enquiries and WhatsApp</h2>
           <p>
@@ -95,13 +101,16 @@ export default function InformationPage({ path }: { path: string }) {
           </p>
           <h2>Owner access and hosting</h2>
           <p>
-            The owner panel checks Clerk identity, a verified owner email and a
-            server-checked panel password on every protected operation.
-            Catalogue details and optimized photos remain in Vercel Blob.
-            Customer information and delivery settings use Neon. Vercel
-            processes hosting requests. A short-lived hashed network identifier
-            is used for enquiry rate limits; expired counters are cleaned
-            periodically. No payment gateway is connected.
+            The owner panel checks the authentication provider, a verified owner
+            email and a server-checked panel password on every protected
+            operation. Firebase owner access also requires the configured owner
+            UID. Catalogue details and optimized photos use{" "}
+            {authProvider === "firebase" ? "Netlify Blobs" : "Vercel Blob"}.
+            Customer information and delivery settings use Neon.{" "}
+            {authProvider === "firebase" ? "Netlify" : "Vercel"} processes
+            hosting requests. A short-lived hashed network identifier is used
+            for enquiry rate limits; expired counters are cleaned periodically.
+            No payment gateway is connected.
           </p>
           <h2>Optional analytics and other forms</h2>
           <p>
@@ -121,13 +130,14 @@ export default function InformationPage({ path }: { path: string }) {
             Saved store records remain until you delete them through Your
             account or the owner handles a verified request. Delete my store
             data removes your saved addresses, account cart and linked store
-            enquiries. Clerk sign-in data is separate: use account security
-            controls or request provider-side deletion. This cannot remove
-            WhatsApp/email messages, provider logs or backups already held by
-            their respective providers. Guest enquiry deletion requests go
-            through the business email; the owner must verify identity and the
-            reference. Backup/log retention and any legally required order
-            retention need owner confirmation before commercial collection.
+            enquiries. Authentication-provider sign-in data is separate: use
+            account security controls or request provider-side deletion. This
+            cannot remove WhatsApp/email messages, provider logs or backups
+            already held by their respective providers. Guest enquiry deletion
+            requests go through the business email; the owner must verify
+            identity and the reference. Backup/log retention and any legally
+            required order retention need owner confirmation before commercial
+            collection.
           </p>
           <h2>Archived demonstration</h2>
           <p>
@@ -205,9 +215,10 @@ export default function InformationPage({ path }: { path: string }) {
           </p>
           <h2>Accounts and privacy</h2>
           <p>
-            Guest enquiries are welcome. Sign-in uses Clerk; saved store data
-            uses Neon when configured. Keep account access secure. The owner
-            panel is restricted separately on the server. See{" "}
+            Guest enquiries are welcome. Sign-in uses{" "}
+            {authProvider === "firebase" ? "Firebase" : "Clerk"}; saved store
+            data uses Neon when configured. Keep account access secure. The
+            owner panel is restricted separately on the server. See{" "}
             <a href="/privacy">privacy and storage</a> for deletion controls and
             providers.
           </p>

@@ -10,6 +10,16 @@ export function trustedOrigin(request: Request) {
 export async function customerIdentity(request: Request, optional = false) {
   const origin = trustedOrigin(request);
   if (optional && !request.headers.get("authorization")) return null;
+  if (process.env.AUTH_PROVIDER === "firebase") {
+    const { firebaseIdentity, UnverifiedFirebaseEmail } =
+      await import("./firebaseAuth.js");
+    try {
+      return await firebaseIdentity(request);
+    } catch (error) {
+      if (optional && error instanceof UnverifiedFirebaseEmail) return null;
+      throw error;
+    }
+  }
   if (!process.env.CLERK_SECRET_KEY)
     throw new ApiError(
       503,

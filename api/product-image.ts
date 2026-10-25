@@ -23,6 +23,8 @@ export async function GET(request: Request) {
   if (!/^[a-f0-9-]{36}$/.test(id))
     return json({ error: "Image not found." }, 404);
   try {
+    if (process.env.CATALOGUE_STORAGE === "netlify")
+      return (await import("../server/netlifyStorage.js")).netlifyImage(id);
     const blob = await get(`products/${id}`, { access: "private" });
     if (!blob || blob.statusCode !== 200)
       return json({ error: "Image not found." }, 404);
@@ -70,11 +72,16 @@ export async function POST(request: Request) {
       );
     }
     const id = randomUUID();
-    await put(`products/${id}`, optimized, {
-      access: "private",
-      contentType: "image/webp",
-      addRandomSuffix: false,
-    });
+    if (process.env.CATALOGUE_STORAGE === "netlify")
+      await (
+        await import("../server/netlifyStorage.js")
+      ).writeNetlifyImage(id, optimized);
+    else
+      await put(`products/${id}`, optimized, {
+        access: "private",
+        contentType: "image/webp",
+        addRandomSuffix: false,
+      });
     return json({ image: `/api/product-image?id=${id}` });
   } catch (error) {
     return apiFailure(error);

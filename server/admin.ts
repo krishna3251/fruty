@@ -46,6 +46,29 @@ export async function requireOwner(request: Request) {
     process.env.VITE_PUBLIC_SITE_URL || "https://fruty-fawn.vercel.app";
   if (request.headers.get("origin") !== origin)
     throw new ApiError(403, "This request must come from the shop website.");
+  if (process.env.AUTH_PROVIDER === "firebase") {
+    if (
+      !process.env.ADMIN_EMAIL ||
+      !process.env.ADMIN_PASSWORD_HASH ||
+      !process.env.FIREBASE_ADMIN_UID
+    )
+      throw new ApiError(503, "Owner access needs server configuration.");
+    const { firebaseIdentity } = await import("./firebaseAuth.js");
+    const user = await firebaseIdentity(request);
+    if (
+      user.uid !== process.env.FIREBASE_ADMIN_UID ||
+      user.email.toLowerCase() !== process.env.ADMIN_EMAIL.toLowerCase()
+    )
+      throw new ApiError(403, "This account does not have owner access.");
+    if (
+      !verifyPanelPassword(
+        request.headers.get("x-panel-password") || "",
+        process.env.ADMIN_PASSWORD_HASH,
+      )
+    )
+      throw new ApiError(403, "The panel password is incorrect.");
+    return user.userId;
+  }
   if (
     !process.env.CLERK_SECRET_KEY ||
     !process.env.ADMIN_EMAIL ||

@@ -2139,3 +2139,96 @@ test("guest cart removal stays removed when an older tab replays legacy storage 
   localStorage.clear();
   window.history.replaceState({}, "", "/");
 });
+
+test("Firebase form keeps reset email, prevents duplicate submission and never confirms failed recovery", async () => {
+  const { default: FirebaseAuthForm } =
+    await import("../src/components/FirebaseAuthForm.tsx");
+  let resetCalls = 0;
+  let succeeds = false;
+  let submitted = "";
+  const actions = {
+    signIn: async () => {},
+    signUp: async () => {},
+    reset: async (email: string) => {
+      resetCalls++;
+      submitted = email;
+      if (!succeeds) throw Error("Network unavailable");
+    },
+    error: (e: any) => e.message,
+  };
+  render(React.createElement(FirebaseAuthForm, { actions }));
+  fireEvent.change(screen.getByLabelText("Email address"), {
+    target: { value: "buyer@example.test" },
+  });
+  fireEvent.click(
+    screen.getByRole("button", { name: "Forgot password?", exact: true }),
+  );
+  assert.equal(
+    (screen.getByLabelText("Email address") as HTMLInputElement).value,
+    "buyer@example.test",
+  );
+  const send = screen.getByRole("button", { name: "Send password reset link" });
+  fireEvent.click(send);
+  fireEvent.click(send);
+  await screen.findByText("Network unavailable");
+  assert.equal(resetCalls, 1);
+  assert.equal(submitted, "buyer@example.test");
+  assert.equal(screen.queryByText(/If this address is eligible/), null);
+  cleanup();
+  succeeds = true;
+  render(React.createElement(FirebaseAuthForm, { actions }));
+  fireEvent.click(
+    screen.getByRole("button", { name: "Forgot password?", exact: true }),
+  );
+  fireEvent.change(screen.getByLabelText("Email address"), {
+    target: { value: "buyer@example.test" },
+  });
+  fireEvent.click(
+    screen.getByRole("button", { name: "Send password reset link" }),
+  );
+  await screen.findByText(/If this address is eligible/);
+  assert.equal(resetCalls, 2);
+});
+test("Firebase signup collects name, supports password managers and visibility, and surfaces provider refusal", async () => {
+  const { default: FirebaseAuthForm } =
+    await import("../src/components/FirebaseAuthForm.tsx");
+  let payload: string[] = [];
+  render(
+    React.createElement(FirebaseAuthForm, {
+      signup: true,
+      actions: {
+        signIn: async () => {},
+        reset: async () => {},
+        signUp: async (...values: string[]) => {
+          payload = values;
+          throw Error("Account creation refused. Try again.");
+        },
+        error: (e: any) => e.message,
+      },
+    }),
+  );
+  fireEvent.change(screen.getByLabelText("Your name"), {
+    target: { value: "Unit Buyer" },
+  });
+  fireEvent.change(screen.getByLabelText("Email address"), {
+    target: { value: "buyer@example.test" },
+  });
+  const password = screen.getByLabelText("Password");
+  assert.equal(password.getAttribute("autocomplete"), "new-password");
+  fireEvent.change(password, { target: { value: "unit-passphrase-only" } });
+  fireEvent.click(screen.getByRole("button", { name: "Show password" }));
+  assert.equal(password.getAttribute("type"), "text");
+  fireEvent.click(
+    screen.getByRole("button", { name: "Create account", exact: true }),
+  );
+  await screen.findByText("Account creation refused. Try again.");
+  assert.deepEqual(payload, [
+    "Unit Buyer",
+    "buyer@example.test",
+    "unit-passphrase-only",
+  ]);
+  assert.equal(
+    (screen.getByLabelText("Your name") as HTMLInputElement).value,
+    "Unit Buyer",
+  );
+});

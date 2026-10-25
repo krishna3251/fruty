@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { useAuth } from "@clerk/react";
+import { useSession } from "../context/Session";
 import {
   Plus,
   Pencil,
@@ -487,6 +487,6 @@ export function ProductManager({
 }
 
 export default function AdminPanel() {
-  const { getToken } = useAuth();
+  const { getToken } = useSession();
   return <ProductManager getToken={getToken} />;
 }

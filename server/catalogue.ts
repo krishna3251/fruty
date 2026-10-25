@@ -2,6 +2,8 @@ import { get, put, BlobPreconditionFailedError } from "@vercel/blob";
 import { pickleProducts, type PickleProduct } from "../src/data/pickles.js";
 import { ApiError } from "./admin.js";
 export async function readCatalogue() {
+  if (process.env.CATALOGUE_STORAGE === "netlify")
+    return (await import("./netlifyStorage.js")).readNetlifyCatalogue();
   if (!process.env.BLOB_READ_WRITE_TOKEN)
     throw new ApiError(503, "Product storage is not configured.");
   const blob = await get("catalogue/products.json", {
@@ -21,6 +23,11 @@ export async function writeCatalogue(
   products: PickleProduct[],
   revision: string,
 ) {
+  if (process.env.CATALOGUE_STORAGE === "netlify")
+    return (await import("./netlifyStorage.js")).writeNetlifyCatalogue(
+      products,
+      revision,
+    );
   try {
     const result = await put(
       "catalogue/products.json",
