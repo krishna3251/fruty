@@ -37,6 +37,13 @@ import {
   PickleProductPage,
   TropicalOrdering,
 } from "./components/Pickles";
+import {
+  SessionProvider,
+  useSession,
+  useFirstVisitLogin,
+  rememberGuest,
+} from "./context/Session";
+import { BusinessProvider, useBusiness } from "./context/Business";
 import { enquiryGmail, enquiryWhatsApp } from "./lib/contact";
 import CinematicHero from "./components/CinematicHero";
 import EnquiryList from "./components/EnquiryList";
@@ -75,7 +82,7 @@ function PantryQuestions() {
           ],
           [
             "What are the prices and jar sizes?",
-            `Current prices: ${products.map((p) => `${p.name}: ₹${p.price ?? "on enquiry"}`).join("; ")}. Delivery is ₹150 per enquiry. Confirm jar size, availability, ingredients/allergens and the final total before ordering.`,
+            `Current prices: ${products.map((p) => `${p.name}: ₹${p.price ?? "on enquiry"}`).join("; ")}. Each initial flavour is a 200 g jar. Delivery charges depend on your location and are confirmed on WhatsApp. Confirm availability, ingredients/allergens and final amount before ordering.`,
           ],
           [
             "Which flavours do you offer?",
@@ -107,6 +114,7 @@ function PantryQuestions() {
   );
 }
 function PantryShell({ path }: { path: string }) {
+  const business = useBusiness();
   const root = useRef<HTMLDivElement>(null);
   const [menu, setMenu] = useState(false);
   const {
@@ -117,7 +125,11 @@ function PantryShell({ path }: { path: string }) {
   } = useCatalogue();
   const [listOpen, setListOpen] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
-  const closeAccount = useCallback(() => setAccountOpen(false), []);
+  const session = useSession();
+  const closeAccount = useCallback(() => {
+    if (session.status !== "signed-in") rememberGuest();
+    setAccountOpen(false);
+  }, [session.status]);
   useEffect(() => {
     const open = () => {
       setListOpen(true);
@@ -136,6 +148,7 @@ function PantryShell({ path }: { path: string }) {
     setListOpen(false);
     setAccountOpen(false);
   }, [path]);
+  useFirstVisitLogin(path, setAccountOpen);
   useEffect(() => {
     const escape = (e: KeyboardEvent) => {
       if (e.key === "Escape") setMenu(false);
@@ -167,7 +180,7 @@ function PantryShell({ path }: { path: string }) {
         </div>
       )}
       <header className="pantry-header">
-        <a href="/" className="pantry-logo" aria-label="Fermented Pickles home">
+        <a href="/" className="pantry-logo" aria-label="Tropical Feast home">
           <img
             src={brandAssets.logo}
             alt="Tropical Feast logo"
@@ -175,7 +188,7 @@ function PantryShell({ path }: { path: string }) {
             height="80"
           />
           <span className="brand-wordmark">
-            Fermented Pickles<small>FEATURING TROPICAL FEAST</small>
+            Tropical Feast<small>HOMEMADE PICKLES · HYDERABAD</small>
           </span>
         </a>
         <nav
@@ -225,7 +238,7 @@ function PantryShell({ path }: { path: string }) {
             }
           >
             <UserRound size={18} />
-            <span>Log in</span>
+            <span>{session.status === "signed-in" ? "Account" : "Log in"}</span>
           </button>
           <button
             className="pantry-list-button"
@@ -464,24 +477,37 @@ function PantryShell({ path }: { path: string }) {
             <span className="eyebrow">CLEAR & SIMPLE</span>
             <a href="/ordering">Ordering information</a>
             <a href="/contact">Contact</a>
-            {enquiryWhatsApp() && (
+            {enquiryWhatsApp(
+              undefined,
+              `https://wa.me/${business.whatsapp}`,
+            ) && (
               <a
-                href={enquiryWhatsApp()!}
+                href={enquiryWhatsApp(
+                  undefined,
+                  `https://wa.me/${business.whatsapp}`,
+                )!}
                 target="_blank"
                 rel="noopener noreferrer"
               >
                 WhatsApp enquiry
               </a>
             )}
-            {enquiryGmail() && (
+            {enquiryGmail(undefined, business.email) && (
               <a
-                href={enquiryGmail()!}
+                href={enquiryGmail(undefined, business.email)!}
                 target="_blank"
                 rel="noopener noreferrer"
               >
                 Email enquiry
               </a>
             )}
+            <a
+              href={business.instagram}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Instagram ↗
+            </a>
             <a href="/privacy">Privacy & storage</a>
             <a href="/terms">Website terms</a>
           </div>
@@ -500,13 +526,8 @@ function PantryShell({ path }: { path: string }) {
           </div>
         </div>
         <div className="pantry-footer-bottom">
-          <span>
-            © {new Date().getFullYear()} Fermented Pickles · Featuring Tropical
-            Feast
-          </span>
-          <span>
-            Enquiry catalogue · no online payments or confirmed orders
-          </span>
+          <span>© {new Date().getFullYear()} Tropical Feast</span>
+          <span>WhatsApp-first · orders confirmed by the business</span>
           <span>Product and brand images supplied by the owner</span>
         </div>
       </footer>
@@ -528,16 +549,42 @@ function PantryShell({ path }: { path: string }) {
       )}
       {accountOpen && (
         <Modal title="Your account" onClose={closeAccount}>
-          <div className="login-dialog">
-            <Suspense fallback={<p role="status">Loading sign-in…</p>}>
-              <AccountPage mode="account" />
-            </Suspense>
-            <a className="text-link" href="/sign-up">
-              New here? Create an account ↗
-            </a>
-            <button className="text-link" onClick={closeAccount}>
-              Continue browsing as a guest
-            </button>
+          <div className="login-dialog welcome-dialog">
+            <div className="welcome-photo">
+              <img
+                src={brandAssets.hero}
+                alt="Tropical Feast pickle jars"
+                width="600"
+                height="800"
+              />
+              <span>
+                Rich flavours,
+                <br />
+                beautifully preserved.
+              </span>
+            </div>
+            <div className="welcome-auth">
+              <img
+                className="welcome-logo"
+                src={brandAssets.logo}
+                alt="Tropical Feast"
+                width="64"
+                height="64"
+              />
+              <Suspense fallback={<p role="status">Loading sign-in…</p>}>
+                <AccountPage mode="account" />
+              </Suspense>
+              <a className="text-link" href="/sign-up">
+                New here? Create an account ↗
+              </a>
+              <button className="text-link" onClick={closeAccount}>
+                Continue browsing as a guest
+              </button>
+              <p className="account-privacy">
+                Sign-in uses essential cookies.{" "}
+                <a href="/privacy">Privacy & storage</a>
+              </p>
+            </div>
           </div>
         </Modal>
       )}
@@ -572,10 +619,14 @@ export default function App() {
       </Suspense>
     );
   return (
-    <CatalogueProvider>
-      <PickleSelectionProvider>
-        <PantryShell path={path} />
-      </PickleSelectionProvider>
-    </CatalogueProvider>
+    <SessionProvider>
+      <BusinessProvider>
+        <CatalogueProvider>
+          <PickleSelectionProvider>
+            <PantryShell path={path} />
+          </PickleSelectionProvider>
+        </CatalogueProvider>
+      </BusinessProvider>
+    </SessionProvider>
   );
 }

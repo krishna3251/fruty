@@ -1,13 +1,6 @@
 import { useEffect, useState } from "react";
-import {
-  ClerkProvider,
-  SignIn,
-  SignUp,
-  UserProfile,
-  useClerk,
-  useUser,
-} from "@clerk/react";
-import { clerkPublishableKey } from "../lib/authConfig";
+import { SignIn, SignUp, UserProfile, useClerk, useUser } from "@clerk/react";
+import CustomerDashboard from "./CustomerDashboard";
 import AdminPanel from "./AdminPanel";
 import type { AccountMode } from "./AccountPage";
 function AccountContents({
@@ -37,7 +30,7 @@ function AccountContents({
               setLeaving(true);
               setError("");
               try {
-                await signOut({ redirectUrl: "/" });
+                await signOut({ redirectUrl: "/sign-in" });
               } catch {
                 setError("Sign-out could not be completed. Please try again.");
                 setLeaving(false);
@@ -51,14 +44,21 @@ function AccountContents({
         {mode === "admin" ? (
           <AdminPanel />
         ) : (
-          <UserProfile
-            routing="hash"
-            fallback={<p role="status">Loading profile controls…</p>}
-          />
+          <>
+            <CustomerDashboard />
+            <details>
+              <summary>Account security and sign-in methods</summary>
+              <UserProfile
+                routing="hash"
+                fallback={<p role="status">Loading profile controls…</p>}
+              />
+            </details>
+          </>
         )}
         <p className="account-scope">
-          Your enquiry basket stays on this device. Online orders, address
-          storage and payment history are not connected.
+          Saved carts and addresses use your account when storage is available.
+          Enquiries require business confirmation; no online payment is
+          processed.
         </p>
       </div>
     );
@@ -88,51 +88,5 @@ export default function ClerkAccount({
   mode: AccountMode;
   onReady: () => void;
 }) {
-  return (
-    <ClerkProvider
-      publishableKey={clerkPublishableKey}
-      signInUrl="/sign-in"
-      signUpUrl="/sign-up"
-      afterSignOutUrl="/"
-      signInFallbackRedirectUrl="/account"
-      signUpFallbackRedirectUrl="/account"
-      telemetry={{ disabled: true }}
-      localization={{
-        signIn: {
-          start: {
-            title: "Sign in to Fermented Pickles",
-            subtitle: "Welcome back. Your pantry awaits.",
-          },
-        },
-        signUp: {
-          start: {
-            title: "Create your pantry account",
-            subtitle: "Welcome to Fermented Pickles.",
-          },
-        },
-      }}
-      appearance={{
-        elements: {
-          rootBox: { maxWidth: "100%", minWidth: 0 },
-          cardBox: { maxWidth: "100%", minWidth: 0 },
-          card: {
-            maxWidth: "100%",
-            width: "100%",
-            minWidth: 0,
-            boxSizing: "border-box",
-          },
-        },
-        variables: {
-          colorPrimary: "#183D25",
-          colorBackground: "#FFF9EE",
-          colorForeground: "#272922",
-          colorInput: "#FFFDF7",
-          borderRadius: "8px",
-          fontFamily: "Manrope, Arial, sans-serif",
-        },
-      }}
-    >
-      <AccountContents mode={mode} onReady={onReady} />
-    </ClerkProvider>
-  );
+  return <AccountContents mode={mode} onReady={onReady} />;
 }

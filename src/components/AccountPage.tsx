@@ -7,6 +7,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { useSession } from "../context/Session";
 import { ArrowUpRight, ShieldCheck } from "lucide-react";
 import {
   clerkPublishableKey,
@@ -63,12 +64,13 @@ function AccountConnection({ mode }: { mode: AccountMode }) {
   );
 }
 export default function AccountPage({ mode }: { mode: AccountMode }) {
+  const session = useSession();
   return (
     <section
       className={`account-page section-pad ${mode === "admin" ? "admin-page" : ""}`}
     >
       <div className="account-intro">
-        <span className="eyebrow">FERMENTED PICKLES / YOUR ACCOUNT</span>
+        <span className="eyebrow">TROPICAL FEAST / YOUR ACCOUNT</span>
         <h1>
           {mode === "admin"
             ? "Your private pantry."
@@ -91,10 +93,13 @@ export default function AccountPage({ mode }: { mode: AccountMode }) {
         </a>
       </div>
       <div className="account-surface">
-        {validClerkPublishableKey(clerkPublishableKey) ? (
+        {validClerkPublishableKey(clerkPublishableKey) &&
+        session.status !== "unavailable" ? (
           <AccountBoundary>
             <AccountConnection mode={mode} />
           </AccountBoundary>
+        ) : validClerkPublishableKey(clerkPublishableKey) ? (
+          <AccountUnavailable />
         ) : (
           <div className="account-unavailable" role="status">
             <h2>Accounts aren’t available here yet.</h2>

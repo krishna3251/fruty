@@ -10,7 +10,7 @@ test("contact links encode enquiry drafts without submitting messages", () => {
   assert.equal(whatsapp.searchParams.get("text"), draft);
   const email = new URL(enquiryEmail(draft)!);
   assert.equal(email.protocol, "mailto:");
-  assert.equal(email.pathname, "krishnasoni3251@gmail.com");
+  assert.equal(email.pathname, "tropicalfeast7@gmail.com");
   assert.equal(email.searchParams.get("body"), draft);
   const original = siteConfig.email;
   try {

@@ -118,7 +118,7 @@ export default function PrivacyControls({
             <p>
               {configured
                 ? "Optional analytics stays off until you allow it. Essential basket storage and sign-in cookies work independently."
-                : "Your basket stays on this device. Signing in uses essential session cookies. Optional analytics is not in use."}
+                : "Guest baskets stay on this device. Signing in uses essential session cookies and can sync your cart. Optional analytics is not in use."}
             </p>
             <a href="/privacy">Read the privacy notice</a>
           </div>
@@ -148,11 +148,12 @@ export default function PrivacyControls({
               <span>Always active</span>
             </div>
             <p>
-              Your pickle enquiry list is kept on this device. The archived
-              fruit demo also stores its bag, saved fruit and demo receipts
-              here. No tracking is needed to shop. Account pages use essential
-              Clerk session cookies for sign-in, independently of optional
-              analytics.
+              Guest baskets and the guest-popup preference stay on this device.
+              Signed-in account carts, saved addresses and enquiries use Neon
+              when configured. Clerk checks essential session cookies
+              independently of optional analytics. The archived fruit demo
+              retains its local sample data. No optional tracking is needed to
+              shop.
             </p>
             <div className="cookie-category-header">
               <h3>Analytics</h3>

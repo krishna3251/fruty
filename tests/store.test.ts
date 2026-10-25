@@ -50,6 +50,7 @@ Object.defineProperty(globalThis, "IS_REACT_ACT_ENVIRONMENT", {
 const React = await import("react");
 const { render, screen, fireEvent, cleanup, within, waitFor } =
   await import("@testing-library/react");
+test.afterEach(() => cleanup());
 const { default: App } = await import("../src/LegacyFruitStore.tsx");
 const { default: PantryApp } = await import("../src/App.tsx");
 const { CartProvider } = await import("../src/context/CartContext.tsx");
@@ -403,9 +404,11 @@ test("dedicated policy/contact routes exist, confirmation is guarded, and mobile
   window.history.replaceState({}, "", "/contact");
   mount();
   assert.ok(
-    screen.getByText("Not provided — no business address is published"),
+    screen.getByText(
+      "Not yet supplied. Hyderabad is the service location, not a published street address.",
+    ),
   );
-  assert.equal(screen.queryByRole("link", { name: /@/ }), null);
+  assert.ok(screen.getByRole("link", { name: "@tropicalfeast.pickles ↗" }));
   cleanup();
   window.history.replaceState({}, "", "/");
   let callback: any;
@@ -514,28 +517,22 @@ test("all pickle routes render, preserve null commercial fields and scope Hydera
   }
   window.history.replaceState({}, "", "/");
 });
-test("Tropical Feast DM is only enabled for its explicit safe configuration", async () => {
-  const { siteConfig } = await import("../src/lib/config.ts");
+test("Tropical Feast ordering uses its verified configurable business contact", async () => {
+  const { BusinessContext } = await import("../src/context/Business.tsx");
+  const { businessDefaults } = await import("../src/lib/business.ts");
   const { TropicalOrdering } = await import("../src/components/Pickles.tsx");
-  const old = siteConfig.tropicalFeastDmUrl;
-  try {
-    siteConfig.tropicalFeastDmUrl = "javascript:alert(1)";
-    render(React.createElement(TropicalOrdering));
-    assert.equal(
-      screen.queryByRole("link", { name: "WhatsApp enquiry" }),
-      null,
-    );
-    cleanup();
-    siteConfig.tropicalFeastDmUrl = "https://dm.example.test/verified-supplier";
-    render(React.createElement(TropicalOrdering));
-    const link = screen.getByRole("link", { name: "WhatsApp enquiry" });
-    assert.equal(link.getAttribute("href"), siteConfig.tropicalFeastDmUrl);
-    assert.equal(link.getAttribute("target"), "_blank");
-    assert.match(link.getAttribute("rel") || "", /noopener/);
-    cleanup();
-  } finally {
-    siteConfig.tropicalFeastDmUrl = old;
-  }
+  render(
+    React.createElement(
+      BusinessContext.Provider,
+      { value: { ...businessDefaults, whatsapp: "919876543210" } },
+      React.createElement(TropicalOrdering),
+    ),
+  );
+  const link = screen.getByRole("link", { name: "WhatsApp enquiry" });
+  assert.equal(link.getAttribute("href"), "https://wa.me/919876543210");
+  assert.equal(link.getAttribute("target"), "_blank");
+  assert.match(link.getAttribute("rel") || "", /noopener/);
+  cleanup();
 });
 
 function mountPantry() {
@@ -900,7 +897,7 @@ test("contact buttons expose destinations only in links and both pickle details 
     );
     if (path.startsWith("/products/")) {
       const main = within(screen.getByRole("main"));
-      assert.ok(main.getAllByText(/₹200/).length);
+      assert.ok(main.getAllByText(/₹149/).length);
       assert.match(
         main
           .getByRole("link", { name: "WhatsApp enquiry" })
@@ -941,17 +938,23 @@ test("enquiry basket quantities, subtotal and both email routes persist and stay
     dialog.getByLabelText("Pineapple Pickle quantity").textContent,
     "2",
   );
-  assert.ok(dialog.getByText("₹400"));
+  assert.ok(dialog.getByText("₹298"));
   const gmail = dialog.getByRole("link", { name: "Email", exact: true });
   assert.equal(dialog.getAllByRole("img").length, 1);
   assert.ok(dialog.getByRole("link", { name: "WhatsApp", exact: true }));
   const web = new URL(gmail.getAttribute("href")!);
   assert.equal(web.origin, "https://mail.google.com");
   assert.match(web.searchParams.get("body")!, /2 × Pineapple Pickle/);
-  assert.match(web.searchParams.get("body")!, /Products subtotal: ₹400/);
-  assert.match(web.searchParams.get("body")!, /Delivery: ₹150/);
-  assert.match(web.searchParams.get("body")!, /Total: ₹550/);
-  assert.ok(dialog.getByText("₹550"));
+  assert.match(web.searchParams.get("body")!, /Products subtotal: ₹298/);
+  assert.match(
+    web.searchParams.get("body")!,
+    /Delivery charge: To be confirmed/,
+  );
+  assert.match(
+    web.searchParams.get("body")!,
+    /Final payable amount: To be confirmed/,
+  );
+  assert.equal(dialog.getAllByText("To be confirmed").length, 2);
   assert.equal(gmail.getAttribute("target"), "_blank");
   fireEvent.click(dialog.getByText("Preview or copy your enquiry"));
   assert.match(
@@ -1058,7 +1061,7 @@ test("empty enquiry basket offers both pictured products and closes when browsin
   );
   assert.ok(dialog.getByRole("link", { name: "Email", exact: true }));
   assert.ok(dialog.getByRole("link", { name: "WhatsApp", exact: true }));
-  assert.equal(dialog.getAllByText("₹200", { selector: "strong" }).length, 2);
+  assert.equal(dialog.getAllByText("₹149", { selector: "strong" }).length, 2);
   assert.equal(
     document.querySelector<HTMLDetailsElement>(".basket-draft-details")?.open,
     false,
@@ -1221,14 +1224,14 @@ test("live products, edited prices and saved dynamic carts are shared across cat
     assert.match(document.title, /Owner Added Pickle/);
     fireEvent.click(screen.getByRole("button", { name: "Open cart, 2 items" }));
     const dialog = within(screen.getByRole("dialog"));
-    assert.ok(dialog.getByText("₹700"));
+    assert.ok(dialog.getByText("₹550"));
     assert.match(
       new URL(
         dialog
           .getByRole("link", { name: "Email", exact: true })
           .getAttribute("href")!,
       ).searchParams.get("body")!,
-      /Total: ₹700/,
+      /Final payable amount: To be confirmed/,
     );
     cleanup();
   } finally {
@@ -1284,7 +1287,7 @@ test("owner product editor handles refused access, preserves a failed edit, and 
       assert.ok(screen.getByRole("heading", { name: "The pantry manager." })),
     );
     fireEvent.click(
-      screen.getByRole("button", { name: /Pineapple Pickle.*₹200/ }),
+      screen.getByRole("button", { name: /Pineapple Pickle.*₹149/ }),
     );
     fireEvent.change(screen.getByLabelText("Price (₹)"), {
       target: { value: "240" },
@@ -1305,7 +1308,7 @@ test("owner product editor handles refused access, preserves a failed edit, and 
       ),
     );
     assert.equal(savedBody.product.price, 240);
-    assert.equal(savedBody.product.jarSize, null);
+    assert.equal(savedBody.product.jarSize, "200 g");
     assert.equal(savedBody.revision, "unit");
     fireEvent.click(screen.getByRole("button", { name: /Lock panel/ }));
     assert.ok(screen.getByRole("button", { name: "Unlock product panel" }));
@@ -1448,7 +1451,7 @@ test("Jar Lab supports reversible pointer and slider controls without loading vi
   assert.equal(slider.value, "0");
   cleanup();
 });
-test("product quick look zooms and restores focus; the pair action opens a delivery-inclusive guest cart", async () => {
+test("product quick look zooms and restores focus; the pair action opens an accurate guest cart with delivery unconfirmed", async () => {
   const { pickleProducts } = await import("../src/data/pickles.ts");
   const { default: ProductGallery } =
     await import("../src/components/ProductGallery.tsx");
@@ -1474,7 +1477,7 @@ test("product quick look zooms and restores focus; the pair action opens a deliv
   mountPantry();
   fireEvent.click(screen.getByRole("button", { name: "Add both to cart" }));
   const cart = within(screen.getByRole("dialog"));
-  assert.ok(cart.getByText("₹550"));
+  assert.ok(cart.getByText("₹298"));
   assert.equal(cart.getAllByRole("img").length, 2);
   assert.match(
     new URL(
@@ -1482,8 +1485,462 @@ test("product quick look zooms and restores focus; the pair action opens a deliv
         .getByRole("link", { name: "WhatsApp", exact: true })
         .getAttribute("href")!,
     ).searchParams.get("text")!,
-    /Delivery: ₹150/,
+    /Delivery charge: To be confirmed/,
   );
   cleanup();
   window.history.replaceState({}, "", "/");
+});
+
+test("first-visit login waits for real session readiness, closes after sign-in, and remembers guest dismissal separately", async () => {
+  const {
+    SessionContext,
+    useFirstVisitLogin,
+    rememberGuest,
+    GUEST_PREFERENCE,
+  } = await import("../src/context/Session.tsx");
+  sessionStorage.clear();
+  function WelcomeHarness() {
+    const [open, setOpen] = React.useState(false);
+    useFirstVisitLogin("/shop", setOpen);
+    return React.createElement(
+      "div",
+      null,
+      open
+        ? React.createElement(
+            "button",
+            {
+              onClick: () => {
+                rememberGuest();
+                setOpen(false);
+              },
+            },
+            "Continue as Guest",
+          )
+        : "Browsing",
+    );
+  }
+  const base = { userId: null, getToken: async () => null };
+  const view = render(
+    React.createElement(
+      SessionContext.Provider,
+      { value: { ...base, status: "loading" } },
+      React.createElement(WelcomeHarness),
+    ),
+  );
+  assert.equal(
+    screen.queryByRole("button", { name: "Continue as Guest" }) === null,
+    true,
+  );
+  view.rerender(
+    React.createElement(
+      SessionContext.Provider,
+      { value: { ...base, status: "guest" } },
+      React.createElement(WelcomeHarness),
+    ),
+  );
+  fireEvent.click(
+    await screen.findByRole("button", { name: "Continue as Guest" }),
+  );
+  assert.equal(sessionStorage.getItem(GUEST_PREFERENCE), "yes");
+  assert.equal(localStorage.getItem("authenticated"), null);
+  cleanup();
+  render(
+    React.createElement(
+      SessionContext.Provider,
+      { value: { ...base, status: "guest" } },
+      React.createElement(WelcomeHarness),
+    ),
+  );
+  assert.equal(
+    screen.queryByRole("button", { name: "Continue as Guest" }) === null,
+    true,
+  );
+  cleanup();
+  sessionStorage.clear();
+  const next = render(
+    React.createElement(
+      SessionContext.Provider,
+      { value: { ...base, userId: "real-user", status: "signed-in" } },
+      React.createElement(WelcomeHarness),
+    ),
+  );
+  assert.equal(
+    screen.queryByRole("button", { name: "Continue as Guest" }) === null,
+    true,
+  );
+  next.rerender(
+    React.createElement(
+      SessionContext.Provider,
+      { value: { ...base, status: "guest" } },
+      React.createElement(WelcomeHarness),
+    ),
+  );
+  assert.ok(await screen.findByRole("button", { name: "Continue as Guest" }));
+  cleanup();
+  sessionStorage.clear();
+  render(
+    React.createElement(
+      SessionContext.Provider,
+      { value: { ...base, status: "unavailable" } },
+      React.createElement(WelcomeHarness),
+    ),
+  );
+  assert.ok(screen.getByText("Browsing"));
+  cleanup();
+});
+
+test("signed-in carts merge guest quantities once and queue edits without persisting account carts to localStorage", async () => {
+  const { SessionContext } = await import("../src/context/Session.tsx");
+  const { CatalogueProvider } = await import("../src/context/Catalogue.tsx");
+  const { PickleSelectionProvider, usePickleSelection } =
+    await import("../src/context/PickleSelection.tsx");
+  const { pickleProducts } = await import("../src/data/pickles.ts");
+  const previous = globalThis.fetch;
+  localStorage.clear();
+  sessionStorage.clear();
+  const id = pickleProducts[0].id;
+  localStorage.setItem("fruity-pickle-selection-v1", JSON.stringify([id]));
+  localStorage.setItem(
+    "fruity-pickle-quantities-v1",
+    JSON.stringify({ [id]: 2 }),
+  );
+  let version = 4;
+  let merges = 0;
+  let serverItems = { [id]: 3 };
+  let saveCount = 0;
+  globalThis.fetch = async (path, options) => {
+    if (String(path) === "/api/catalogue")
+      return Response.json({ products: pickleProducts });
+    const body = JSON.parse(String(options?.body));
+    if (body.action === "load")
+      return Response.json({
+        cart: { items: serverItems, version },
+        addresses: [],
+        orders: [],
+      });
+    if (body.mergeId) {
+      merges++;
+      assert.equal(body.items[id], 2);
+      return Response.json({ items: serverItems, version: ++version });
+    }
+    assert.equal(body.version, version);
+    serverItems = body.items;
+    saveCount++;
+    return Response.json({ items: serverItems, version: ++version });
+  };
+  function CartHarness() {
+    const c = usePickleSelection()!;
+    return React.createElement(
+      "div",
+      null,
+      React.createElement("output", null, String(c.quantities[id] || 0)),
+      React.createElement("p", null, c.syncStatus),
+      React.createElement(
+        "button",
+        { onClick: () => c.setQuantity(id, (c.quantities[id] || 0) + 1) },
+        "Increase",
+      ),
+    );
+  }
+  try {
+    render(
+      React.createElement(
+        SessionContext.Provider,
+        {
+          value: {
+            status: "signed-in",
+            userId: "verified-fixture",
+            getToken: async () => "test-session",
+          },
+        },
+        React.createElement(
+          CatalogueProvider,
+          null,
+          React.createElement(
+            PickleSelectionProvider,
+            null,
+            React.createElement(CartHarness),
+          ),
+        ),
+      ),
+    );
+    await screen.findByText("Cart saved to your account.");
+    assert.equal(screen.getByRole("status").textContent, "3");
+    assert.equal(merges, 1);
+    assert.equal(localStorage.getItem("fruity-pickle-selection-v1"), null);
+    fireEvent.click(screen.getByRole("button", { name: "Increase" }));
+    fireEvent.click(screen.getByRole("button", { name: "Increase" }));
+    await waitFor(() => assert.equal(serverItems[id], 5), { timeout: 2500 });
+    assert.ok(saveCount >= 1 && saveCount <= 2);
+    assert.equal(localStorage.getItem("fruity-pickle-quantities-v1"), null);
+  } finally {
+    cleanup();
+    globalThis.fetch = previous;
+    localStorage.clear();
+    sessionStorage.clear();
+  }
+});
+
+test("enquiry review validates delivery details, preserves failure, and shows only genuine saved-enquiry confirmation", async () => {
+  const { default: EnquiryReview } =
+    await import("../src/components/EnquiryReview.tsx");
+  const { pickleProducts } = await import("../src/data/pickles.ts");
+  const { orderMessage } = await import("../src/lib/customer.ts");
+  const previous = globalThis.fetch;
+  let succeeds = false;
+  let attempts = 0;
+  let requestId = "";
+  globalThis.fetch = async (_path, options) => {
+    const body = JSON.parse(String(options?.body));
+    attempts++;
+    if (requestId) assert.equal(body.requestId, requestId);
+    requestId = body.requestId;
+    if (!succeeds)
+      return Response.json(
+        { error: "Storage is temporarily unavailable." },
+        { status: 503 },
+      );
+    return Response.json({
+      reference: "TF-UNIT",
+      subtotal: 149,
+      message: "Verified draft",
+      url: "https://wa.me/919398152226?text=Verified%20draft",
+    });
+  };
+  try {
+    render(
+      React.createElement(EnquiryReview, {
+        products: pickleProducts,
+        items: { [pickleProducts[0].id]: 1 },
+      }),
+    );
+    fireEvent.click(screen.getByRole("button", { name: /Review & enquire/ }));
+    fireEvent.submit(
+      screen.getByRole("button", { name: "Review details" }).closest("form")!,
+    );
+    assert.ok(screen.getByRole("alert").textContent?.includes("phone"));
+    for (const [label, value] of [
+      ["Recipient name", "Test Customer"],
+      ["Mobile number", "9876543210"],
+      ["House / street address", "12 Test Street"],
+      ["Hyderabad locality", "Test locality"],
+      ["PIN code", "500001"],
+    ])
+      fireEvent.change(screen.getByLabelText(label), { target: { value } });
+    fireEvent.submit(
+      screen.getByRole("button", { name: "Review details" }).closest("form")!,
+    );
+    fireEvent.click(
+      screen.getByRole("button", { name: "Prepare WhatsApp enquiry" }),
+    );
+    await screen.findByText("Storage is temporarily unavailable.");
+    assert.equal(screen.queryByText(/saved for review/), null);
+    assert.ok(screen.getByText(/Test Customer/));
+    succeeds = true;
+    fireEvent.click(
+      screen.getByRole("button", { name: "Prepare WhatsApp enquiry" }),
+    );
+    await screen.findByText("Enquiry TF-UNIT saved for review.");
+    assert.equal(attempts, 2);
+    assert.ok(screen.getByRole("link", { name: "Open WhatsApp ↗" }));
+    assert.ok(screen.getByText(/not a confirmed order/));
+    assert.doesNotMatch(
+      localStorage.getItem("fruity-pickle-selection-v1") || "",
+      /Test Customer/,
+    );
+  } finally {
+    cleanup();
+    globalThis.fetch = previous;
+  }
+});
+
+test("owner enquiry and settings interfaces submit authenticated, revision-checked updates and preserve errors", async () => {
+  const { default: OwnerOperations } =
+    await import("../src/components/OwnerOperations.tsx");
+  const { businessDefaults } = await import("../src/lib/business.ts");
+  const previous = globalThis.fetch;
+  let savedStatus = "";
+  let settingsSaved = false;
+  const customer = {
+    recipient: "Test Buyer",
+    phone: "9876543210",
+    street: "Test Street",
+    locality: "Test locality",
+    city: "Hyderabad",
+    pin: "500001",
+  };
+  const order = {
+    id: "c95e6549-a251-40be-af85-ae4f62cc7929",
+    reference: "TF-TEST",
+    customer,
+    items: [{ name: "Pineapple Pickle", price: 149, quantity: 1 }],
+    subtotal: 149,
+    delivery: null,
+    total: null,
+    status: "enquiry_initiated",
+    payment_method: "unconfirmed",
+    payment_status: "unpaid",
+    version: 0,
+    history: [{ at: "2026-10-25", status: "enquiry_initiated" }],
+  };
+  globalThis.fetch = async (path, options) => {
+    const headers = options?.headers as Record<string, string>;
+    assert.equal(headers.Authorization, "Bearer unit-session");
+    assert.equal(headers["X-Panel-Password"], "unit-panel");
+    const body = JSON.parse(String(options?.body));
+    if (String(path) === "/api/owner-orders") {
+      if (body.action === "list") return Response.json({ orders: [order] });
+      assert.equal(body.version, 0);
+      assert.equal(body.delivery, 50);
+      savedStatus = body.status;
+      return Response.json({
+        order: { ...order, ...body, version: 1, total: 199 },
+      });
+    }
+    if (body.action === "load")
+      return Response.json({ settings: businessDefaults, version: 2 });
+    assert.equal(body.version, 2);
+    settingsSaved = true;
+    return Response.json({ settings: body.settings, version: 3 });
+  };
+  try {
+    render(
+      React.createElement(OwnerOperations, {
+        getToken: async () => "unit-session",
+        password: () => "unit-panel",
+      }),
+    );
+    fireEvent.submit(
+      screen.getByRole("button", { name: "Load enquiries" }).closest("form")!,
+    );
+    fireEvent.click(
+      await screen.findByRole("button", { name: /TF-TEST.*enquiry initiated/ }),
+    );
+    fireEvent.change(screen.getByLabelText("Order status"), {
+      target: { value: "confirmed" },
+    });
+    fireEvent.change(screen.getByLabelText(/Confirmed delivery charge/), {
+      target: { value: "50" },
+    });
+    fireEvent.submit(
+      screen
+        .getByRole("button", { name: "Save business confirmation" })
+        .closest("form")!,
+    );
+    await screen.findByText(
+      "Enquiry updated after the server confirmed saving.",
+    );
+    assert.equal(savedStatus, "confirmed");
+    fireEvent.click(
+      screen.getByRole("button", { name: "Business settings", exact: true }),
+    );
+    fireEvent.click(
+      screen.getByRole("button", { name: "Load current settings" }),
+    );
+    const hours = await screen.findByLabelText("Business hours");
+    fireEvent.change(hours, { target: { value: "Owner verified hours" } });
+    fireEvent.submit(
+      screen
+        .getByRole("button", { name: "Save business settings" })
+        .closest("form")!,
+    );
+    await screen.findByText(
+      "Business settings saved. Refresh the shop to see updates.",
+    );
+    assert.equal(settingsSaved, true);
+  } finally {
+    cleanup();
+    globalThis.fetch = previous;
+  }
+});
+
+test("a successful HTTP response without valid JSON cannot falsely confirm a submission", async () => {
+  const { customerApi } = await import("../src/lib/customerApi.ts");
+  const previous = globalThis.fetch;
+  try {
+    globalThis.fetch = async () =>
+      new Response("<html>Fallback page</html>", { status: 200 });
+    await assert.rejects(
+      () => customerApi("/api/enquiry", {}, async () => null),
+      /unexpected response/,
+    );
+  } finally {
+    globalThis.fetch = previous;
+  }
+});
+
+test("real sign-out overrides stale guest dismissal after Clerk's intermediate loading state", async () => {
+  const {
+    SessionContext,
+    useFirstVisitLogin,
+    GUEST_PREFERENCE,
+    rememberGuest,
+  } = await import("../src/context/Session.tsx");
+  sessionStorage.clear();
+  function SignOutHarness() {
+    const [open, setOpen] = React.useState(false);
+    useFirstVisitLogin("/shop", setOpen);
+    return React.createElement(
+      "div",
+      null,
+      open
+        ? React.createElement(
+            "button",
+            {
+              onClick: () => {
+                rememberGuest();
+                setOpen(false);
+              },
+            },
+            "Continue as Guest",
+          )
+        : "Browsing",
+    );
+  }
+  const base = { userId: null, getToken: async () => null };
+  const view = render(
+    React.createElement(
+      SessionContext.Provider,
+      { value: { ...base, status: "signed-in", userId: "verified-user" } },
+      React.createElement(SignOutHarness),
+    ),
+  );
+  // A stale preference left by an earlier UI version must not suppress sign-out.
+  sessionStorage.setItem(GUEST_PREFERENCE, "yes");
+  view.rerender(
+    React.createElement(
+      SessionContext.Provider,
+      { value: { ...base, status: "loading" } },
+      React.createElement(SignOutHarness),
+    ),
+  );
+  assert.equal(
+    screen.queryByRole("button", { name: "Continue as Guest" }) === null,
+    true,
+  );
+  view.rerender(
+    React.createElement(
+      SessionContext.Provider,
+      { value: { ...base, status: "guest" } },
+      React.createElement(SignOutHarness),
+    ),
+  );
+  fireEvent.click(
+    await screen.findByRole("button", { name: "Continue as Guest" }),
+  );
+  assert.equal(sessionStorage.getItem(GUEST_PREFERENCE), "yes");
+  // Choosing guest after logout still works and must not reopen the prompt.
+  view.rerender(
+    React.createElement(
+      SessionContext.Provider,
+      { value: { ...base, status: "guest" } },
+      React.createElement(SignOutHarness),
+    ),
+  );
+  assert.equal(
+    screen.queryByRole("button", { name: "Continue as Guest" }) === null,
+    true,
+  );
+  cleanup();
+  sessionStorage.clear();
 });

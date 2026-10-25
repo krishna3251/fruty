@@ -1,6 +1,3 @@
-import { useCatalogue } from "../context/Catalogue";
-import { money } from "../data/products";
-import { DELIVERY_CHARGE } from "../lib/catalogue";
 import { useEffect, useRef, useState } from "react";
 import {
   ArrowDown,
@@ -23,11 +20,6 @@ export default function CinematicHero({
 }: {
   paused?: boolean;
 }) {
-  const { products } = useCatalogue();
-  const prices = products
-    .map((p) => p.price)
-    .filter((p): p is number => p !== null && p > 0);
-  const fromPrice = prices.length ? Math.min(...prices) : null;
   const video = useRef<HTMLVideoElement>(null);
   const range = useRef<HTMLInputElement>(null);
   const seek = useRef<(time: number) => void>(() => {});
@@ -208,7 +200,7 @@ export default function CinematicHero({
       </div>
       <div className="cinema-copy">
         <div className="cinema-intro">
-          <span className="eyebrow">FERMENTED PICKLES / A PINEAPPLE STORY</span>
+          <span className="eyebrow">TROPICAL FEAST / A PINEAPPLE STORY</span>
           <h1 id="cinema-title">
             Your plate’s
             <br /> <em>plot twist.</em>
@@ -224,10 +216,8 @@ export default function CinematicHero({
             Play with the jar <ArrowUpRight size={15} />
           </a>
           <div className="hero-shopping-note">
-            {fromPrice !== null && (
-              <strong>From {money(fromPrice)} / jar</strong>
-            )}
-            <span>Hyderabad only · ₹{DELIVERY_CHARGE} delivery</span>
+            <strong>200 g jars · see prices in cart</strong>
+            <span>Hyderabad · delivery confirmed by location</span>
           </div>
         </div>
       </div>

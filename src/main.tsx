@@ -10,6 +10,7 @@ import "./pickles.css";
 import "./pantry.css";
 import "./cinematic.css";
 import "./experience.css";
+import "./commerce.css";
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <ErrorBoundary>

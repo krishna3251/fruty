@@ -19,8 +19,8 @@ test("supplied pickle records remain distinct, owner-priced, local and outside t
   assert.equal(pickleCollections.length, 1);
   assert.equal(pickleCollections[0].id, "tropical-feast");
   for (const p of pickleProducts) {
-    assert.equal(p.price, 200);
-    assert.equal(p.jarSize, null);
+    assert.equal(p.price, 149);
+    assert.equal(p.jarSize, "200 g");
     assert.equal(p.ingredients, null);
     assert.equal(p.currency, "INR");
     assert.equal(p.availability, "unconfirmed");

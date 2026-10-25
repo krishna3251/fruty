@@ -1,5 +1,5 @@
 import { pickleProducts, type PickleProduct } from "../data/pickles.js";
-export const DELIVERY_CHARGE = 150;
+export const DELIVERY_CHARGE: number | null = null; // Confirmed by location, never a universal fee.
 export function cartTotals(
   products: PickleProduct[],
   quantities: Record<string, number>,
@@ -9,7 +9,11 @@ export function cartTotals(
     0,
   );
   const delivery = products.length ? DELIVERY_CHARGE : 0;
-  return { subtotal, delivery, total: subtotal + delivery };
+  return {
+    subtotal,
+    delivery,
+    total: delivery === null ? null : subtotal + delivery,
+  };
 }
 export function validateProduct(value: unknown): PickleProduct {
   if (!value || typeof value !== "object")
@@ -85,6 +89,19 @@ export function validateProduct(value: unknown): PickleProduct {
           )
           .slice(0, 8)
       : [],
+    stockQuantity:
+      p.stockQuantity == null
+        ? null
+        : (() => {
+            if (
+              typeof p.stockQuantity !== "number" ||
+              !Number.isInteger(p.stockQuantity) ||
+              p.stockQuantity < 0 ||
+              p.stockQuantity > 100000
+            )
+              throw Error("Enter a verified nonnegative stock quantity.");
+            return p.stockQuantity;
+          })(),
     availability: availability as PickleProduct["availability"],
     collectionId: "tropical-feast",
     currency: "INR",

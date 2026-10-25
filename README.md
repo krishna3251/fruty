@@ -1,3 +1,5 @@
+> **25 October update:** See [UPGRADE_REPORT.md](UPGRADE_REPORT.md) for the prepared Tropical Feast account/Neon/WhatsApp upgrade, verified ₹149 / 200 g defaults, location-based delivery, migration instructions and actual test limits. Older entries below describe earlier deployments. This upgrade has not been published.
+
 > **Current public site:** Fruity is now a pickle-first enquiry catalogue. `/shop` means pickles. Read [RECONSTRUCTION.md](RECONSTRUCTION.md) for the current architecture, tests and remaining supplier configuration. The fruit-store features described below are preserved in the separate, noindex archive at `/fruit-demo` and original fruit product routes.
 
 # furity — Freshness, in full color.

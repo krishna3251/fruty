@@ -1,5 +1,5 @@
 // Owner confirmed two flavours and supplied the homepage, logo and product images.
-// Owner confirmed ₹200 for each pickle. Jar sizes, ingredients and stock remain unconfirmed.
+// Business questionnaire confirms ₹149 per 200 g jar. Ingredients and stock remain unconfirmed.
 export type PickleCollectionId = "tropical-feast";
 export interface PickleCollection {
   id: PickleCollectionId;
@@ -26,6 +26,7 @@ export interface PickleProduct {
   ingredients: string[] | null;
   flavourDescriptors: string[];
   availability: "unconfirmed" | "available" | "unavailable";
+  stockQuantity?: number | null;
   orderMethod: "direct-message" | null;
   serviceArea: string | null;
 }
@@ -48,9 +49,9 @@ export const pickleCollections: PickleCollection[] = [
   },
 ];
 const pending = {
-  price: 200,
+  price: 149,
   currency: "INR",
-  jarSize: null,
+  jarSize: "200 g",
   ingredients: null,
   availability: "unconfirmed",
   imageType: "owner-supplied",

@@ -16,7 +16,7 @@ test("Gmail redirect contains the whole encoded draft, recipient and compose fie
   assert.equal(url.origin, "https://mail.google.com");
   assert.equal(url.pathname, "/mail/");
   assert.equal(url.searchParams.get("view"), "cm");
-  assert.equal(url.searchParams.get("to"), "krishnasoni3251@gmail.com");
+  assert.equal(url.searchParams.get("to"), "tropicalfeast7@gmail.com");
   assert.equal(url.searchParams.get("body"), message);
 });
 test("basket quantity restoration rejects tampered and invalid values and defaults old selections to one", () => {

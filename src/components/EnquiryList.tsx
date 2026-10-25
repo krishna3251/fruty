@@ -1,4 +1,6 @@
+import { useBusiness } from "../context/Business";
 import { useCatalogue } from "../context/Catalogue";
+import EnquiryReview from "./EnquiryReview";
 import { cartTotals } from "../lib/catalogue";
 import { useRef, useState } from "react";
 import {
@@ -22,21 +24,24 @@ export default function EnquiryList({
   onNavigate?: () => void;
 }) {
   const { products: pickleProducts, error: catalogueError } = useCatalogue();
+  const business = useBusiness();
   const selection = usePickleSelection();
   const [status, setStatus] = useState("");
   const [copying, setCopying] = useState(false);
   const copyingRef = useRef(false);
   if (!selection) return null;
   const selected = pickleProducts.filter((p) => selection.ids.includes(p.id));
-  const { subtotal, delivery, total } = cartTotals(
-    selected,
-    selection.quantities,
-  );
+  const { subtotal } = cartTotals(selected, selection.quantities);
   const missing = selection.ids.filter(
     (id) => !pickleProducts.some((p) => p.id === id),
   );
   const unavailable = selected.some(
-    (p) => p.availability === "unavailable" || p.price === null,
+    (p) =>
+      p.availability === "unavailable" ||
+      p.price === null ||
+      p.stockQuantity === 0 ||
+      (p.stockQuantity != null &&
+        (selection.quantities[p.id] || 1) > p.stockQuantity),
   );
   const message = [
     "Hello, I’d like to enquire about:",
@@ -45,18 +50,18 @@ export default function EnquiryList({
         `• ${selection.quantities[p.id] || 1} × ${p.name} — ${collectionFor(p).name} — ${money(p.price!)} each`,
     ),
     `Products subtotal: ${money(subtotal)}`,
-    `Delivery: ${money(delivery)}`,
-    `Total: ${money(total)}`,
+    "Delivery charge: To be confirmed",
+    "Final payable amount: To be confirmed",
     "Please confirm jar sizes, ingredients/allergens, stock, delivery details and the final total before I order.",
   ].join("\n");
-  const dm = enquiryWhatsApp(message);
+  const dm = enquiryWhatsApp(message, `https://wa.me/${business.whatsapp}`);
   return (
     <div
       className={`enquiry-list ${selected.length ? "has-items" : "is-empty"}`}
     >
       <p className="basket-intro">
         Pick your jars. We’ll help with the rest.{" "}
-        <span>₹150 delivery · Hyderabad enquiries</span>
+        <span>Delivery confirmed by location · Hyderabad enquiries</span>
       </p>
       {catalogueError && <p role="status">{catalogueError}</p>}
       {missing.length > 0 && (
@@ -78,6 +83,14 @@ export default function EnquiryList({
           An item is unavailable. Remove it before sending your enquiry.
         </p>
       )}
+      {selection.syncStatus && (
+        <p role="status">
+          {selection.syncStatus}{" "}
+          <button className="text-link" onClick={selection.reloadSaved}>
+            Reload saved cart
+          </button>
+        </p>
+      )}
       {selection.storageUnavailable && (
         <p role="status">
           Browser storage is unavailable. Your list lasts for this visit only.
@@ -97,7 +110,13 @@ export default function EnquiryList({
                 key={p.id}
                 className="basket-suggestion"
                 onClick={() => selection.add(p.id)}
-                disabled={p.availability === "unavailable" || p.price === null}
+                disabled={
+                  p.availability === "unavailable" ||
+                  p.price === null ||
+                  p.stockQuantity === 0 ||
+                  (p.stockQuantity != null &&
+                    (selection.quantities[p.id] || 1) > p.stockQuantity)
+                }
                 aria-label={`Add to cart: ${p.name}`}
               >
                 <img src={p.image} alt={p.imageAlt} width="160" height="110" />
@@ -147,7 +166,8 @@ export default function EnquiryList({
                             : ""}
                         </small>
                         <strong className="basket-unit-price">
-                          {money(p.price!)} <span>/ jar · size to confirm</span>
+                          {money(p.price!)}{" "}
+                          <span>/ jar · {p.jarSize || "size to confirm"}</span>
                         </strong>
                         <div
                           className="enquiry-quantity"
@@ -156,7 +176,10 @@ export default function EnquiryList({
                           <button
                             className="icon-button"
                             aria-label={`Decrease ${p.name} quantity`}
-                            disabled={(selection.quantities[p.id] || 1) <= 1}
+                            disabled={
+                              selection.syncLoading ||
+                              (selection.quantities[p.id] || 1) <= 1
+                            }
                             onClick={() =>
                               selection.setQuantity(
                                 p.id,
@@ -174,7 +197,10 @@ export default function EnquiryList({
                             aria-label={`Increase ${p.name} quantity`}
                             disabled={
                               (selection.quantities[p.id] || 1) >=
-                              MAX_ENQUIRY_QUANTITY
+                              Math.min(
+                                MAX_ENQUIRY_QUANTITY,
+                                p.stockQuantity ?? MAX_ENQUIRY_QUANTITY,
+                              )
                             }
                             onClick={() =>
                               selection.setQuantity(
@@ -208,16 +234,17 @@ export default function EnquiryList({
               <span>Products subtotal</span>
               <strong>{money(subtotal)}</strong>
               <small>
-                Confirm jar size, stock and delivery details before ordering.
+                Confirm stock, ingredients/allergens and delivery before
+                ordering.
               </small>
             </div>
             <div className="cart-total-row">
               <span>Delivery</span>
-              <strong>{money(delivery)}</strong>
+              <strong>To be confirmed</strong>
             </div>
             <div className="cart-total-row cart-grand-total">
-              <span>Total</span>
-              <strong>{money(total)}</strong>
+              <span>Final payable amount</span>
+              <strong>To be confirmed</strong>
             </div>
             <a
               className="cart-account-link"
@@ -226,7 +253,17 @@ export default function EnquiryList({
             >
               Sign in / Manage account ↗
             </a>
-            <span className="basket-action-label">SEND YOUR ENQUIRY</span>
+            {!unavailable && (
+              <EnquiryReview
+                products={selected}
+                items={Object.fromEntries(
+                  selected.map((p) => [p.id, selection.quantities[p.id] || 1]),
+                )}
+              />
+            )}
+            <span className="basket-action-label">
+              PRODUCT QUESTIONS? CONTACT US
+            </span>
             <div className="basket-contact-actions">
               {dm && !unavailable && (
                 <a

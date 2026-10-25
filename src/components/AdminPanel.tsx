@@ -11,7 +11,8 @@ import {
 import type { PickleProduct } from "../data/pickles";
 import { useCatalogue } from "../context/Catalogue";
 import { money } from "../data/products";
-import { DELIVERY_CHARGE, validateProduct } from "../lib/catalogue";
+import OwnerOperations from "./OwnerOperations";
+import { validateProduct } from "../lib/catalogue";
 const blank: PickleProduct = {
   id: "",
   name: "",
@@ -165,7 +166,7 @@ export function ProductManager({
           <strong>{catalogue.products.length}</strong> Products
         </span>
         <span>
-          <strong>{money(DELIVERY_CHARGE)}</strong> Delivery / enquiry
+          <strong>By location</strong> Delivery confirmed in chat
         </span>
         <span>
           <ShoppingBag size={20} /> Enquiry-based store
@@ -177,6 +178,7 @@ export function ProductManager({
       <p role="status" className="admin-success">
         {success}
       </p>
+      <OwnerOperations getToken={getToken} password={() => password.current} />
       <div className="admin-layout">
         <section className="admin-product-list">
           <div className="admin-list-heading">
@@ -396,6 +398,23 @@ export function ProductManager({
                   <option value="available">Available</option>
                   <option value="unavailable">Currently unavailable</option>
                 </select>
+              </label>
+              <label>
+                Verified stock quantity — leave blank when unknown
+                <input
+                  type="number"
+                  min="0"
+                  max="100000"
+                  step="1"
+                  value={draft.stockQuantity ?? ""}
+                  onChange={(e) =>
+                    setDraft({
+                      ...draft,
+                      stockQuantity:
+                        e.target.value === "" ? null : Number(e.target.value),
+                    })
+                  }
+                />
               </label>
               <details>
                 <summary>Optional verified product details</summary>

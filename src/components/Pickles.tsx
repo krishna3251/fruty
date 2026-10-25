@@ -2,7 +2,8 @@ import ProductGallery from "./ProductGallery";
 import JarLab from "./JarLab";
 import ShoppingConfidence from "./ShoppingConfidence";
 import { useCatalogue } from "../context/Catalogue";
-import { DELIVERY_CHARGE } from "../lib/catalogue";
+import { useBusiness } from "../context/Business";
+import { DELIVERY_NOTICE } from "../lib/business";
 import { useRef, useState, type PointerEvent } from "react";
 import {
   ArrowUpRight,
@@ -81,11 +82,14 @@ function SavePickle({
   const selection = usePickleSelection();
   if (!selection) return null;
   const saved = selection.ids.includes(p.id);
-  const unavailable = p.availability === "unavailable" || p.price === null;
+  const unavailable =
+    p.availability === "unavailable" ||
+    p.price === null ||
+    p.stockQuantity === 0;
   return (
     <button
       className={`button primary product-add ${detail ? "pickle-save-detail" : ""}`}
-      disabled={unavailable}
+      disabled={unavailable || selection.syncLoading}
       onClick={() => {
         if (saved) window.dispatchEvent(new window.Event("pantry:open-cart"));
         else selection.add(p.id);
@@ -153,15 +157,12 @@ function PickleCard({ product: p }: { product: PickleProduct }) {
         </div>
         <p className="pickle-descriptors">{p.flavourDescriptors.join(" · ")}</p>
         <div className="product-card-price">
-          <strong>{p.price === null ? "On enquiry" : money(p.price)}</strong>
-          <span>{p.jarSize || "per jar · size to confirm"}</span>
+          <strong>{p.jarSize || "Size on enquiry"}</strong>
+          <span>See price in your cart before enquiring</span>
         </div>
-        {p.price !== null && (
-          <p className="product-delivered-price">
-            1 jar + delivery: <b>{money(p.price + DELIVERY_CHARGE)}</b>
-            <span>Hyderabad only</span>
-          </p>
-        )}
+        <p className="product-delivered-price">
+          Hyderabad only · delivery by location
+        </p>
         <SavePickle product={p} />
         <a className="text-link" href={`/products/${p.id}`}>
           Product details <ArrowUpRight size={16} />
@@ -178,10 +179,16 @@ function PairPick() {
   );
   if (
     !selection ||
-    pair.some((p) => !p || p.price === null || p.availability === "unavailable")
+    pair.some(
+      (p) =>
+        !p ||
+        p.price === null ||
+        p.availability === "unavailable" ||
+        p.stockQuantity === 0,
+    )
   )
     return null;
-  const total = pair.reduce((n, p) => n + (p?.price || 0), 0) + DELIVERY_CHARGE;
+
   return (
     <aside className="pair-pick">
       <div>
@@ -193,11 +200,12 @@ function PairPick() {
       </div>
       <div className="pair-pick-action">
         <strong>
-          {money(total)}
-          <small>for the pair, including ₹{DELIVERY_CHARGE} delivery</small>
+          Your flavour duo
+          <small>See current prices in cart · delivery confirmed in chat</small>
         </strong>
         <button
           className="button primary"
+          disabled={selection.syncLoading}
           onClick={() => {
             pair.forEach((p) => selection.add(p!.id));
             window.dispatchEvent(new window.Event("pantry:open-cart"));
@@ -290,10 +298,11 @@ export function TropicalOrdering({
   product,
 }: { product?: PickleProduct } = {}) {
   const message = product
-    ? `Hello, I’d like to enquire about ${product.name} at ₹${product.price}, plus ₹150 delivery. Please confirm jar size, ingredients/allergens, availability and delivery.`
+    ? `Hello, I’d like to enquire about ${product.name} (${product.jarSize || "size to confirm"}). Please confirm the current price, ingredients/allergens, availability and delivery.`
     : undefined;
-  const link = enquiryWhatsApp(message);
-  const email = enquiryGmail(message);
+  const business = useBusiness();
+  const link = enquiryWhatsApp(message, `https://wa.me/${business.whatsapp}`);
+  const email = enquiryGmail(message, business.email);
   return (
     <section
       className="pickle-ordering section-pad"
@@ -308,7 +317,7 @@ export function TropicalOrdering({
         <p>
           Pineapple and cucumber pickle enquiries are by direct message. Confirm
           availability, price, jar size, ingredients and delivery before
-          ordering. Delivery is ₹150 per enquiry.
+          ordering. Delivery charges will be confirmed on WhatsApp.
         </p>
       </div>
       <div className="pickle-order-action">
@@ -490,7 +499,7 @@ export function PickleCatalogue({
         )}
         <p className="pickle-results" role="status">
           {results.length} {results.length === 1 ? "flavour" : "flavours"} ·
-          ₹150 delivery per enquiry · Confirm jar size and availability
+          Delivery by location · Confirm availability
         </p>
         <div className="pickle-grid">
           {results.map((p) => (
@@ -584,19 +593,7 @@ export function PickleProductPage({ product: p }: { product: PickleProduct }) {
             Add your chosen flavour to your cart, then confirm the details
             before ordering. No order or payment is processed here.
           </p>
-          <p className="delivery-note">
-            ₹{DELIVERY_CHARGE} delivery per enquiry · Hyderabad only
-          </p>
-          {p.price !== null && (
-            <div className="product-one-jar-total">
-              <span>One jar, with delivery</span>
-              <strong>{money(p.price + DELIVERY_CHARGE)}</strong>
-              <small>
-                {money(p.price)} product + ₹{DELIVERY_CHARGE} delivery · confirm
-                availability before ordering
-              </small>
-            </div>
-          )}
+          <p className="delivery-note">{DELIVERY_NOTICE} Hyderabad only.</p>
           <SavePickle product={p} detail />
           <a
             className="text-link pickle-detail-enquiry"

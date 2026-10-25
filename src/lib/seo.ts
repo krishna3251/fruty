@@ -28,9 +28,8 @@ export function pageMeta(
 ) {
   if (path === "/admin")
     return {
-      title: "Owner Product Panel | Fermented Pickles",
-      description:
-        "Private product management for the Fermented Pickles owner.",
+      title: "Owner Product Panel | Tropical Feast",
+      description: "Private product management for the Tropical Feast owner.",
       type: "website",
       index: false,
     };
@@ -38,12 +37,12 @@ export function pageMeta(
     return {
       title:
         path === "/sign-up"
-          ? "Create Your Account | Fermented Pickles"
+          ? "Create Your Account | Tropical Feast"
           : path === "/sign-in"
-            ? "Sign In | Fermented Pickles"
-            : "Your Account | Fermented Pickles",
+            ? "Sign In | Tropical Feast"
+            : "Your Account | Tropical Feast",
       description:
-        "Secure sign-in, registration and profile management for Fermented Pickles. Guest browsing and pickle enquiries remain available.",
+        "Secure sign-in, registration and profile management for Tropical Feast. Guest browsing and pickle enquiries remain available.",
       type: "website",
       index: false,
     };
@@ -63,7 +62,7 @@ export function pageMeta(
   if (pickle)
     return {
       title: `${pickle.name} | Tropical Feast`,
-      description: `Explore Tropical Feast’s ${pickle.name.toLowerCase()}${pickle.price === null ? " — price on enquiry" : ` at ${money(pickle.price)}`}. Enquire in Hyderabad and confirm jar size, ingredients, availability and delivery.`,
+      description: `Explore Tropical Feast’s ${pickle.name.toLowerCase()}${pickle.price === null ? " — price on enquiry" : ` at ${money(pickle.price)}`}. Enquire in Hyderabad and confirm ingredients, availability and delivery.`,
       type: "website",
       index: true,
     };
@@ -92,9 +91,9 @@ export function pageMeta(
         "Explore pineapple and cucumber pickles from Tropical Feast, with owner-supplied product images and clear enquiry details.",
     },
     "/": {
-      title: "Fermented Pickles | Pineapple & Cucumber Pickles",
+      title: "Tropical Feast | Pineapple & Cucumber Pickles",
       description:
-        "Watch the pineapple pickle film at Fermented Pickles. Discover Tropical Feast’s pineapple and cucumber pickles and enquire in Hyderabad.",
+        "Watch the pineapple pickle film at Tropical Feast. Discover Tropical Feast’s pineapple and cucumber pickles and enquire in Hyderabad.",
     },
     "/shop": {
       title: "Shop Pineapple & Cucumber Pickles | Tropical Feast",

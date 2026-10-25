@@ -21,8 +21,8 @@ export function structuredData(
       "@type": "WebSite",
       "@id": `${origin}/#website`,
       url: `${origin}/`,
-      name: "Fermented Pickles",
-      alternateName: "Fermented Pickles featuring Tropical Feast",
+      name: "Tropical Feast",
+      alternateName: "Fruty × Tropical Feast",
       inLanguage: "en-IN",
     });
   else {

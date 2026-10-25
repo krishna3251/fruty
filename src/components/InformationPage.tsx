@@ -1,31 +1,33 @@
 import { useState } from "react";
 import { siteConfig } from "../lib/config";
+import { useBusiness } from "../context/Business";
 import { enquiryWhatsApp, enquiryGmail } from "../lib/contact";
 export default function InformationPage({ path }: { path: string }) {
-  const [storageError, setStorageError] = useState("");
+  const business = useBusiness();
+  const [error, setError] = useState("");
+  const email = enquiryGmail(undefined, business.email);
+  const whatsapp = enquiryWhatsApp(
+    undefined,
+    `https://wa.me/${business.whatsapp}`,
+  );
   if (path === "/thank-you") {
     let confirmed = false;
     try {
-      const time = Number(
-        sessionStorage.getItem("furity-newsletter-confirmed"),
-      );
-      confirmed = time > 0 && Date.now() - time < 30 * 60000;
-    } catch {
-      /* No confirmation without a verified session marker. */
-    }
+      const t = Number(sessionStorage.getItem("furity-newsletter-confirmed"));
+      confirmed = t > 0 && Date.now() - t < 1800000;
+    } catch {}
     return (
       <section className="information-page section-pad">
-        <span className="eyebrow">NEWSLETTER STATUS</span>
         <h1>
           {confirmed ? "Thanks for subscribing." : "No signup to confirm."}
         </h1>
         <p>
           {confirmed
-            ? "The configured newsletter service confirmed your signup. Check your inbox for any follow-up sent by that service."
-            : "We have not verified a newsletter submission in this session. You can return to the homepage to check signup availability."}
+            ? "The configured newsletter service confirmed your signup. Check your inbox for any follow-up."
+            : "No genuine newsletter submission was verified in this session."}
         </p>
         <a className="button primary" href="/">
-          Back to the pickle collection ↗
+          Back to the pantry ↗
         </a>
       </section>
     );
@@ -45,125 +47,99 @@ export default function InformationPage({ path }: { path: string }) {
             ? "Website terms."
             : "Let’s get in touch."}
       </h1>
-      <p className="policy-intro">
-        {path === "/contact"
-          ? "Ask about either pickle on WhatsApp or by email. We keep contact details behind these links."
-          : "Implementation notice for the pickle enquiry catalogue. Updated 24 October 2026."}
-      </p>
       {path === "/privacy" ? (
         <>
-          <h2>Who operates this website?</h2>
           <p>
-            {siteConfig.businessName ||
-              "Business/legal name: not supplied by the owner."}{" "}
-            Privacy contact:{" "}
-            {siteConfig.email ? (
-              <a
-                href={enquiryGmail()!}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Contact by email
-              </a>
-            ) : (
-              "not supplied. The owner must provide a working privacy contact before collecting personal information commercially."
-            )}
+            Implementation notice · updated 25 October 2026. Trading name:{" "}
+            {business.name}, Hyderabad, Telangana, India. The owner must supply
+            the legal seller identity, physical address and a verified retention
+            policy.{" "}
+            <a href={email!} target="_blank" rel="noopener noreferrer">
+              Contact by email
+            </a>
+            .
           </p>
-          <h2>What stays on your device</h2>
+          <h2>Your device and cookies</h2>
           <p>
-            Your enquiry basket stores product IDs (fruity-pickle-selection-v1)
-            and requested quantities (fruity-pickle-quantities-v1) locally until
-            you remove them or clear site data. No enquiry is automatically
-            transmitted. The archived fruit demo’s bag (furity-cart-v1), saved
-            fruit (furity-saved-v1), and sample receipts (furity-receipts-v1)
-            use localStorage. They remain until you clear them or your browser
-            removes site data. Demo receipts contain a sample ID, date, product
-            IDs, quantities and estimated total; they contain no contact/address
-            details.
+            Guest carts store product IDs and quantities in localStorage until
+            removed or site data is cleared. The guest-login dismissal is a
+            non-sensitive sessionStorage preference (tf-guest-session-v1), not
+            an authenticated session. A random cart-merge identifier may be held
+            in sessionStorage to prevent duplicate merges. Personal names, phone
+            numbers and delivery addresses are not stored in localStorage.
           </p>
-          <h2>Collection enquiries</h2>
+          <h2>Sign-in and saved account data</h2>
           <p>
-            Tropical Feast offers external WhatsApp and email enquiry links.
-            Following that link, when available, takes you to the configured
-            provider or email app. WhatsApp and Gmail web links include the
-            selected product draft in the destination URL when you click. The
-            website does not send the message automatically; review and send it
-            yourself. The supplier and provider must confirm how they handle
-            enquiries.
+            Clerk checks your session on storefront visits and provides
+            registration, sign-in and profile/security management. Google
+            processes authentication if you choose Google login; we never
+            receive your Google password. Essential session cookies work
+            independently of optional analytics. Clerk SDK telemetry is
+            disabled. After real authentication, the store uses Neon PostgreSQL
+            for your Clerk user reference, name, verified email, optional phone,
+            saved addresses, cart and enquiry history. Server endpoints scope
+            these records to the verified session. Guest browsing and ordering
+            remain available.
           </p>
-          <h2>Customer accounts</h2>
+          <h2>Enquiries and WhatsApp</h2>
           <p>
-            Account sign-in, registration, verification and profile management
-            are provided by Clerk when configured. Clerk processes account
-            details and authentication activity; Google processes authentication
-            if you choose Google sign-in. We do not receive your Google
-            password. Essential Clerk session cookies keep you signed in; these
-            are separate from optional analytics consent. The Clerk SDK is
-            loaded when you open the account dialog or visit an account page,
-            and SDK telemetry is disabled. Use your account’s security controls
-            to manage sessions or sign out. Account and provider-side retention
-            and deletion requests require the owner’s confirmed privacy process.
-            Your enquiry basket stays on this device and is not synced to your
-            account.
+            Delivery details stay in memory until you choose Prepare WhatsApp
+            enquiry. That action saves your name, phone, address, product and
+            price snapshots, timestamps and an enquiry reference in Neon, for
+            authorized business review. Opening WhatsApp or Gmail sends an
+            editable draft in the destination URL to that provider; you must
+            send it yourself. A redirect does not prove a message was sent and
+            does not confirm an order. If storage fails, an explicitly labelled
+            direct-message fallback does not save an enquiry here. Never include
+            payment passwords or card details.
           </p>
-          <h2>Owner product management</h2>
+          <h2>Owner access and hosting</h2>
           <p>
-            The private owner panel uses verified Clerk account access and a
-            server-checked panel password. Product photos, prices and
-            descriptions are stored in Vercel Blob and made available in the
-            public catalogue. The panel password is not stored in the browser.
-            No customer address or payment data is stored by this panel.
+            The owner panel checks Clerk identity, a verified owner email and a
+            server-checked panel password on every protected operation.
+            Catalogue details and optimized photos remain in Vercel Blob.
+            Customer information and delivery settings use Neon. Vercel
+            processes hosting requests. A short-lived hashed network identifier
+            is used for enquiry rate limits; expired counters are cleaned
+            periodically. No payment gateway is connected.
           </p>
-          <h2>Forms and checkout</h2>
-          <p>
-            The public pickle catalogue has no online checkout. Its enquiry
-            draft is generated on your device; copying it places product names
-            and an enquiry template on your clipboard only when you click Copy.
-            No personal details are requested. In the archived fruit demo,
-            checkout fields stay in memory while the checkout is open; no order,
-            payment or address is sent to a server. Newsletter signup is
-            disabled unless an HTTPS endpoint is configured. When configured,
-            submitting sends your email to that endpoint; confirmation requires
-            its successful response. A short-lived confirmation marker is saved
-            in sessionStorage. The owner must disclose the newsletter provider
-            and its actual retention policy before enabling it.
-          </p>
-          <h2>Optional analytics and cookies</h2>
+          <h2>Optional analytics and other forms</h2>
           <p>
             {siteConfig.analyticsId
-              ? "Google Analytics is configured but loads only after you explicitly allow it in preferences."
-              : "No analytics measurement ID is currently configured; no optional analytics tag is loaded."}{" "}
-            If enabled and accepted, GA4 receives page paths and product/CTA
-            events, and may use first-party _ga cookies (configured lifetime:
-            180 days). Form contents, addresses, email, phone and URL query
-            parameters are excluded from our event payloads. Google may process
-            network/device information under its own policies. Advertising
-            features are disabled.
+              ? "Google Analytics loads only after explicit optional analytics consent."
+              : "No analytics measurement ID is configured, so optional analytics is off."}{" "}
+            Consent preferences use furity-consent-v1 for up to 180 days.
+            Rejecting analytics does not sign you out or stop shopping. Form
+            contents, phone, addresses and email are excluded from site
+            analytics events. Newsletter signup appears only with a configured
+            endpoint; a genuine successful response is required for
+            confirmation. The owner must disclose that provider before enabling
+            it.
           </p>
+          <h2>Retention and deletion</h2>
           <p>
-            Your dismissed cookie notice and optional analytics choices use
-            furity-consent-v1 for up to 180 days (or this visit if browser
-            storage is blocked). Rejecting optional analytics does not prevent
-            shopping. Preferences can be reopened in the footer. Hosting on
-            Vercel involves standard request processing; the owner must confirm
-            any hosting-log retention settings. No advertising pixel, embedded
-            social feed or third-party font service is used.
+            Saved store records remain until you delete them through Your
+            account or the owner handles a verified request. Delete my store
+            data removes your saved addresses, account cart and linked store
+            enquiries. Clerk sign-in data is separate: use account security
+            controls or request provider-side deletion. This cannot remove
+            WhatsApp/email messages, provider logs or backups already held by
+            their respective providers. Guest enquiry deletion requests go
+            through the business email; the owner must verify identity and the
+            reference. Backup/log retention and any legally required order
+            retention need owner confirmation before commercial collection.
           </p>
-          <h2>Control and retention</h2>
+          <h2>Archived demonstration</h2>
           <p>
-            You can remove the saved shopping and analytics preference data
-            below. This does not sign you out of Clerk or delete your account;
-            use the account page to manage your session. This does not delete
-            any information already sent to a configured newsletter or analytics
-            provider. Use the owner’s privacy contact for provider-side requests
-            once supplied. No claim of compliance with a particular privacy law
-            is made.
+            The separate fruit demo retains its local sample bag, saved fruit
+            and sample receipts. It processes no real payment or order and
+            stores no customer contact data in receipts.
           </p>
           <button
             className="button primary"
             onClick={() => {
               try {
-                for (const key of [
+                for (const k of [
                   "fruity-pickle-selection-v1",
                   "fruity-pickle-quantities-v1",
                   "furity-cart-v1",
@@ -171,129 +147,130 @@ export default function InformationPage({ path }: { path: string }) {
                   "furity-receipts-v1",
                   "furity-consent-v1",
                 ])
-                  localStorage.removeItem(key);
-                sessionStorage.removeItem("furity-newsletter-confirmed");
+                  localStorage.removeItem(k);
+                for (const k of [
+                  "tf-guest-session-v1",
+                  "tf-cart-merge-v1",
+                  "furity-newsletter-confirmed",
+                ])
+                  sessionStorage.removeItem(k);
                 window.location.reload();
               } catch {
-                setStorageError(
-                  "Browser storage could not be cleared here. Use your browser’s site-data settings.",
+                setError(
+                  "Use your browser’s site-data settings to clear local data.",
                 );
               }
             }}
           >
             Clear this site’s browser data
           </button>
-          <p role="status">{storageError}</p>
+          <p>
+            This does not delete your server account or sign you out.{" "}
+            <a href="/account">Manage store data and sign-in</a>.
+          </p>
+          <p role="status">{error}</p>
         </>
       ) : path === "/terms" ? (
         <>
-          <div className="demo-banner">
-            <p>
-              Editable pre-launch terms template. The owner must confirm
-              business details and obtain legal review before commercial
-              publication.
-            </p>
-          </div>
-          <h2>Using this catalogue</h2>
-          <p>
-            Tropical Feast is a pickle discovery and enquiry catalogue for two
-            owner-confirmed flavours: pineapple and cucumber. Product prices
-            appear in the catalogue. Delivery is ₹150 per enquiry; the cart
-            shows the current product prices and total. Jar sizes,
-            ingredients/allergens and stock remain unconfirmed. No offer to
-            supply goods or contract is created by saving a product or copying
-            an enquiry draft. A separately archived fruit demonstration retains
-            its sample prices and checkout.
+          <p className="demo-banner">
+            Editable terms: owner legal review and completion are required
+            before commercial launch.
           </p>
-          <h2>Orders, payments and accounts</h2>
+          <h2>Products and pricing</h2>
           <p>
-            The pickle website does not accept payments or verify orders. A
-            supplier must confirm the details directly before any off-site
-            transaction. No purchase contract is formed through the archived
-            demo checkout. Account sign-in is provided by Clerk when configured.
-            No real payment, order fulfillment, delivery reservation or
-            inventory allocation is connected. A demo receipt is not a tax
-            invoice or order confirmation.
+            Tropical Feast offers homemade pickles in Hyderabad. The initial
+            cucumber and pineapple products are 200 g jars at ₹149 each. Current
+            cart prices reflect the catalogue; the owner may update them. Prices
+            are visible before you provide delivery details. Ingredients,
+            allergens, storage, shelf life and stock must be confirmed with the
+            business where not supplied.
           </p>
-          <h2>Before live sales begin</h2>
+          <h2>Enquiries are not orders</h2>
           <p>
-            The owner must publish the verified seller identity, service area,
-            total price/tax rules, payment methods, delivery times, cancellation
-            conditions, damaged-produce process, return eligibility, refund
-            process/timeframes, customer support and applicable jurisdiction.
-            These commercial terms are not yet provided and no delivery/refund
-            guarantee is represented here.
+            Saving a cart, preparing an enquiry or opening a WhatsApp draft is
+            not a confirmed purchase. The business must accept the enquiry and
+            confirm availability, delivery coverage, charge, payable total and
+            payment arrangements directly. Only the authorized business can mark
+            an order confirmed or fulfilled. No online payment is collected here
+            and no cash-on-delivery service is promised.
           </p>
-          <h2>Content and availability</h2>
+          <h2>Delivery</h2>
           <p>
-            Use the site lawfully. The owner must secure rights to product
-            photography and other assets before commercial use. Features may
-            change or be temporarily unavailable; statutory rights that cannot
-            lawfully be excluded are not purported to be waived by this
-            template.
+            Delivery charges depend on location and will be confirmed on
+            WhatsApp. Configured area rates, any eligible free-delivery
+            threshold and delivery timing are estimates until the business
+            confirms them. A valid PIN format alone does not establish service
+            availability. No delivery outside confirmed Hyderabad service areas
+            is promised.
           </p>
-          <h2>Questions and business identity</h2>
+          <h2>Accounts and privacy</h2>
           <p>
-            See the <a href="/contact">contact page</a> for configured details.
-            Governing law, legal business name, physical address and applicable
-            dispute process require owner confirmation.
+            Guest enquiries are welcome. Sign-in uses Clerk; saved store data
+            uses Neon when configured. Keep account access secure. The owner
+            panel is restricted separately on the server. See{" "}
+            <a href="/privacy">privacy and storage</a> for deletion controls and
+            providers.
+          </p>
+          <h2>Commercial terms still required</h2>
+          <p>
+            The owner must publish the legal seller identity and address, tax
+            treatment, accepted payment arrangements, cancellation conditions,
+            damaged-jar process, return/refund eligibility and timeframes, and
+            applicable dispute process. None is invented here. Statutory rights
+            that cannot be excluded are not waived by this template.
           </p>
         </>
       ) : (
         <>
+          <p>{business.tagline}</p>
           <dl className="contact-details">
-            <dt>Business/legal name</dt>
-            <dd>
-              {siteConfig.businessName ||
-                "Not provided — owner configuration required"}
-            </dd>
+            <dt>Trading brand</dt>
+            <dd>{business.name} · Homemade pickles</dd>
+            <dt>Location</dt>
+            <dd>{business.location}</dd>
+            <dt>Business hours</dt>
+            <dd>{business.hours}</dd>
             <dt>Email</dt>
             <dd>
-              {/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(siteConfig.email) ? (
-                <a
-                  href={enquiryGmail()!}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Contact by email
-                </a>
-              ) : (
-                "Not provided — no support email is published"
-              )}
+              <a href={email!} target="_blank" rel="noopener noreferrer">
+                Contact by email ↗
+              </a>
             </dd>
             <dt>WhatsApp</dt>
             <dd>
-              {enquiryWhatsApp() ? (
-                <a
-                  href={enquiryWhatsApp()!}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Chat on WhatsApp
+              {whatsapp ? (
+                <a href={whatsapp} target="_blank" rel="noopener noreferrer">
+                  Chat on WhatsApp ↗
                 </a>
               ) : (
-                "Contact channel unavailable"
+                "Ordering channel unavailable"
               )}
             </dd>
-            <dt>Physical address</dt>
+            <dt>Instagram</dt>
+            <dd>
+              <a
+                href={business.instagram}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                @tropicalfeast.pickles ↗
+              </a>
+            </dd>
+            <dt>Physical business address</dt>
             <dd>
               {siteConfig.address ||
-                "Not provided — no business address is published"}
+                "Not yet supplied. Hyderabad is the service location, not a published street address."}
             </dd>
           </dl>
-          <h2>Service status</h2>
           <p>
-            This website provides pickle discovery and enquiry preparation.
-            Tropical Feast’s Hyderabad-only enquiry channel is separately
-            configurable. Online payment, fulfilment and order processing are
-            not connected. No response-time promise or company registration is
-            implied.
+            Delivery charges will be confirmed on WhatsApp. Enquiries need
+            direct business confirmation before an order is accepted.
           </p>
-          <h2>Owner completion checklist</h2>
+          <h2>Owner details to complete</h2>
           <p>
-            Supply the legal/trading name, monitored support and privacy email,
-            telephone, physical business address, support hours and delivery
-            area. Verify the details before enabling live commerce.
+            Confirm legal seller identity, physical address,
+            ingredients/allergens, shelf life, delivery areas/timing and
+            cancellation/return/refund terms before commercial launch.
           </p>
           <a href="/privacy">Privacy notice</a> ·{" "}
           <a href="/terms">Website terms</a>

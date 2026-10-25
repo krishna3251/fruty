@@ -1,3 +1,4 @@
+import { useBusiness } from "../context/Business";
 import { ArrowUpRight, Mail } from "lucide-react";
 import { enquiryEmail, enquiryGmail } from "../lib/contact";
 export default function EmailEnquiry({
@@ -11,7 +12,8 @@ export default function EmailEnquiry({
   fallback?: boolean;
   prominent?: boolean;
 }) {
-  const gmail = enquiryGmail(message);
+  const business = useBusiness();
+  const gmail = enquiryGmail(message, business.email);
   if (!gmail) return null;
   return (
     <div className="email-enquiry-actions">
@@ -27,7 +29,10 @@ export default function EmailEnquiry({
       </a>
       {fallback && (
         <>
-          <a className="email-app-link" href={enquiryEmail(message)!}>
+          <a
+            className="email-app-link"
+            href={enquiryEmail(message, business.email)!}
+          >
             Use my email app instead
           </a>
           <small>

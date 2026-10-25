@@ -1,7 +1,9 @@
+import { useBusiness } from "../context/Business";
 import { MapPin, Truck, MessageCircle, ArrowUpRight } from "lucide-react";
 import { enquiryWhatsApp } from "../lib/contact";
-import { DELIVERY_CHARGE } from "../lib/catalogue";
+
 export default function ShoppingConfidence() {
+  const business = useBusiness();
   return (
     <section
       className="shopping-confidence section-pad"
@@ -17,8 +19,8 @@ export default function ShoppingConfidence() {
       <div>
         <Truck size={21} />
         <span>
-          <strong>₹{DELIVERY_CHARGE} delivery. Shown upfront.</strong>
-          <small>One delivery charge for all jars in your enquiry.</small>
+          <strong>Delivery by location. Confirmed in chat.</strong>
+          <small>Delivery charges will be confirmed on WhatsApp.</small>
         </span>
       </div>
       <div>
@@ -31,6 +33,7 @@ export default function ShoppingConfidence() {
       <a
         href={enquiryWhatsApp(
           "Hello! I’m in Hyderabad. Can you confirm delivery availability, timing, jar sizes and ingredients/allergens before I order?",
+          `https://wa.me/${business.whatsapp}`,
         )!}
         target="_blank"
         rel="noopener noreferrer"

@@ -1,3 +1,5 @@
+> **25 October update:** See [UPGRADE_REPORT.md](UPGRADE_REPORT.md) for the prepared Tropical Feast account/Neon/WhatsApp upgrade, verified ₹149 / 200 g defaults, location-based delivery, migration instructions and actual test limits. Older entries below describe earlier deployments. This upgrade has not been published.
+
 # Customer accounts — Clerk / React + Vite
 
 The existing Clerk Marketplace resource connected to Vercel project `fruty` is used. No replacement application or user database was created.
