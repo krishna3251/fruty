@@ -51,3 +51,11 @@ The automated component tests use JSDOM. Database tests use isolated PostgreSQL/
 ## Readiness
 
 **Source checks pass; not yet a fully configured production store.** The deployment is a migration in progress. No paid domain is necessary for the prepared approach, but platform quotas still apply. The original Vercel deployment and historical customer identities were not replaced by this audit.
+
+## Follow-up after public access was enabled
+
+The owner enabled public access after this audit. Fresh unauthenticated checks then returned 200 for the home/sign-in pages and 404 for an unknown page. The API endpoints returned **502** with `ERR_REQUIRE_ESM`: Firebase Admin's transitive CommonJS `jwks-rsa@4.1.0` required ESM-only `jose@6`. The former access wall had prevented exercising the live handler.
+
+The function bundle reproduced this crash locally with Node's `--no-experimental-require-module` flag. A scoped `jwks-rsa > jose` override selects the already-used dual CommonJS/ESM `jose@5.10.0` series, without changing unrelated dependencies or disabling token verification. The locked dependency tree was regenerated. `tests/netlify-runtime.test.ts` now bundles the Netlify entry, loads it in a subprocess under that restriction, checks a real handler response and exercises JWKS RSA public-key conversion/signature verification without network calls or customer credentials. This extends the suite to **101 passing tests**. Real signup/mail/admin/database verification still needs external configuration.
+
+Upstream reference: https://github.com/firebase/firebase-admin-node/issues/3181. Reassess the scoped override once upstream CommonJS compatibility is fixed. At the public-config recheck, `frutyi.netlify.app` was still absent from Firebase's authorized domains.
