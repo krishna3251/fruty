@@ -93,3 +93,24 @@ test("pickle shop is indexable while archived fruit routes remain available and 
     !readFileSync("dist/sitemap.xml", "utf8").includes("/products/mango"),
   );
 });
+
+test("live sitemap and no-JavaScript policies include the new service pages", async () => {
+  const { cataloguePaths } = await import("../src/lib/seo.ts");
+  const { pickleProducts } = await import("../src/data/pickles.ts");
+  const paths = cataloguePaths([
+    { ...pickleProducts[0], id: "owner-added-jar" },
+  ]);
+  assert.ok(paths.includes("/shipping"));
+  assert.ok(paths.includes("/returns"));
+  assert.ok(paths.includes("/products/owner-added-jar"));
+  assert.ok(!paths.includes("/products/tropical-pineapple-pickle"));
+  assert.ok(!paths.includes("/sign-in"));
+  for (const path of ["shipping", "returns"]) {
+    const html = readFileSync(`dist/${path}/index.html`, "utf8");
+    const noScript = html.match(/<noscript>(.*?)<\/noscript>/s)?.[1] || "";
+    assert.ok(
+      noScript.includes(pageMeta(`/${path}`).title.replaceAll("&", "&amp;")),
+    );
+    assert.ok(!noScript.includes("The animated film"));
+  }
+});

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { SignIn, SignUp, UserProfile, useClerk, useUser } from "@clerk/react";
 import PasswordRecovery from "./PasswordRecovery";
 import CustomerDashboard from "./CustomerDashboard";
@@ -15,6 +15,7 @@ function AccountContents({
   const { signOut } = useClerk();
   const [recovering, setRecovering] = useState(false);
   const [email, setEmail] = useState("");
+  const signInSurface = useRef<HTMLDivElement>(null);
   const [leaving, setLeaving] = useState(false);
   const [error, setError] = useState("");
   useEffect(() => {
@@ -81,17 +82,7 @@ function AccountContents({
       fallback={<p role="status">Loading sign-up…</p>}
     />
   ) : (
-    <div
-      className="signin-with-recovery"
-      onChangeCapture={(e) => {
-        const target = e.target;
-        if (
-          target instanceof HTMLInputElement &&
-          (target.type === "email" || target.name === "identifier")
-        )
-          setEmail(target.value);
-      }}
-    >
+    <div className="signin-with-recovery" ref={signInSurface}>
       <SignIn
         routing="hash"
         signUpUrl="/sign-up"
@@ -102,7 +93,16 @@ function AccountContents({
       />
       <button
         className="text-link recovery-link"
-        onClick={() => setRecovering(true)}
+        onClick={() => {
+          // Clerk mounts a separate React root, so read only the standard email
+          // input at this explicit action. Never read or persist the password.
+          const entered =
+            signInSurface.current?.querySelector<HTMLInputElement>(
+              'input[autocomplete="email"],input[name="identifier"]',
+            )?.value;
+          setEmail(entered || email);
+          setRecovering(true);
+        }}
       >
         Forgot password?
       </button>

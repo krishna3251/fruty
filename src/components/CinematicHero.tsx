@@ -13,6 +13,9 @@ import {
   videoTimeForProgress,
   progressForVideoTime,
 } from "../lib/pickleVideo";
+import { useCatalogue } from "../context/Catalogue";
+import { money } from "../data/products";
+import { STANDARD_DELIVERY_CHARGE } from "../lib/business";
 import { createVideoSeeker } from "../lib/videoSeeker";
 
 export default function CinematicHero({
@@ -20,6 +23,16 @@ export default function CinematicHero({
 }: {
   paused?: boolean;
 }) {
+  const { products } = useCatalogue();
+  const prices = products
+    .filter(
+      (p) =>
+        p.price !== null &&
+        p.availability !== "unavailable" &&
+        p.stockQuantity !== 0,
+    )
+    .map((p) => p.price!);
+  const sizes = [...new Set(products.map((p) => p.jarSize).filter(Boolean))];
   const video = useRef<HTMLVideoElement>(null);
   const range = useRef<HTMLInputElement>(null);
   const seek = useRef<(time: number) => void>(() => {});
@@ -216,8 +229,16 @@ export default function CinematicHero({
             Play with the jar <ArrowUpRight size={15} />
           </a>
           <div className="hero-shopping-note">
-            <strong>200 g jars · see prices in cart</strong>
-            <span>Hyderabad · delivery confirmed by location</span>
+            <strong>
+              {sizes.length === 1 ? `${sizes[0]} jars` : "Explore our jars"}
+              {prices.length
+                ? ` · from ${money(Math.min(...prices))}`
+                : " · ask about availability"}
+            </strong>
+            <span>
+              Hyderabad · {money(STANDARD_DELIVERY_CHARGE)} standard delivery
+              per order
+            </span>
           </div>
         </div>
       </div>

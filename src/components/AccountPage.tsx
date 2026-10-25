@@ -41,7 +41,7 @@ function AccountUnavailable() {
       >
         Try again
       </button>
-      <a href="/shop">
+      <a href="/shop" onClick={rememberGuest}>
         Continue as a guest <ArrowUpRight size={15} />
       </a>
     </div>
@@ -116,7 +116,7 @@ export default function AccountPage({ mode }: { mode: AccountMode }) {
               The authentication connection is not configured for this
               environment. You can still browse and enquire as a guest.
             </p>
-            <a className="button primary" href="/shop">
+            <a className="button primary" href="/shop" onClick={rememberGuest}>
               Explore pickles
             </a>
           </div>

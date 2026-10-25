@@ -51,14 +51,27 @@ const fallback = (path: string) => {
   const whatsapp = safeEnquiryUrl(
     env.VITE_TROPICAL_FEAST_DM_URL || siteConfig.tropicalFeastDmUrl,
   );
-  if (["/privacy", "/terms", "/contact", "/ordering"].includes(path)) {
+  if (
+    [
+      "/privacy",
+      "/terms",
+      "/contact",
+      "/ordering",
+      "/shipping",
+      "/returns",
+    ].includes(path)
+  ) {
     const meta = pageMeta(path);
     const notice =
       path === "/privacy"
         ? "The site saves selected products and quantities on your device. Optional analytics is disabled unless configured and accepted. Enquiry links open external Gmail or WhatsApp drafts; nothing is sent automatically. No online payments are collected. Enable JavaScript to read and manage the full storage and consent notice."
         : path === "/terms"
           ? "This is an enquiry catalogue, not an online checkout. Both initial products are 200 g jars at ₹149 each; confirm ingredients/allergens, stock, ₹150 standard delivery and final payable amount with the business. Seller identity, delivery and refund terms still require owner confirmation. No order is confirmed by this website. Enable JavaScript to read the complete editable terms."
-          : "Tropical Feast enquiries are for Hyderabad. Confirm all product and delivery details directly before ordering. No online payment is taken. Enable JavaScript for the full contact and ordering information.";
+          : path === "/shipping"
+            ? "Standard delivery is ₹150 per order for Hyderabad enquiries. Confirm coverage and timing before ordering. Owner-configured PIN rates and eligible free-delivery rules are shown in the address review. No online payment is collected."
+            : path === "/returns"
+              ? "Contact Tropical Feast about cancellations, damaged jars and order issues using your enquiry reference. Cancellation, return and refund eligibility and timeframes must be confirmed with the seller before ordering; no blanket restriction is invented."
+              : "Tropical Feast enquiries are for Hyderabad. Confirm all product and delivery details directly before ordering. No online payment is taken. Enable JavaScript for the full contact and ordering information.";
     return `<noscript><main class="pantry-store information-page section-pad"><a href="/">Tropical Feast</a><h1>${escape(meta.title)}</h1><p>${escape(notice)}</p><p>${escape(meta.description)}</p><a href="/shop">Browse both flavours</a></main></noscript>`;
   }
   return `<noscript><main class="pantry-store information-page section-pad"><a href="/">Tropical Feast</a><h1>${escape(product?.name || "Pineapple & Cucumber Pickles")}</h1><p>The animated film and saved basket need JavaScript. You can still browse the products and open an enquiry below. Hyderabad enquiries only; no online payment is taken.</p>${shown.map((p) => `<article><h2><a href="/products/${p.id}">${escape(p.name)}</a></h2><img src="${escape(p.image)}" alt="${escape(p.imageAlt)}" width="300" height="200"><p>${escape(p.description)}</p><p>${p.price === null ? "Price on enquiry" : `₹${p.price}`} · Confirm jar size, ingredients/allergens, availability and delivery.</p></article>`).join("")}<p>${whatsapp ? `<a href="${escape(whatsapp)}" target="_blank" rel="noopener noreferrer">WhatsApp enquiry</a> · ` : ""}${/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ? `<a href="${escape(gmail.href)}" target="_blank" rel="noopener noreferrer">Open Gmail</a>` : ""}</p><a href="/shop">View both flavours</a></main></noscript>`;

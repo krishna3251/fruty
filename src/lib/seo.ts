@@ -1,11 +1,11 @@
-import { money } from "../data/products";
-import { products } from "../data/products";
+import { money } from "../data/products.js";
+import { products } from "../data/products.js";
 import {
   pickleCollections,
   pickleProducts,
   collectionFor,
   type PickleProduct,
-} from "../data/pickles";
+} from "../data/pickles.js";
 export const publicPaths = [
   "/",
   "/shop",
@@ -18,6 +18,13 @@ export const publicPaths = [
   "/shipping",
   "/returns",
 ];
+// The live sitemap shares public static routes while using the current catalogue.
+export function cataloguePaths(catalogue: PickleProduct[]) {
+  return [
+    ...publicPaths.filter((path) => !path.startsWith("/products/")),
+    ...catalogue.map((p) => `/products/${p.id}`),
+  ];
+}
 export const accountPaths = ["/account", "/sign-in", "/sign-up"];
 export const archivePaths = [
   "/fruit-demo",

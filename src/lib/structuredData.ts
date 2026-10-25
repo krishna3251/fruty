@@ -40,6 +40,8 @@ export function structuredData(
             "/privacy": "Privacy",
             "/terms": "Terms",
             "/contact": "Contact",
+            "/shipping": "Shipping & delivery",
+            "/returns": "Cancellations & order support",
           } as Record<string, string>
         )[path] ||
         "Pickles",

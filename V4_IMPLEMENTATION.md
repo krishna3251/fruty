@@ -61,7 +61,7 @@ Previously shared panel credentials require rotation by the owner using the docu
 ## Verification
 
 Baseline: 78 tests, strict frontend/server TypeScript and production build passed.
-Changed-behaviour automated suite: 82 tests passed, including actual parameterized production SQL through isolated PostgreSQL transport, recovery provider mocks (no email/password changed), duplicate submission guards, expired code/weak password/network failures, notifications, delivery estimates and account isolation. Production build/format results and browser release checks are recorded in the release follow-up below.
+Changed-behaviour automated suite: 83 tests passed, including actual parameterized production SQL through isolated PostgreSQL transport, recovery provider mocks (no email/password changed), duplicate submission guards, expired code/weak password/network failures, notifications, delivery estimates and account isolation. Production build/format results and browser release checks are recorded in the release follow-up below.
 
 Real pre-release browser observation: an existing authenticated session restored the customer account and its saved cart. Clicking Sign out ended that session and displayed the actual signed-out Google/email/password form at `/sign-in`; no customer credentials were entered. This verifies restore/logout UI, not a fresh Google/sign-up/recovery round trip.
 
@@ -69,4 +69,12 @@ Sources consulted: [Clerk Core 3 recovery guide](https://clerk.com/docs/guides/d
 
 ## Release follow-up
 
-Pending final build/format check, deployment and responsive browser verification. Do not interpret the local automated tests as live provider, customer-write, owner-write or performance-field verification.
+Application commit `bfefac1` was published on GitHub main and production deployment `dpl_BPKpBhVfy5QCbSbZ4srrbEPagQ4g` reached READY. The site remains https://fruty-fawn.vercel.app. No deployment build/migration command or project setting was changed.
+
+Live browser checks on the V4 release: home, shop and cart at 320, 375, 390, 430, 768, 1024 and 1440 px without horizontal overflow. Both shop photos loaded, listing prices/sizes were correct, a pair totalled ₹448 including delivery; increasing pineapple to two made ₹597 and decreasing restored ₹448. Guest cart survived refresh and the dismissed welcome did not recur. The first-visit login and mobile recovery entry opened. Shipping/returns returned HTTP 200 with unique metadata; an unknown route returned an actual HTTP 404.
+
+The release check identified and corrected two follow-ups: the live API sitemap had its own route list that omitted new policies (now shares the canonical route helper, with regression coverage); Clerk's separate React root did not deliver the typed email through the parent change listener (now reads only the email input on the explicit Forgot password action). Also corrected policy noscript content/breadcrumbs, suppressed background toasts while a modal is open, retained guest choice in provider-failure exits and made the hero price/delivery note catalogue-driven. Final correction deployment/browser recheck is reported with the final response. Local verification remains 83 tests, production build/type checks and formatting.
+
+These viewport checks do not establish physical-device keyboard/slow-network behavior, field Core Web Vitals, WCAG certification, a new OAuth/signup round trip or actual recovery email/reset. No message, payment, genuine enquiry or privileged owner write was performed. Real recovery delivery, production Clerk setup, owner credential rotation and the missing business information remain outstanding.
+
+![Live mobile cart with transparent delivery estimate](docs/v4-mobile-cart.png)
