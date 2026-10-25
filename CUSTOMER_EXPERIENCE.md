@@ -51,7 +51,7 @@ The code deployment reached READY on Vercel. Native mouse dragging changed the J
 
 The product photo dialog opened at phone width, and its zoom changed the rendered photo from its container width to 160%; closing restored the shopping view. Add both to cart produced the ₹400 subtotal + ₹150 delivery = ₹550 total at phone width with both contact buttons visible. Only the test-added pineapple item was removed afterwards, preserving the pre-existing cucumber basket item. No enquiry message or payment was sent.
 
-No horizontal overflow was observed at 320, 390, 768, 1024 or 1680 pixels. Visual review led to three focused refinements: sticky-header anchor spacing, a more compact phone catalogue introduction, and an expandable menu on portrait tablets. The existing motion controls and cookie preferences remain.
+No horizontal overflow was observed at 320, 390, 768, 1024 or 1680 pixels. Visual review led to focused refinements: sticky-header anchor spacing, a more compact phone catalogue introduction, an expandable menu on portrait tablets, and moving the phone motion toggle below the footer so it cannot cover shopping buttons. The existing motion controls and cookie preferences remain.
 
 The production build, frontend/server TypeScript, 61 tests and formatting pass. Metadata generation was also run twice; the targeted SEO/commerce checks passed with one canonical and JSON-LD block per indexable page. Development startup succeeds with `npm run dev -- --host 127.0.0.1` in this environment; the standard all-interface startup hits an environment network-interface restriction. Live-browser verification used the deployed site rather than claiming local HTTP access.
 

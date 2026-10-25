@@ -689,7 +689,7 @@
 
 /* Anchor targets clear the sticky navigation; owner photos need no extra inset. */
 .pantry-store :is(#jar-lab, #collections, #pickle-grid, #pantry-story) {
-  scroll-margin-top: 105px;
+  scroll-margin-top: 10px;
 }
 .pantry-product-card .product-photo-open img {
   padding: 0;
@@ -724,7 +724,7 @@
 }
 @media (max-width: 767px) {
   .pantry-store :is(#jar-lab, #collections, #pickle-grid, #pantry-story) {
-    scroll-margin-top: 82px;
+    scroll-margin-top: 62px;
   }
   .pantry-store .pickle-page-heading {
     padding-top: 28px;
@@ -746,5 +746,15 @@
   }
   .pantry-store .pickle-toolbar {
     margin-bottom: 14px;
+  }
+}
+@media (max-width: 767px) {
+  .pantry-store .pantry-motion {
+    position: static;
+    width: max-content;
+    margin: 14px 6% 20px;
+  }
+  .pantry-store .pantry-motion span {
+    display: inline;
   }
 }
