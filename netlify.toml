@@ -66,3 +66,9 @@
   to = "/404.html"
   status = 410
   force = true
+
+[functions]
+  node_bundler = "esbuild"
+
+[functions.product-page]
+  included_files = ["dist/index.html", "dist/404.html"]
