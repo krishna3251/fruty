@@ -1,6 +1,10 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
+import {
+  firebaseProject,
+  resolveFirebaseConfig,
+} from "../src/lib/firebaseProject.ts";
 import { validFirebaseConfig } from "../src/lib/firebaseConfig.ts";
 import {
   checkedFirebaseUser,
@@ -204,5 +208,25 @@ test("Netlify catalogue uses conditional writes so stale edits and double initia
   await assert.rejects(
     () => writeNetlifyCatalogue(pickleProducts, current.revision, storage),
     /changed in another tab/,
+  );
+});
+
+test("Owner Firebase project is available without env duplication; partial project overrides fail closed", () => {
+  assert.ok(validFirebaseConfig(resolveFirebaseConfig({})));
+  assert.equal(resolveFirebaseConfig({}).projectId, "fruty-189ed");
+  assert.deepEqual(resolveFirebaseConfig({}), firebaseProject);
+  assert.ok(
+    !validFirebaseConfig(
+      resolveFirebaseConfig({ VITE_FIREBASE_PROJECT_ID: "other-project" }),
+    ),
+  );
+  assert.deepEqual(
+    resolveFirebaseConfig({
+      VITE_FIREBASE_API_KEY: config.apiKey,
+      VITE_FIREBASE_AUTH_DOMAIN: config.authDomain,
+      VITE_FIREBASE_PROJECT_ID: config.projectId,
+      VITE_FIREBASE_APP_ID: config.appId,
+    }),
+    config,
   );
 });

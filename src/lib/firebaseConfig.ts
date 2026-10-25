@@ -1,17 +1,11 @@
-export type FirebasePublicConfig = {
-  apiKey: string;
-  authDomain: string;
-  projectId: string;
-  appId: string;
-};
+import { resolveFirebaseConfig } from "./firebaseProject";
+import type { FirebasePublicConfig } from "./firebaseProject";
+export type { FirebasePublicConfig } from "./firebaseProject";
 export const authProvider =
   import.meta.env?.VITE_AUTH_PROVIDER === "firebase" ? "firebase" : "clerk";
-export const firebasePublicConfig: FirebasePublicConfig = {
-  apiKey: import.meta.env?.VITE_FIREBASE_API_KEY || "",
-  authDomain: import.meta.env?.VITE_FIREBASE_AUTH_DOMAIN || "",
-  projectId: import.meta.env?.VITE_FIREBASE_PROJECT_ID || "",
-  appId: import.meta.env?.VITE_FIREBASE_APP_ID || "",
-};
+export const firebasePublicConfig = resolveFirebaseConfig(
+  import.meta.env || {},
+);
 export function validFirebaseConfig(c: FirebasePublicConfig) {
   return (
     /^AIza[\w-]{25,}$/.test(c.apiKey) &&

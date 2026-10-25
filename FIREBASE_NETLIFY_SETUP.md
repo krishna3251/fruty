@@ -2,9 +2,13 @@
 
 25 October 2026. Prepared in the existing `krishna3251/fruty` codebase. **Not activated on the live shop.** The current Vercel/Clerk site remains intact while Firebase access and Netlify configuration are completed. Code is saved on `migration/firebase-netlify-free`; `main` stays on the existing live release. This is a provider migration, not a redesign or database replacement.
 
-## Actual Firebase access blocker
+## Verified Firebase project and remaining activation
 
-The connected browser's Firebase Console shows **Enable multi-factor authentication (MFA)** and says Google two-step verification must be enabled to gain Firebase access. The account holder must complete Google 2SV themselves at https://myaccount.google.com/signinoptions/twosv, then reload https://console.firebase.google.com/. No password, OTP, recovery code or security change was used or performed by the agent. No paid domain or plan is needed to resolve this access gate.
+The owner supplied the public web app configuration for **fruty-189ed**. It is now stored in `src/lib/firebaseProject.ts` and reused by the frontend and Netlify build. No repeated entry of the four public fields is needed; complete environment overrides remain available for another project. Partial overrides are rejected rather than mixing projects. Analytics was not initialized.
+
+A read-only public Identity Toolkit configuration request on 25 October 2026 returned HTTP 200 for project number **203931840323**. Its authorized domains were only `localhost`, `fruty-189ed.firebaseapp.com`, and `fruty-189ed.web.app`. The actual Netlify hostname must be added before production Google sign-in. This request does not verify email/password provider settings, mail delivery or a real login.
+
+The earlier connected-console check showed a Google 2SV gate. Console access has not been rechecked since that handoff; the public configuration request does not establish its current status. The account holder must handle any Google security or credential prompts themselves.
 
 ## Implemented
 
@@ -19,15 +23,17 @@ The connected browser's Firebase Console shows **Enable multi-factor authenticat
 - Existing design, original MP4, two products, prices/jar sizes, ₹150 standard delivery, WhatsApp review, guest cart, owner UI and archived fruit demo are preserved.
 - Updated storage/privacy disclosures distinguish Firebase/Netlify from the retained Clerk/Vercel deployment.
 
-## Owner setup after 2SV
+## Remaining owner setup
 
-1. Create/select a Firebase project on the **Spark** plan. Analytics and other services are not required. Do not enable paid services or attach billing for this Auth-only setup.
-2. Register a Web app. Enable Authentication → Email/Password; configure a minimum password length of 8 or stronger. Enable Google if wanted and select the actual support email. Keep email-enumeration protection enabled.
+1. Select the existing **fruty-189ed** Firebase project on the **Spark** plan. Analytics and other services are not required. Do not enable paid services or attach billing for this Auth-only setup.
+2. The Web app is already registered and its public configuration is integrated. Enable Authentication → Email/Password; configure a minimum password length of 8 or stronger. Enable Google if wanted and select the actual support email. Keep email-enumeration protection enabled.
 3. Create/import the existing GitHub repository in Netlify on its Free plan. Select `migration/firebase-netlify-free` for the initial configured deployment, because `main` has not been switched. Use that branch's `netlify.toml`. A real assigned `*.netlify.app` address is enough; no custom domain is required. No Netlify connector was found in the available directory, so deployment needs a signed-in Netlify account/UI or securely configured CLI access.
 4. In Firebase Authentication settings, add the **actual** Netlify site hostname to Authorized domains. Review Firebase's verification/password-reset email templates and test delivery. The hosted reset handler avoids needing a new custom action-page domain.
 5. Configure the following values in Netlify. Never paste service-account credentials, passwords or tokens into chat, source files, screenshots or GitHub.
 
 ### Build-time public configuration
+
+The four `VITE_FIREBASE_*` identity fields below are optional overrides: the owner-provided `fruty-189ed` values are already integrated. Leave all four unset to use that project; supply all four together only to use another project.
 
 | Name                           | Value/source                                                             |
 | ------------------------------ | ------------------------------------------------------------------------ |
