@@ -686,3 +686,65 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Anchor targets clear the sticky navigation; owner photos need no extra inset. */
+.pantry-store :is(#jar-lab, #collections, #pickle-grid, #pantry-story) {
+  scroll-margin-top: 105px;
+}
+.pantry-product-card .product-photo-open img {
+  padding: 0;
+}
+@media (min-width: 768px) and (max-width: 900px) {
+  .pantry-store .pantry-menu {
+    display: grid;
+    min-width: 44px;
+    min-height: 44px;
+  }
+  .pantry-store .pantry-navigation {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    padding: 18px 6%;
+    background: #fff9ee;
+    border-bottom: 1px solid #183d2530;
+    box-shadow: 0 14px 24px #183d2510;
+  }
+  .pantry-store .pantry-navigation.is-open {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
+  }
+  .pantry-store .pantry-navigation a {
+    font-size: 14px;
+    padding: 14px 0;
+  }
+}
+@media (max-width: 767px) {
+  .pantry-store :is(#jar-lab, #collections, #pickle-grid, #pantry-story) {
+    scroll-margin-top: 82px;
+  }
+  .pantry-store .pickle-page-heading {
+    padding-top: 28px;
+    padding-bottom: 20px;
+  }
+  .pantry-store .pickle-page-heading h1 {
+    margin: 16px 0;
+    font-size: clamp(38px, 10.5vw, 54px);
+  }
+  .pantry-store .pickle-page-heading > p {
+    font-size: 13px;
+    margin-bottom: 0;
+  }
+  .pantry-store .pickle-catalogue {
+    padding-top: 24px;
+  }
+  .pantry-store .pickle-catalogue .section-heading {
+    margin-bottom: 20px;
+  }
+  .pantry-store .pickle-toolbar {
+    margin-bottom: 14px;
+  }
+}

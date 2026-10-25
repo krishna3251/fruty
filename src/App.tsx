@@ -82,6 +82,14 @@ function PantryQuestions() {
             `Explore ${products.map((p) => p.name).join(", ")}. These are Tropical Feast products.`,
           ],
           [
+            "Can I pay online or choose cash on delivery?",
+            "This website prepares an enquiry. Confirm accepted payment methods directly with Tropical Feast on WhatsApp or email before ordering. Online checkout and cash on delivery are not confirmed services.",
+          ],
+          [
+            "When will my jars arrive?",
+            "Confirm delivery availability and timing for your Hyderabad location before ordering. We do not show an estimated arrival date until the supplier has confirmed it.",
+          ],
+          [
             "What images are shown?",
             "The homepage, logo and both product images were supplied by the owner. Product images do not replace an ingredient list; confirm ingredients, allergens, jar size and availability before ordering.",
           ],

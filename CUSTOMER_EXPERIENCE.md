@@ -39,8 +39,24 @@ No dependency, authentication-permission, payment, product-data or secret change
 
 ## Verification and limitations
 
-61 automated tests pass, including continuous/reversible drag mapping, pointer/range controls in reduced motion, photo zoom/focus restoration and the pair cart action. Frontend/server TypeScript, build and format checks are included in `npm run verify`. Live browser checks and screenshots are recorded after deployment. Phone CSS uses a single-column product grid, a stacked Jar Lab, large native/touch controls and no hover dependency; an actual phone viewport is not available in this browser environment.
+61 automated tests pass, including continuous/reversible drag mapping, pointer/range controls in reduced motion, photo zoom/focus restoration and the pair cart action. Frontend/server TypeScript, build and format checks are included in `npm run verify`. Live browser checks and screenshots are recorded after deployment. Phone CSS uses a single-column product grid, a stacked Jar Lab, large native/touch controls and no hover dependency; the live site has now been checked at 320 px and 390 px phone widths, 768 px tablet, 1024 px laptop, and the default 1680 px desktop viewport. These are responsive viewport checks, not physical-phone hardware tests.
 
 ## Owner information still needed
 
 The next trust improvements need real business information, not decorative widgets: exact net jar sizes, ingredients and allergens, shelf-life/storage directions, seller/legal identity and address, delivery coverage and usual lead time, accepted payment methods, tax treatment and clear cancellation/refund/support terms. Add only verified reviews, with permission, once they exist. Clerk production setup and a real owner-session upload/save test remain pending from the previous update. No COD, UPI checkout, payment success, pincode delivery guarantee or order tracking is claimed by this enquiry-based store.
+
+## Live browser verification — 25 October 2026
+
+The code deployment reached READY on Vercel. Native mouse dragging changed the Jar Lab from 0% / 7.5 seconds to 100% / 6.5 seconds; reverse dragging passed 50% / 7 seconds and returned to 0% / 7.5 seconds. The video stayed paused throughout and followed pointer control rather than autoplaying. The native range and open/close controls remain alternatives.
+
+The product photo dialog opened at phone width, and its zoom changed the rendered photo from its container width to 160%; closing restored the shopping view. Add both to cart produced the ₹400 subtotal + ₹150 delivery = ₹550 total at phone width with both contact buttons visible. Only the test-added pineapple item was removed afterwards, preserving the pre-existing cucumber basket item. No enquiry message or payment was sent.
+
+No horizontal overflow was observed at 320, 390, 768, 1024 or 1680 pixels. Visual review led to three focused refinements: sticky-header anchor spacing, a more compact phone catalogue introduction, and an expandable menu on portrait tablets. The existing motion controls and cookie preferences remain.
+
+The production build, frontend/server TypeScript, 61 tests and formatting pass. Metadata generation was also run twice; the targeted SEO/commerce checks passed with one canonical and JSON-LD block per indexable page. Development startup succeeds with `npm run dev -- --host 127.0.0.1` in this environment; the standard all-interface startup hits an environment network-interface restriction. Live-browser verification used the deployed site rather than claiming local HTTP access.
+
+## Screenshots
+
+![Updated homepage](docs/pantry-hero.jpg)
+
+![Phone cart with delivery total](docs/mobile-cart.jpg)
