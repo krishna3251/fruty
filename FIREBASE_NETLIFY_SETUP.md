@@ -1,6 +1,6 @@
 # Free Firebase + Netlify migration
 
-25 October 2026. Prepared in the existing `krishna3251/fruty` codebase. **Not activated on the live shop.** The current Vercel/Clerk site remains intact while Firebase access and Netlify configuration are completed. This is a provider migration, not a redesign or database replacement.
+25 October 2026. Prepared in the existing `krishna3251/fruty` codebase. **Not activated on the live shop.** The current Vercel/Clerk site remains intact while Firebase access and Netlify configuration are completed. Code is saved on `migration/firebase-netlify-free`; `main` stays on the existing live release. This is a provider migration, not a redesign or database replacement.
 
 ## Actual Firebase access blocker
 
@@ -23,7 +23,7 @@ The connected browser's Firebase Console shows **Enable multi-factor authenticat
 
 1. Create/select a Firebase project on the **Spark** plan. Analytics and other services are not required. Do not enable paid services or attach billing for this Auth-only setup.
 2. Register a Web app. Enable Authentication → Email/Password; configure a minimum password length of 8 or stronger. Enable Google if wanted and select the actual support email. Keep email-enumeration protection enabled.
-3. Create/import the existing GitHub repository in Netlify on its Free plan. Use the repository's `netlify.toml`. A real assigned `*.netlify.app` address is enough; no custom domain is required. No Netlify connector was found in the available directory, so deployment needs a signed-in Netlify account/UI or securely configured CLI access.
+3. Create/import the existing GitHub repository in Netlify on its Free plan. Select `migration/firebase-netlify-free` for the initial configured deployment, because `main` has not been switched. Use that branch's `netlify.toml`. A real assigned `*.netlify.app` address is enough; no custom domain is required. No Netlify connector was found in the available directory, so deployment needs a signed-in Netlify account/UI or securely configured CLI access.
 4. In Firebase Authentication settings, add the **actual** Netlify site hostname to Authorized domains. Review Firebase's verification/password-reset email templates and test delivery. The hosted reset handler avoids needing a new custom action-page domain.
 5. Configure the following values in Netlify. Never paste service-account credentials, passwords or tokens into chat, source files, screenshots or GitHub.
 
