@@ -48,10 +48,20 @@ export default function FirebaseSession({ children }: { children: ReactNode }) {
       value={{
         ...state,
         getToken: async () => {
+          const auth = firebaseAuth();
+          const user = auth.currentUser;
+          if (
+            !user ||
+            state.userId !==
+              `firebase:${firebasePublicConfig.projectId}:${user.uid}`
+          )
+            return null;
           try {
-            return (await firebaseAuth().currentUser?.getIdToken()) || null;
+            const token = await user.getIdToken();
+            return auth.currentUser === user ? token : null;
           } catch {
-            await signOut(firebaseAuth()).catch(() => {});
+            // An old request must never sign a newly selected account out.
+            if (auth.currentUser === user) await signOut(auth).catch(() => {});
             return null;
           }
         },

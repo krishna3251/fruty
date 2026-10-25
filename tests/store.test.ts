@@ -2232,3 +2232,240 @@ test("Firebase signup collects name, supports password managers and visibility, 
     "Unit Buyer",
   );
 });
+
+test("Firebase route changes switch signup/signin forms and clear the previous password", async () => {
+  const { default: Form } =
+    await import("../src/components/FirebaseAuthForm.tsx");
+  const actions = {
+    signIn: async () => {},
+    signUp: async () => {},
+    reset: async () => {},
+    error: () => "Error",
+  };
+  const view = render(React.createElement(Form, { actions }));
+  fireEvent.change(screen.getByLabelText("Password"), {
+    target: { value: "private-fixture" },
+  });
+  view.rerender(React.createElement(Form, { actions, signup: true }));
+  assert.ok(
+    screen.getByRole("button", { name: "Create account", exact: true }),
+  );
+  assert.equal(
+    (screen.getByLabelText("Password") as HTMLInputElement).value,
+    "",
+  );
+  assert.ok(screen.getByLabelText("Your name"));
+  view.rerender(React.createElement(Form, { actions, signup: false }));
+  assert.equal(screen.queryByLabelText("Your name"), null);
+  assert.ok(screen.getByRole("button", { name: "Sign in", exact: true }));
+});
+
+test("changing accounts clears the previous customer's addresses before the next response", async () => {
+  const { default: Dashboard } =
+    await import("../src/components/CustomerDashboard.tsx");
+  const { SessionContext } = await import("../src/context/Session.tsx");
+  const oldFetch = globalThis.fetch;
+  let resolveSecond!: (value: Response) => void;
+  globalThis.fetch = async (_path, options) => {
+    const token = (options?.headers as Record<string, string>).Authorization;
+    if (token === "Bearer account-a")
+      return Response.json({
+        addresses: [
+          {
+            id: "fixture",
+            label: "A private home",
+            recipient: "Fixture A",
+            street: "Private fixture street",
+            locality: "Fixture",
+            city: "Hyderabad",
+            pin: "500001",
+          },
+        ],
+        orders: [],
+      });
+    return new Promise<Response>((resolve) => {
+      resolveSecond = resolve;
+    });
+  };
+  const tree = (id: string) =>
+    React.createElement(
+      SessionContext.Provider,
+      { value: { status: "signed-in", userId: id, getToken: async () => id } },
+      React.createElement(Dashboard),
+    );
+  try {
+    const view = render(tree("account-a"));
+    await screen.findByText("A private home");
+    view.rerender(tree("account-b"));
+    assert.equal(screen.queryByText("A private home"), null);
+    await waitFor(() => assert.ok(resolveSecond));
+    resolveSecond(Response.json({ addresses: [], orders: [] }));
+    await screen.findByText(
+      "No submitted enquiries yet. Opening a WhatsApp draft does not confirm an order.",
+    );
+    assert.equal(screen.queryByText("A private home"), null);
+  } finally {
+    cleanup();
+    globalThis.fetch = oldFetch;
+  }
+});
+
+test("an obsolete account cart load cannot merge the guest cart after signing out", async () => {
+  const { SessionContext } = await import("../src/context/Session.tsx");
+  const { CatalogueProvider } = await import("../src/context/Catalogue.tsx");
+  const { PickleSelectionProvider, usePickleSelection, PICKLE_BASKET_KEY } =
+    await import("../src/context/PickleSelection.tsx");
+  const { pickleProducts } = await import("../src/data/pickles.ts");
+  const oldFetch = globalThis.fetch;
+  localStorage.clear();
+  sessionStorage.clear();
+  const id = pickleProducts[0].id;
+  localStorage.setItem(
+    PICKLE_BASKET_KEY,
+    JSON.stringify({ ids: [id], quantities: { [id]: 2 } }),
+  );
+  let resolveLoad!: (value: Response) => void;
+  let cartWrites = 0;
+  globalThis.fetch = async (path, options) => {
+    if (String(path) === "/api/catalogue")
+      return Response.json({ products: pickleProducts });
+    const body = JSON.parse(String(options?.body));
+    if (body.action === "load")
+      return new Promise<Response>((resolve) => {
+        resolveLoad = resolve;
+      });
+    cartWrites++;
+    return Response.json({ items: { [id]: 2 }, version: 1 });
+  };
+  function Harness() {
+    const cart = usePickleSelection()!;
+    return React.createElement(
+      "output",
+      null,
+      String(cart.quantities[id] || 0),
+    );
+  }
+  const tree = (signedIn: boolean) =>
+    React.createElement(
+      SessionContext.Provider,
+      {
+        value: {
+          status: signedIn ? "signed-in" : "guest",
+          userId: signedIn ? "account-a" : null,
+          getToken: async () => (signedIn ? "account-a" : null),
+        },
+      },
+      React.createElement(
+        CatalogueProvider,
+        null,
+        React.createElement(
+          PickleSelectionProvider,
+          null,
+          React.createElement(Harness),
+        ),
+      ),
+    );
+  try {
+    const view = render(tree(true));
+    await waitFor(() => assert.ok(resolveLoad));
+    view.rerender(tree(false));
+    resolveLoad(
+      Response.json({
+        cart: { items: {}, version: 0 },
+        addresses: [],
+        orders: [],
+      }),
+    );
+    await React.act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 30));
+    });
+    assert.equal(cartWrites, 0);
+    assert.equal(screen.getByRole("status").textContent, "2");
+    assert.deepEqual(JSON.parse(localStorage.getItem(PICKLE_BASKET_KEY)!).ids, [
+      id,
+    ]);
+  } finally {
+    cleanup();
+    globalThis.fetch = oldFetch;
+    localStorage.clear();
+    sessionStorage.clear();
+  }
+});
+
+test("switching account relocks the owner workspace and clears the typed panel password", async () => {
+  const { default: AdminPanel } =
+    await import("../src/components/AdminPanel.tsx");
+  const { SessionContext } = await import("../src/context/Session.tsx");
+  const { pickleProducts } = await import("../src/data/pickles.ts");
+  const oldFetch = globalThis.fetch;
+  globalThis.fetch = async () =>
+    Response.json({ products: pickleProducts, revision: "unit" });
+  const tree = (id: string) =>
+    React.createElement(
+      SessionContext.Provider,
+      { value: { status: "signed-in", userId: id, getToken: async () => id } },
+      React.createElement(AdminPanel),
+    );
+  try {
+    const view = render(tree("owner-a"));
+    fireEvent.change(screen.getByLabelText("Panel password"), {
+      target: { value: "unit-panel-fixture" },
+    });
+    fireEvent.click(
+      screen.getByRole("button", { name: "Unlock product panel" }),
+    );
+    await screen.findByText("The pantry manager.");
+    view.rerender(tree("customer-b"));
+    assert.equal(screen.queryByText("The pantry manager."), null);
+    assert.equal(
+      (screen.getByLabelText("Panel password") as HTMLInputElement).value,
+      "",
+    );
+  } finally {
+    cleanup();
+    globalThis.fetch = oldFetch;
+  }
+});
+
+test("changing accounts clears the previous enquiry recipient and delivery form", async () => {
+  const { default: Review } =
+    await import("../src/components/EnquiryReview.tsx");
+  const { SessionContext } = await import("../src/context/Session.tsx");
+  const { pickleProducts } = await import("../src/data/pickles.ts");
+  const oldFetch = globalThis.fetch;
+  globalThis.fetch = async () =>
+    Response.json({
+      addresses: [],
+      orders: [],
+      cart: { items: {}, version: 0 },
+    });
+  const tree = (id: string) =>
+    React.createElement(
+      SessionContext.Provider,
+      { value: { status: "signed-in", userId: id, getToken: async () => id } },
+      React.createElement(Review, {
+        products: pickleProducts,
+        items: { [pickleProducts[0].id]: 1 },
+      }),
+    );
+  try {
+    const view = render(tree("account-a"));
+    fireEvent.click(
+      screen.getByRole("button", { name: /Review & enquire on WhatsApp/ }),
+    );
+    const recipient = screen.getByLabelText("Recipient name");
+    fireEvent.change(recipient, { target: { value: "Private fixture A" } });
+    view.rerender(tree("account-b"));
+    assert.equal(screen.queryByDisplayValue("Private fixture A"), null);
+    fireEvent.click(
+      screen.getByRole("button", { name: /Review & enquire on WhatsApp/ }),
+    );
+    assert.equal(
+      (screen.getByLabelText("Recipient name") as HTMLInputElement).value,
+      "",
+    );
+  } finally {
+    cleanup();
+    globalThis.fetch = oldFetch;
+  }
+});

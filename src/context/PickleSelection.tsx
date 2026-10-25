@@ -125,6 +125,7 @@ export function PickleSelectionProvider({ children }: { children: ReactNode }) {
   const [syncStatus, setSyncStatus] = useState("");
   const [reload, setReload] = useState(0);
   const reloadSaved = useCallback(() => setReload((v) => v + 1), []);
+  const syncEpoch = useRef(0);
   const serverVersion = useRef(0);
   const synced = useRef("");
   const [syncReady, setSyncReady] = useState(false);
@@ -137,6 +138,8 @@ export function PickleSelectionProvider({ children }: { children: ReactNode }) {
   const [syncLoading, setSyncLoading] = useState(false);
   useEffect(() => {
     if (session.status === "signed-in") {
+      if (basketOwner !== null && basketOwner !== session.userId)
+        setBasket({ ids: [], quantities: {} });
       setBasketOwner(session.userId);
       return;
     }
@@ -194,6 +197,7 @@ export function PickleSelectionProvider({ children }: { children: ReactNode }) {
   });
   useEffect(() => {
     let active = true;
+    const epoch = ++syncEpoch.current;
     setSyncReady(false);
     pendingSync.current = false;
     if (session.status !== "signed-in") {
@@ -215,6 +219,7 @@ export function PickleSelectionProvider({ children }: { children: ReactNode }) {
         { action: "load" },
         session.getToken,
       );
+      if (!active || syncEpoch.current !== epoch) return;
       const guest = readBasket();
       // Only valid, available guest items are merged. Account-local PII is never persisted.
       const items = Object.fromEntries(
@@ -302,7 +307,13 @@ export function PickleSelectionProvider({ children }: { children: ReactNode }) {
     const serialized = JSON.stringify(items);
     if (serialized === synced.current) return;
     const savingUser = session.userId;
+    const savingEpoch = syncEpoch.current;
     const timer = window.setTimeout(() => {
+      if (
+        syncEpoch.current !== savingEpoch ||
+        currentUser.current !== savingUser
+      )
+        return;
       pendingSync.current = true;
       setSyncStatus("Saving cart…");
       void customerApi(
@@ -311,13 +322,20 @@ export function PickleSelectionProvider({ children }: { children: ReactNode }) {
         session.getToken,
       )
         .then((cart) => {
-          if (currentUser.current !== savingUser) return;
+          if (
+            currentUser.current !== savingUser ||
+            syncEpoch.current !== savingEpoch
+          )
+            return;
           serverVersion.current = cart.version;
           synced.current = serialized;
           setSyncStatus("Cart saved to your account.");
         })
         .catch((e) => {
-          if (currentUser.current === savingUser) {
+          if (
+            currentUser.current === savingUser &&
+            syncEpoch.current === savingEpoch
+          ) {
             setSyncReady(false);
             setSyncStatus(
               e instanceof CustomerApiError && e.status === 409
@@ -327,14 +345,16 @@ export function PickleSelectionProvider({ children }: { children: ReactNode }) {
           }
         })
         .finally(() => {
-          pendingSync.current = false;
-          if (currentUser.current === savingUser) setSaveTick((v) => v + 1);
+          if (syncEpoch.current === savingEpoch) {
+            pendingSync.current = false;
+            if (currentUser.current === savingUser) setSaveTick((v) => v + 1);
+          }
         });
     }, 600);
     return () => {
       clearTimeout(timer);
     };
-  }, [basket, syncReady, session.status, saveTick]);
+  }, [basket, syncReady, session.status, session.userId, saveTick]);
   useEffect(() => {
     const clear = () => {
       setBasket({ ids: [], quantities: {} });

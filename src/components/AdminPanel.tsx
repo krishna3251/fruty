@@ -63,6 +63,7 @@ export function ProductManager({
           "Content-Type": photo ? photo.type : "application/json",
         },
         body: photo || JSON.stringify(body),
+        signal: AbortSignal.timeout(20000),
       },
     );
     const data = await response.json().catch(() => null);
@@ -70,6 +71,10 @@ export function ProductManager({
       throw Error(
         data?.error ||
           "Connection interrupted. Reload to check whether your changes saved before trying again.",
+      );
+    if (!data || typeof data !== "object" || Array.isArray(data))
+      throw Error(
+        "The service returned an unexpected response. Reload to check your changes before trying again.",
       );
     return data;
   }
@@ -487,6 +492,6 @@ export function ProductManager({
 }
 
 export default function AdminPanel() {
-  const { getToken } = useSession();
-  return <ProductManager getToken={getToken} />;
+  const { getToken, userId } = useSession();
+  return <ProductManager key={userId || "guest"} getToken={getToken} />;
 }

@@ -1,3 +1,5 @@
+> **Current repository audit (25 October 2026):** [REPOSITORY_AUDIT_2026-10-25.md](REPOSITORY_AUDIT_2026-10-25.md). Netlify uses branch `migration/firebase-netlify-free`; see [FIREBASE_NETLIFY_SETUP.md](FIREBASE_NETLIFY_SETUP.md) for remaining runtime configuration. A successful deploy does not mean account storage/admin setup is complete. The older fruit-demo description below is historical.
+
 > **Latest V4 update (25 October 2026):** See [V4_IMPLEMENTATION.md](V4_IMPLEMENTATION.md) for the current audit, recovery/cart/mobile improvements and owner-confirmed ₹150 standard delivery. Historical release notes below describe earlier versions.
 
 > **25 October update:** See [UPGRADE_REPORT.md](UPGRADE_REPORT.md) for the prepared Tropical Feast account/Neon/WhatsApp upgrade, verified ₹149 / 200 g defaults, location-based delivery, migration instructions and actual test limits. Older entries below describe earlier deployments. The upgrade and login recovery fix are published; see [LIVE_RELEASE.md](LIVE_RELEASE.md) for deployment checks and remaining limits.
@@ -20,7 +22,7 @@ npm run dev
 Open the URL printed by Vite, normally http://localhost:4173.
 
 ```sh
-npm run verify  # build, 19 tests, and formatting checks
+npm run verify  # production build, automated tests, and formatting checks
 npm run build   # strict TypeScript check and production build
 npm run preview # serve the production dist folder
 npm run format:check

@@ -1,5 +1,6 @@
 import { requireOwner, json, apiFailure, ApiError } from "../server/admin.js";
 import { readCatalogue, writeCatalogue } from "../server/catalogue.js";
+import { readJson } from "../server/requestBody.js";
 import { validateProduct } from "../src/lib/catalogue.js";
 export async function GET() {
   try {
@@ -11,17 +12,7 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     await requireOwner(request);
-    if (Number(request.headers.get("content-length")) > 20000)
-      throw new ApiError(413, "Product details are too large.");
-    const body = await request.text();
-    if (body.length > 20000)
-      throw new ApiError(413, "Product details are too large.");
-    let data;
-    try {
-      data = JSON.parse(body);
-    } catch {
-      throw new ApiError(400, "Check the product details.");
-    }
+    const data = await readJson(request, 20000);
     const current = await readCatalogue();
     if (data.action === "unlock") return json(current);
     let product;

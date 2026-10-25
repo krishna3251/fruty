@@ -14,13 +14,15 @@ import { type PickleProduct } from "../data/pickles";
 import AddressFields from "./AddressFields";
 import { money } from "../data/products";
 import EmailEnquiry from "./EmailEnquiry";
-export default function EnquiryReview({
-  products,
-  items,
-}: {
+type EnquiryReviewProps = {
   products: PickleProduct[];
   items: Record<string, number>;
-}) {
+};
+export default function EnquiryReview(props: EnquiryReviewProps) {
+  const { userId } = useSession();
+  return <EnquiryReviewContents key={userId || "guest"} {...props} />;
+}
+function EnquiryReviewContents({ products, items }: EnquiryReviewProps) {
   const session = useSession();
   const settings = useBusiness();
   const [step, setStep] = useState<"cart" | "details" | "review">("cart");

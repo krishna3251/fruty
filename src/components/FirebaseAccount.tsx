@@ -13,6 +13,7 @@ import {
 } from "firebase/auth";
 import { firebaseAuth, authError } from "../lib/firebaseClient";
 import { firebaseGoogleEnabled } from "../lib/firebaseConfig";
+import { useNotify } from "../context/Notifications";
 import { useSession } from "../context/Session";
 import { navigate } from "../hooks/useRoute";
 import FirebaseAuthForm from "./FirebaseAuthForm";
@@ -27,6 +28,7 @@ export default function FirebaseAccount({
   onReady: () => void;
 }) {
   const session = useSession();
+  const notify = useNotify();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [status, setStatus] = useState("");
@@ -75,12 +77,26 @@ export default function FirebaseAccount({
               email,
               password,
             );
-            try {
-              await updateProfile(created.user, { displayName });
-              await sendEmailVerification(created.user);
-            } finally {
-              navigate(destination);
-            }
+            // The sign-in account already exists at this point. Keep partial
+            // setup failures visible instead of losing them on navigation.
+            const [profile, verification] = await Promise.allSettled([
+              updateProfile(created.user, { displayName }),
+              sendEmailVerification(created.user),
+            ]);
+            const notice =
+              verification.status === "fulfilled"
+                ? "Your sign-in account was created and verification was requested. Check your inbox and spam folder."
+                : "Your sign-in account was created, but verification email could not be requested. Use Request verification email in your account to retry.";
+            setStatus(notice);
+            notify(
+              notice,
+              verification.status === "fulfilled" ? "success" : "warning",
+            );
+            if (profile.status === "rejected")
+              setError(
+                "Your name could not be saved. Update it in Account profile & security below.",
+              );
+            navigate(destination);
           },
           reset: async (email) => {
             try {

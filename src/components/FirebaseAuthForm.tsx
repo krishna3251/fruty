@@ -1,4 +1,4 @@
-import { useRef, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { Eye, EyeOff, Mail, ArrowUpRight } from "lucide-react";
 export interface AuthActions {
   signIn: (email: string, password: string) => Promise<void>;
@@ -26,6 +26,13 @@ export default function FirebaseAuthForm({
   const [status, setStatus] = useState("");
   const [retryAt, setRetryAt] = useState(0);
   const pending = useRef(false);
+  useEffect(() => {
+    setMode(signup ? "sign-up" : "sign-in");
+    setPassword("");
+    setVisible(false);
+    setError("");
+    setStatus("");
+  }, [signup]);
   const run = async (action: () => Promise<void>) => {
     if (pending.current) return;
     pending.current = true;
@@ -157,7 +164,11 @@ export default function FirebaseAuthForm({
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   disabled={busy}
-                  aria-describedby="firebase-password-guidance firebase-error"
+                  aria-describedby={
+                    mode === "sign-up"
+                      ? "firebase-password-guidance firebase-error"
+                      : "firebase-error"
+                  }
                 />
                 <button
                   className="icon-button"

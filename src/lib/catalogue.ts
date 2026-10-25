@@ -1,4 +1,6 @@
 import { pickleProducts, type PickleProduct } from "../data/pickles.js";
+import { products as archivedFruit } from "../data/products.js";
+import { retiredPickleRoutes } from "../data/pickles.js";
 import { STANDARD_DELIVERY_CHARGE } from "./business.js";
 export const DELIVERY_CHARGE = STANDARD_DELIVERY_CHARGE;
 export function cartTotals(
@@ -34,6 +36,14 @@ export function validateProduct(value: unknown): PickleProduct {
   const id = text("id", 3, 80);
   if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(id))
     throw Error("Use a lowercase product slug with hyphens.");
+  if (
+    archivedFruit.some((p) => p.id === id) ||
+    Object.hasOwn(retiredPickleRoutes, `/products/${id}`) ||
+    id === "fermented-pale-vegetable-pickle"
+  )
+    throw Error(
+      "That product slug belongs to an archived or retired page. Choose a different slug.",
+    );
   const image = text("image", 1, 160);
   if (
     !pickleProducts.some((p) => p.image === image) &&

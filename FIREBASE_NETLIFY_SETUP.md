@@ -1,12 +1,12 @@
 # Free Firebase + Netlify migration
 
-25 October 2026. Prepared in the existing `krishna3251/fruty` codebase. **Not activated on the live shop.** The current Vercel/Clerk site remains intact while Firebase access and Netlify configuration are completed. Code is saved on `migration/firebase-netlify-free`; `main` stays on the existing live release. This is a provider migration, not a redesign or database replacement.
+25 October 2026. Prepared in the existing `krishna3251/fruty` codebase. The migration branch is now deployed to **https://frutyi.netlify.app**, but account storage and owner access are not production-ready until runtime credentials are configured and real flows are verified. The original Vercel/Clerk deployment is separate. This is a provider migration, not a redesign or database replacement.
 
 ## Verified Firebase project and remaining activation
 
 The owner supplied the public web app configuration for **fruty-189ed**. It is now stored in `src/lib/firebaseProject.ts` and reused by the frontend and Netlify build. No repeated entry of the four public fields is needed; complete environment overrides remain available for another project. Partial overrides are rejected rather than mixing projects. Analytics was not initialized.
 
-A read-only public Identity Toolkit configuration request on 25 October 2026 returned HTTP 200 for project number **203931840323**. Its authorized domains were only `localhost`, `fruty-189ed.firebaseapp.com`, and `fruty-189ed.web.app`. The actual Netlify hostname must be added before production Google sign-in. This request does not verify email/password provider settings, mail delivery or a real login.
+The owner’s supplied Authentication screenshot confirms Email/Password and Google are enabled. A read-only public Identity Toolkit configuration request on 25 October 2026 returned HTTP 200 for project number **203931840323**. Its authorized domains were only `localhost`, `fruty-189ed.firebaseapp.com`, and `fruty-189ed.web.app`. The actual Netlify hostname must be added before production Google sign-in. This request does not verify email/password provider settings, mail delivery or a real login.
 
 The earlier connected-console check showed a Google 2SV gate. Console access has not been rechecked since that handoff; the public configuration request does not establish its current status. The account holder must handle any Google security or credential prompts themselves.
 
@@ -27,7 +27,7 @@ The earlier connected-console check showed a Google 2SV gate. Console access has
 
 1. Select the existing **fruty-189ed** Firebase project on the **Spark** plan. Analytics and other services are not required. Do not enable paid services or attach billing for this Auth-only setup.
 2. The Web app is already registered and its public configuration is integrated. Enable Authentication → Email/Password; configure a minimum password length of 8 or stronger. Enable Google if wanted and select the actual support email. Keep email-enumeration protection enabled.
-3. Create/import the existing GitHub repository in Netlify on its Free plan. Select `migration/firebase-netlify-free` for the initial configured deployment, because `main` has not been switched. Use that branch's `netlify.toml`. A real assigned `*.netlify.app` address is enough; no custom domain is required. No Netlify connector was found in the available directory, so deployment needs a signed-in Netlify account/UI or securely configured CLI access.
+3. The existing GitHub repository is linked to Netlify project `frutyi`. Select `migration/firebase-netlify-free` for the initial configured deployment, because `main` has not been switched. Use that branch's `netlify.toml`. A real assigned `*.netlify.app` address is enough; no custom domain is required. No Netlify connector was found in the available directory, so deployment needs a signed-in Netlify account/UI or securely configured CLI access.
 4. In Firebase Authentication settings, add the **actual** Netlify site hostname to Authorized domains. Review Firebase's verification/password-reset email templates and test delivery. The hosted reset handler avoids needing a new custom action-page domain.
 5. Configure the following values in Netlify. Never paste service-account credentials, passwords or tokens into chat, source files, screenshots or GitHub.
 
@@ -74,17 +74,17 @@ Keep production database/credentials/store separate from deploy previews. Do not
 
 ## Verification actually executed
 
-- Production TypeScript/Vite build and formatting passed. A Netlify build with explicitly synthetic public configuration generated all 11 page heads and static security headers for a test-only `.example.test` origin; the normal build was then restored. TOML parsed successfully. The Netlify function entry bundled with esbuild, and its bundled handler returned the expected 404/security headers locally with installed dependencies. This is not an actual Netlify deployment.
-- **91 automated tests passed**: retained 84 tests plus Firebase UI recovery/signup errors and duplicate requests, server identity/disabled/unverified checks, missing-auth fail-closed paths, production emulator refusal, Netlify routing/security/status/HEAD/archive handling and catalogue CAS conflicts.
+- Production TypeScript/Vite build and formatting passed. A Netlify build with explicitly synthetic public configuration generated all 11 page heads and static security headers for a test-only `.example.test` origin; the normal build was then restored. TOML parsed successfully. The Netlify function entry bundled with esbuild, and its bundled handler returned the expected 404/security headers locally with installed dependencies. That local fixture was not a deployment; a subsequent actual Netlify deployment of commit `46f0536` succeeded.
+- **100 automated tests passed after the repository audit**: retained 84 tests plus Firebase UI recovery/signup errors and duplicate requests, server identity/disabled/unverified checks, missing-auth fail-closed paths, production emulator refusal, Netlify routing/security/status/HEAD/archive handling and catalogue CAS conflicts.
 - Netlify storage tests use a local fake Store; existing database tests use isolated PostgreSQL. They are not actual Netlify/Firebase deployment or email-delivery tests.
-- Firebase Console browser inspection verified the MFA gate, not a working Firebase project. No account signup, password reset, Google OAuth, verification email, account deletion or new cloud project was performed.
+- The earlier Firebase Console browser inspection showed an MFA gate; the later owner-supplied screenshot confirms both required sign-in providers are enabled. No account signup, password reset, Google OAuth, verification email, account deletion or new cloud project was performed.
 - No database migration, live identity update, product/image import or production host switch was run.
 - Dependencies added: modular `firebase`, server-only `firebase-admin`, and `@netlify/blobs`. A patched `@grpc/grpc-js` override avoids the vulnerable transitive Firestore copy; the app does not use Firestore. Existing Clerk/Vercel packages are retained only for the working deployment/transition.
 
 ## Ready status
 
-**Code prepared for configured testing; migration is not live.** Blocked by Google 2SV/Firebase project access and a configured Netlify deployment. After those are ready, verify real signup, email verification, Google popup, recovery link, session restore/logout, saved carts/addresses, owner image uploads/edits, catalogue transfer, an explicitly approved test enquiry, actual HTTP routes/CSP and physical phone behavior. No paid service is required by this implementation, but free tiers have quotas and do not provide unlimited traffic or an SLA.
+**Deployed for configured testing, not yet a complete production store.** At the latest unauthenticated HTTP check, Netlify still returned 401 HTML from its private-site access protection. Firebase server credentials, the Neon connection and owner access configuration are missing. Non-secret hosting/provider/origin settings are saved; production and preview catalogue stores are distinct. After those are ready, verify real signup, email verification, Google popup, recovery link, session restore/logout, saved carts/addresses, owner image uploads/edits, catalogue transfer, an explicitly approved test enquiry, actual HTTP routes/CSP and physical phone behavior. No paid service is required by this implementation, but free tiers have quotas and do not provide unlimited traffic or an SLA.
 
 Business launch still needs confirmed legal seller/address, ingredients/allergens, storage/shelf life, service areas/timing, cancellation/refund/payment terms, retention/backups and rotation of shared credentials. No online payment gateway was added.
 
-References: Firebase Web Auth, Admin token verification, Google MFA requirements, Netlify Functions/Blobs documentation. Current production stays at https://fruty-fawn.vercel.app until an explicit verified cutover.
+References: Firebase Web Auth, Admin token verification, Google MFA requirements, Netlify Functions/Blobs documentation. The original site at https://fruty-fawn.vercel.app has not been replaced by the Netlify deployment. See REPOSITORY_AUDIT_2026-10-25.md for the latest source audit and verification limits.

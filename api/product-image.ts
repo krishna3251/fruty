@@ -1,5 +1,6 @@
 import { get, put } from "@vercel/blob";
 import sharp from "sharp";
+import { readBytes } from "../server/requestBody.js";
 import { randomUUID } from "node:crypto";
 import { requireOwner, json, apiFailure, ApiError } from "../server/admin.js";
 export function imageType(bytes: Uint8Array) {
@@ -42,11 +43,8 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     await requireOwner(request);
-    if (Number(request.headers.get("content-length")) > 2 * 1024 * 1024)
-      throw new ApiError(413, "Choose an image under 2 MB.");
-    const bytes = new Uint8Array(await request.arrayBuffer());
-    if (!bytes.length || bytes.length > 2 * 1024 * 1024)
-      throw new ApiError(413, "Choose an image under 2 MB.");
+    const bytes = await readBytes(request, 2 * 1024 * 1024);
+    if (!bytes.length) throw new ApiError(400, "Choose a product photo.");
     const type = imageType(bytes);
     if (!type)
       throw new ApiError(

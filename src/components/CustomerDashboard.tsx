@@ -12,6 +12,10 @@ import {
 import AddressFields from "./AddressFields";
 import { money } from "../data/products";
 export default function CustomerDashboard() {
+  const { userId } = useSession();
+  return <CustomerDashboardContents key={userId || "guest"} />;
+}
+function CustomerDashboardContents() {
   const session = useSession();
   const selection = usePickleSelection();
   const [data, setData] = useState<{
