@@ -60,3 +60,7 @@ The production build, frontend/server TypeScript, 61 tests and formatting pass. 
 ![Updated homepage](docs/pantry-hero.jpg)
 
 ![Phone cart with delivery total](docs/mobile-cart.jpg)
+
+![Live Jar Lab with the lid lifted](docs/jar-lab-open.jpg)
+
+Final checks confirmed the Jar Lab anchor clears the 91 px desktop header, the phone motion toggle stays in document flow below the footer, and 320/390 px shop views have no horizontal overflow. The live page has one canonical and one structured-data block. Keyboard End/Home controls also seek to the same 6.5/7.5-second endpoints. No application console errors were observed in this review.
