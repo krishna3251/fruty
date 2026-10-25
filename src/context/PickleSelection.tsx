@@ -12,6 +12,7 @@ import { useCatalogue } from "./Catalogue";
 import { useSession } from "./Session";
 import { customerApi, CustomerApiError } from "../lib/customerApi";
 import { pickleProducts } from "../data/pickles";
+export const PICKLE_BASKET_KEY = "tropical-feast-guest-cart-v2";
 export const PICKLE_SELECTION_KEY = "fruity-pickle-selection-v1";
 export function restoreSelection(
   raw: string | null,
@@ -76,6 +77,15 @@ export function restoreQuantities(
 }
 function readBasket() {
   try {
+    const atomic = localStorage.getItem(PICKLE_BASKET_KEY);
+    if (atomic) {
+      const saved = JSON.parse(atomic);
+      const ids = restoreSelection(JSON.stringify(saved.ids), null);
+      return {
+        ids,
+        quantities: restoreQuantities(JSON.stringify(saved.quantities), ids),
+      };
+    }
     const ids = restoreSelection(
       localStorage.getItem(PICKLE_SELECTION_KEY),
       null,
@@ -96,6 +106,7 @@ const SelectionContext = createContext<{
   quantities: Record<string, number>;
   itemCount: number;
   toggle: (id: string) => void;
+  remove: (id: string) => void;
   add: (id: string) => void;
   setQuantity: (id: string, quantity: number) => void;
   storageUnavailable: boolean;
@@ -144,6 +155,8 @@ export function PickleSelectionProvider({ children }: { children: ReactNode }) {
     )
       return;
     try {
+      // One atomic source of truth prevents older tabs from replaying torn ID/quantity writes.
+      localStorage.setItem(PICKLE_BASKET_KEY, JSON.stringify(basket));
       localStorage.setItem(PICKLE_SELECTION_KEY, JSON.stringify(basket.ids));
       localStorage.setItem(
         PICKLE_QUANTITIES_KEY,
@@ -155,11 +168,22 @@ export function PickleSelectionProvider({ children }: { children: ReactNode }) {
   }, [basket, session.status, basketOwner]);
   useEffect(() => {
     const sync = (e: StorageEvent) => {
-      if (
-        session.status !== "signed-in" &&
-        [PICKLE_SELECTION_KEY, PICKLE_QUANTITIES_KEY, null].includes(e.key)
-      )
-        setBasket(readBasket());
+      if (session.status === "signed-in" || session.status === "loading")
+        return;
+      try {
+        const legacyEvent = [
+          PICKLE_SELECTION_KEY,
+          PICKLE_QUANTITIES_KEY,
+        ].includes(e.key || "");
+        if (
+          e.key === PICKLE_BASKET_KEY ||
+          e.key === null ||
+          (legacyEvent && !localStorage.getItem(PICKLE_BASKET_KEY))
+        )
+          setBasket(readBasket());
+      } catch {
+        setStorageUnavailable(true);
+      }
     };
     window.addEventListener("storage", sync);
     return () => window.removeEventListener("storage", sync);
@@ -231,6 +255,10 @@ export function PickleSelectionProvider({ children }: { children: ReactNode }) {
         );
         if (active) {
           try {
+            localStorage.setItem(
+              PICKLE_BASKET_KEY,
+              JSON.stringify({ ids: [], quantities: {} }),
+            );
             localStorage.removeItem(PICKLE_SELECTION_KEY);
             localStorage.removeItem(PICKLE_QUANTITIES_KEY);
             sessionStorage.removeItem("tf-cart-merge-v1");
@@ -319,6 +347,16 @@ export function PickleSelectionProvider({ children }: { children: ReactNode }) {
     window.addEventListener("pantry:store-data-deleted", clear);
     return () => window.removeEventListener("pantry:store-data-deleted", clear);
   }, []);
+  const remove = (id: string) => {
+    if (syncLoading) return;
+    setBasket((current) => {
+      const ids = current.ids.filter((item) => item !== id);
+      return {
+        ids,
+        quantities: restoreQuantities(JSON.stringify(current.quantities), ids),
+      };
+    });
+  };
   const toggle = (id: string) => {
     if (syncLoading) return;
     if (!basket.ids.includes(id) && !products.some((p) => p.id === id)) return;
@@ -393,6 +431,7 @@ export function PickleSelectionProvider({ children }: { children: ReactNode }) {
           0,
         ),
         toggle,
+        remove,
         add,
         setQuantity,
         storageUnavailable,

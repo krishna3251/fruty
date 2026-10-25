@@ -442,3 +442,12 @@
 #root[inert] .pantry-notifications {
   visibility: hidden;
 }
+.welcome-auth > .text-link {
+  display: flex;
+  width: 100%;
+  min-height: 44px;
+  align-items: center;
+  justify-content: flex-start;
+  white-space: normal;
+  margin: 8px 0;
+}

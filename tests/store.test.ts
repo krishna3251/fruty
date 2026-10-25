@@ -1216,7 +1216,7 @@ test("live products, edited prices and saved dynamic carts are shared across cat
       ),
     );
     assert.ok(screen.getByText("₹275"));
-    assert.match(document.title, /Owner Added Pickle/);
+    await waitFor(() => assert.match(document.title, /Owner Added Pickle/));
     fireEvent.click(screen.getByRole("button", { name: "Open cart, 2 items" }));
     const dialog = within(screen.getByRole("dialog"));
     assert.ok(dialog.getByText("₹550"));
@@ -2091,4 +2091,51 @@ test("notifications deduplicate, cap the stack, expose severity and provide a wo
   } finally {
     window.removeEventListener("pantry:open-cart", open);
   }
+});
+
+test("guest cart removal stays removed when an older tab replays legacy storage writes", async () => {
+  const { PICKLE_BASKET_KEY, PICKLE_SELECTION_KEY, PICKLE_QUANTITIES_KEY } =
+    await import("../src/context/PickleSelection.tsx");
+  localStorage.clear();
+  window.history.replaceState({}, "", "/shop");
+  mountPantry();
+  fireEvent.click(screen.getByRole("button", { name: "Add both to cart" }));
+  const cart = within(screen.getByRole("dialog"));
+  fireEvent.click(
+    cart.getByRole("button", {
+      name: "Remove Pineapple Pickle — Tropical Feast from enquiry list",
+    }),
+  );
+  fireEvent.click(
+    cart.getByRole("button", {
+      name: "Remove Cucumber Pickle — Tropical Feast from enquiry list",
+    }),
+  );
+  assert.ok(cart.getByText("A little tang is waiting."));
+  assert.deepEqual(
+    JSON.parse(localStorage.getItem(PICKLE_BASKET_KEY)!).ids,
+    [],
+  );
+  // Older releases wrote IDs and quantities as separate records; ignore stale legacy events once migrated.
+  localStorage.setItem(
+    PICKLE_SELECTION_KEY,
+    JSON.stringify(["tropical-pineapple-pickle"]),
+  );
+  localStorage.setItem(
+    PICKLE_QUANTITIES_KEY,
+    JSON.stringify({ "tropical-pineapple-pickle": 1 }),
+  );
+  fireEvent(
+    window,
+    new dom.window.StorageEvent("storage", { key: PICKLE_SELECTION_KEY }),
+  );
+  assert.ok(cart.getByText("A little tang is waiting."));
+  cleanup();
+  mountPantry();
+  assert.ok(
+    screen.getByRole("button", { name: "Open cart, 0 items", exact: true }),
+  );
+  cleanup();
+  localStorage.clear();
+  window.history.replaceState({}, "", "/");
 });

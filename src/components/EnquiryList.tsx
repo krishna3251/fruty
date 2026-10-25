@@ -73,7 +73,7 @@ export default function EnquiryList({
             <button
               className="text-link"
               key={id}
-              onClick={() => selection.toggle(id)}
+              onClick={() => selection.remove(id)}
             >
               Remove missing item
             </button>
@@ -228,7 +228,7 @@ export default function EnquiryList({
                       <button
                         className="icon-button"
                         onClick={() => {
-                          selection.toggle(p.id);
+                          selection.remove(p.id);
                           setStatus("");
                         }}
                         aria-label={`Remove ${p.name} — ${c.name} from enquiry list`}
