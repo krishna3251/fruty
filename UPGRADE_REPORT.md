@@ -1,6 +1,6 @@
 # Tropical Feast customer accounts and WhatsApp commerce
 
-Local implementation prepared 25 October 2026 in the existing `krishna3251/fruty` project. Review branch: `feature/tropical-feast-neon-commerce`. **Not pushed or deployed**, following the attached brief. The live site still has the previously deployed version. This report supersedes older price, delivery and account-scope statements in historical project notes.
+Local implementation prepared 25 October 2026 in the existing `krishna3251/fruty` project. Review branch: `feature/tropical-feast-neon-commerce`. **Published to GitHub main and Vercel after explicit user approval.** See [LIVE_RELEASE.md](LIVE_RELEASE.md) for the live verification and migration execution record. This report supersedes older price, delivery and account-scope statements in historical project notes.
 
 ## Audit and scope
 
@@ -78,7 +78,7 @@ npm run verify
 
 The catalogue script only updates original records still at exactly ₹200 with no jar size. If the catalogue is uninitialized, new verified seed values already apply. If original records have deliberate owner changes, they are skipped: confirm/update them through the existing panel. Migration does not run at build/startup or from a public URL. `npm run dev` serves the frontend only; use `vercel dev` with securely loaded server environment for real local API testing. Run a single migration process per database; changed applied migrations are rejected. Review the target database/backup before applying any migration.
 
-Next, authorize GitHub publishing/Vercel deployment. In an authenticated owner session, verify real upload/save, business settings and a test enquiry. Configure verified Hyderabad areas, delivery rates/timing/free-delivery rules only when known. No default 1–2 day promise was added.
+GitHub publishing/Vercel deployment were subsequently authorized and completed. In an authenticated owner session, verify real upload/save, business settings and a test enquiry. Configure verified Hyderabad areas, delivery rates/timing/free-delivery rules only when known. No default 1–2 day promise was added.
 
 ## Verification
 
@@ -92,7 +92,7 @@ Next, authorize GitHub publishing/Vercel deployment. In an authenticated owner s
 
 ## Launch blockers / honest readiness
 
-**Ready for code review and configuration, not yet production-ready or deployed.** Still required: applying/checking the migration on the intended Neon database, updating any persisted legacy Blob values, real signed-in cross-device/owner flows, and a deployment verification. The existing Clerk resource is a development instance; owned-domain production setup and Google OAuth must still be completed by the owner.
+**Deployed, with commercial/authentication configuration still outstanding.** Live public routes, login UI and settings/catalogue reads are verified. Preview build logs record the additive migration, and the live settings endpoint successfully queries its table. Real signed-in cross-device/owner flows remain unverified. The existing Clerk resource is a development instance; owned-domain production setup and Google OAuth must still be completed by the owner.
 
 Owner must confirm legal seller identity/address, retention/backup process, ingredients/allergens, storage/shelf life, stock, service PINs, delivery timing/rates, tax/payment arrangements and cancellation/refund terms. Payment status in the panel is a manual business record, never a gateway verification. No payment was collected, no customer account created and no real enquiry was submitted during testing.
 
@@ -100,4 +100,4 @@ References used: official Clerk React `useAuth` documentation, Neon serverless d
 
 ## Sign-out follow-up
 
-Sign-out now redirects to `/sign-in` from both the account button and Clerk provider defaults. Closing a signed-in account dialog no longer saves a guest dismissal. A verified signed-in → loading → signed-out state transition clears stale guest dismissal before offering login again; choosing guest afterward still works. Regression coverage uses simulated session states, not a completed live Clerk sign-out. Build, 78 tests and formatting passed. This follow-up remains on the local review branch and is not published.
+Sign-out now redirects to `/sign-in` from both the account button and Clerk provider defaults. Closing a signed-in account dialog no longer saves a guest dismissal. A verified signed-in → loading → signed-out state transition clears stale guest dismissal before offering login again; choosing guest afterward still works. Regression coverage uses simulated session states, not a completed live Clerk sign-out. Build, 78 tests and formatting passed. This follow-up is now published on GitHub main and the production site.
