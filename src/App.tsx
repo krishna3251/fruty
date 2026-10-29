@@ -47,6 +47,7 @@ import { BusinessProvider, useBusiness } from "./context/Business";
 import { enquiryGmail, enquiryWhatsApp } from "./lib/contact";
 import CinematicHero from "./components/CinematicHero";
 import EnquiryList from "./components/EnquiryList";
+import EnquiryReview from "./components/EnquiryReview";
 import Modal from "./components/Modal";
 import ShoppingConfidence from "./components/ShoppingConfidence";
 import { siteConfig } from "./lib/config";
@@ -125,6 +126,7 @@ function PantryShell({ path }: { path: string }) {
     refresh: refreshCatalogue,
   } = useCatalogue();
   const [listOpen, setListOpen] = useState(false);
+  const [checkoutOpen, setCheckoutOpen] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
   const session = useSession();
   const closeAccount = useCallback(() => {
@@ -134,6 +136,7 @@ function PantryShell({ path }: { path: string }) {
   useEffect(() => {
     const open = () => {
       setListOpen(true);
+      setCheckoutOpen(false);
       setAccountOpen(false);
     };
     window.addEventListener("pantry:open-cart", open);
@@ -142,11 +145,27 @@ function PantryShell({ path }: { path: string }) {
   const [paused, setPaused] = useState(false);
   const reduced = useReducedMotion();
   const selection = usePickleSelection()!;
+  const checkoutProducts = pickleProducts.filter((p) =>
+    selection.ids.includes(p.id),
+  );
+  const checkoutReady =
+    checkoutProducts.length > 0 &&
+    checkoutProducts.length === selection.ids.length &&
+    checkoutProducts.every(
+      (p) =>
+        p.price !== null &&
+        p.availability !== "unavailable" &&
+        p.stockQuantity !== 0 &&
+        (p.stockQuantity == null ||
+          (selection.quantities[p.id] || 1) <= p.stockQuantity),
+    );
   const closeList = useCallback(() => setListOpen(false), []);
+  const closeCheckout = useCallback(() => setCheckoutOpen(false), []);
   usePantryMotion(root, path, paused || !!reduced);
   useEffect(() => {
     setMenu(false);
     setListOpen(false);
+    setCheckoutOpen(false);
     setAccountOpen(false);
   }, [path]);
   useFirstVisitLogin(path, setAccountOpen);
@@ -386,9 +405,10 @@ function PantryShell({ path }: { path: string }) {
                   the ₹150 standard delivery charge.
                 </li>
                 <li>
-                  <strong>Enquire.</strong> Enter your delivery details, review
-                  the draft and send it on WhatsApp. The seller confirms stock,
-                  coverage and payment arrangements.
+                  <strong>Enquire.</strong> Open your cart and send the draft on
+                  WhatsApp or email. You can also add delivery details in the
+                  optional checkout. The seller confirms stock, coverage and
+                  payment arrangements.
                 </li>
               </ol>
               <div
@@ -602,7 +622,48 @@ function PantryShell({ path }: { path: string }) {
       )}
       {listOpen && (
         <Modal title="Your cart" onClose={closeList} drawer>
-          <EnquiryList onNavigate={closeList} />
+          <EnquiryList
+            onNavigate={closeList}
+            onCheckout={() => {
+              setListOpen(false);
+              setCheckoutOpen(true);
+            }}
+          />
+        </Modal>
+      )}
+      {checkoutOpen && (
+        <Modal title="Checkout details" onClose={closeCheckout}>
+          <div className="enquiry-checkout">
+            {checkoutReady ? (
+              <EnquiryReview
+                products={checkoutProducts}
+                items={Object.fromEntries(
+                  checkoutProducts.map((p) => [
+                    p.id,
+                    selection.quantities[p.id] || 1,
+                  ]),
+                )}
+                startAtDetails
+                onBackToCart={() => {
+                  setCheckoutOpen(false);
+                  setListOpen(true);
+                }}
+              />
+            ) : (
+              <>
+                <p>Your cart has changed. Review your items before checkout.</p>
+                <button
+                  className="text-link"
+                  onClick={() => {
+                    setCheckoutOpen(false);
+                    setListOpen(true);
+                  }}
+                >
+                  Back to cart
+                </button>
+              </>
+            )}
+          </div>
         </Modal>
       )}
     </div>

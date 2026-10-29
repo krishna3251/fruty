@@ -1,0 +1,410 @@
+/* The pickle cart uses the same warm pantry palette as the storefront. */
+.drawer:has(.enquiry-list) {
+  width: 520px;
+  max-height: calc(100dvh - 32px);
+  border: 1px solid #e0e4d4;
+  border-radius: 18px;
+  background: #fbfaf4;
+  box-shadow: 0 24px 90px #132d1c40;
+}
+
+.drawer:has(.enquiry-list) .modal-head {
+  padding: 22px 26px;
+  background: #fbfaf4;
+  border-color: #e8e9df;
+}
+
+.drawer:has(.enquiry-list) .modal-head h2 {
+  color: #203e2b;
+  font-size: 29px;
+  letter-spacing: -0.035em;
+}
+
+.drawer:has(.enquiry-list) .modal-head .icon-button {
+  width: 44px;
+  height: 44px;
+  border: 1px solid #e0e6d9;
+  border-radius: 50%;
+  background: #fff;
+}
+
+.drawer:has(.enquiry-list) .enquiry-list {
+  padding: 0 24px 20px;
+  scrollbar-color: #b8c6ac transparent;
+}
+
+.enquiry-list .basket-intro {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+  margin: 0;
+  padding: 20px 0 16px;
+}
+
+.basket-intro .basket-eyebrow,
+.basket-summary-heading {
+  display: block;
+  color: #748269;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+
+.enquiry-list .basket-intro p {
+  margin: 5px 0 0;
+  color: #53634d;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.basket-intro .basket-count {
+  flex-shrink: 0;
+  margin: 0;
+  padding: 7px 11px;
+  border: 1px solid #dce5d3;
+  border-radius: 999px;
+  background: #edf3e7;
+  color: #345b3a;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.enquiry-list .enquiry-empty {
+  padding-top: 24px;
+}
+
+.enquiry-empty > svg {
+  box-sizing: content-box;
+  padding: 18px;
+  border-radius: 50%;
+  background: #edf2e6;
+}
+
+.basket-suggestions {
+  gap: 12px;
+}
+
+.basket-suggestion {
+  border-color: #e5e7da;
+  border-radius: 12px;
+  background: #fff;
+  transition:
+    transform 0.2s,
+    border-color 0.2s,
+    box-shadow 0.2s;
+}
+
+.basket-suggestion:hover {
+  transform: translateY(-2px);
+  border-color: #a6b698;
+  box-shadow: 0 8px 20px #263e2912;
+}
+
+.basket-suggestion img {
+  height: 125px;
+  background: #f0eddd;
+}
+
+.basket-products .enquiry-group {
+  padding: 0;
+}
+
+.basket-products .enquiry-group h3 {
+  margin: 4px 0 9px;
+  color: #7a8970;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+}
+
+.basket-products .enquiry-item {
+  grid-template-columns: 96px minmax(0, 1fr) 40px;
+  gap: 14px;
+  margin: 0 0 10px;
+  padding: 12px;
+  border: 1px solid #e9eadd;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 5px 16px #2a452a08;
+}
+
+.enquiry-item .basket-product-image {
+  align-self: stretch;
+  border-radius: 9px;
+  background: #f3ecdc;
+}
+
+.basket-product-image img {
+  height: 100%;
+  min-height: 125px;
+  object-fit: contain;
+}
+
+.basket-products .enquiry-item .basket-product-info > a {
+  color: #203e2b;
+  font-size: 21px;
+  line-height: 1.2;
+}
+
+.basket-products .enquiry-item small {
+  color: #78816d;
+  font-size: 10px;
+}
+
+.basket-unit-price {
+  margin-top: 8px;
+  color: #304b34;
+}
+
+.basket-unit-price span {
+  font-size: 10px;
+}
+
+.basket-line-total {
+  margin: 5px 0 0;
+  color: #6c7c65;
+  font-size: 11px;
+}
+
+.basket-products .enquiry-quantity {
+  margin-top: 9px;
+  border: 1px solid #dce3d6;
+  border-radius: 8px;
+  background: #f9fbf6;
+}
+
+.basket-products .enquiry-quantity .icon-button,
+.basket-products .enquiry-item > .icon-button {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+.basket-products .enquiry-item > .icon-button {
+  color: #7c8976;
+  border-radius: 8px;
+}
+
+.basket-products .enquiry-item > .icon-button:hover {
+  background: #f8eee9;
+  color: #a1533f;
+}
+
+.basket-draft-details {
+  margin: 6px 0 0;
+  border-color: #e3e8dd;
+}
+
+.basket-draft-details > summary {
+  padding: 13px 0;
+  color: #456549;
+  font-size: 12px;
+}
+
+.basket-summary {
+  margin-top: 6px;
+  padding: 18px;
+  border: 1px solid #dce8d8;
+  border-radius: 14px;
+  background: #f1f6ed;
+}
+
+.basket-summary-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.basket-summary-heading span:last-child {
+  color: #58745a;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+.basket-summary .cart-total-row {
+  margin: 9px 0;
+  color: #526451;
+  font-size: 13px;
+}
+
+.basket-summary .cart-total-row strong {
+  color: #29462d;
+  font-size: 13px;
+}
+
+.basket-summary .cart-grand-total {
+  margin-top: 13px;
+  padding-top: 13px;
+  border-color: #d1decd;
+  color: #203e2b;
+  font-weight: 700;
+}
+
+.basket-summary .cart-grand-total strong {
+  font-family: Georgia, serif;
+  font-size: 24px;
+}
+
+.enquiry-list .basket-delivery-note {
+  margin: 6px 0 0;
+  color: #64785e;
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.basket-action-panel {
+  padding: 16px 2px 4px;
+  background: #fbfaf4;
+}
+
+.basket-action-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.basket-action-heading strong {
+  color: #29462d;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.basket-action-label {
+  margin: 0;
+  color: #748269;
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.basket-contact-actions {
+  gap: 8px;
+}
+
+.basket-contact {
+  min-height: 48px;
+  border-radius: 8px;
+  text-decoration: none;
+}
+
+.whatsapp-contact {
+  border-color: #244f33;
+  background: #244f33;
+}
+
+.email-contact {
+  border-color: #c9d9c3;
+  background: #fff;
+}
+
+.enquiry-list .basket-reassurance {
+  margin: 9px 0 0;
+  color: #697b65;
+  font-size: 10px;
+  line-height: 1.4;
+}
+
+.basket-secondary-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px 14px;
+  margin-top: 10px;
+}
+
+.basket-secondary-actions :is(a, button) {
+  min-height: 36px;
+  padding: 0;
+  color: #48674a;
+  font-size: 11px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.enquiry-checkout {
+  padding: 0 26px 26px;
+}
+
+.enquiry-checkout .enquiry-review {
+  margin: 0;
+  border: 0;
+}
+
+@media (max-width: 767px) {
+  .drawer:has(.enquiry-list) {
+    width: calc(100% - 20px);
+    max-height: calc(100dvh - 20px);
+    margin: 10px;
+    border-radius: 16px;
+  }
+
+  .drawer:has(.enquiry-list) .modal-head {
+    padding: 14px 18px;
+  }
+
+  .drawer:has(.enquiry-list) .modal-head h2 {
+    font-size: 25px;
+  }
+
+  .drawer:has(.enquiry-list) .enquiry-list {
+    padding: 0 16px max(16px, env(safe-area-inset-bottom));
+  }
+
+  .basket-products .enquiry-item {
+    grid-template-columns: 76px minmax(0, 1fr) 44px;
+    gap: 8px;
+    padding: 10px;
+  }
+
+  .basket-product-image img {
+    height: 100%;
+    min-height: 124px;
+  }
+
+  .basket-products .enquiry-item .basket-product-info > a {
+    font-size: 19px;
+  }
+
+  .basket-summary {
+    padding: 15px;
+  }
+
+  .enquiry-checkout {
+    padding: 0 18px 20px;
+  }
+}
+
+@media (min-height: 650px) {
+  .enquiry-list.has-items .basket-action-panel {
+    position: sticky;
+    bottom: -1px;
+    z-index: 2;
+    box-shadow: 0 -10px 16px #fbfaf4ed;
+  }
+}
+
+@media (max-width: 359px) {
+  .basket-products .enquiry-item {
+    grid-template-columns: 60px minmax(0, 1fr) 44px;
+    gap: 6px;
+  }
+
+  .basket-products .enquiry-item .basket-product-info > a {
+    font-size: 17px;
+  }
+
+  .basket-products .enquiry-quantity .icon-button {
+    min-width: 44px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .basket-suggestion {
+    transition: none;
+  }
+
+  .basket-suggestion:hover {
+    transform: none;
+  }
+}

@@ -1,7 +1,6 @@
 import { deliveryQuote } from "../lib/customer";
 import { useBusiness } from "../context/Business";
 import { useCatalogue } from "../context/Catalogue";
-import EnquiryReview from "./EnquiryReview";
 import { cartTotals } from "../lib/catalogue";
 import { useRef, useState } from "react";
 import {
@@ -21,8 +20,10 @@ import { MAX_ENQUIRY_QUANTITY } from "../context/PickleSelection";
 import { money } from "../data/products";
 export default function EnquiryList({
   onNavigate,
+  onCheckout,
 }: {
   onNavigate?: () => void;
+  onCheckout?: () => void;
 }) {
   const { products: pickleProducts, error: catalogueError } = useCatalogue();
   const business = useBusiness();
@@ -44,6 +45,7 @@ export default function EnquiryList({
       (p.stockQuantity != null &&
         (selection.quantities[p.id] || 1) > p.stockQuantity),
   );
+  const blocked = unavailable || missing.length > 0;
   const quote = deliveryQuote(business, "", subtotal);
   const message = [
     "Hello, I’d like to enquire about:",
@@ -61,10 +63,17 @@ export default function EnquiryList({
     <div
       className={`enquiry-list ${selected.length ? "has-items" : "is-empty"}`}
     >
-      <p className="basket-intro">
-        Pick your jars. We’ll help with the rest.{" "}
-        <span>₹150 standard delivery per order · Hyderabad enquiries</span>
-      </p>
+      <div className="basket-intro">
+        <div>
+          <span className="basket-eyebrow">THE TROPICAL FEAST PANTRY</span>
+          <p>Good things are going in your basket.</p>
+        </div>
+        {selected.length > 0 && (
+          <span className="basket-count">
+            {selection.itemCount} {selection.itemCount === 1 ? "jar" : "jars"}
+          </span>
+        )}
+      </div>
       {catalogueError && <p role="status">{catalogueError}</p>}
       {missing.length > 0 && (
         <div role="status">
@@ -241,63 +250,6 @@ export default function EnquiryList({
               ) : null;
             })}
           </div>
-          <div className="basket-summary">
-            <div className="enquiry-subtotal">
-              <span>Products subtotal</span>
-              <strong>{money(subtotal)}</strong>
-              <small>
-                Confirm stock, ingredients/allergens and delivery before
-                ordering.
-              </small>
-            </div>
-            <div className="cart-total-row">
-              <span>Delivery</span>
-              <strong>{money(quote.delivery!)}</strong>
-            </div>
-            <div className="cart-total-row cart-grand-total">
-              <span>Estimated total</span>
-              <strong>{money(quote.total!)}</strong>
-            </div>
-            <a
-              className="cart-account-link"
-              href="/account"
-              onClick={onNavigate}
-            >
-              Sign in / Manage account ↗
-            </a>
-            {!unavailable && (
-              <EnquiryReview
-                products={selected}
-                items={Object.fromEntries(
-                  selected.map((p) => [p.id, selection.quantities[p.id] || 1]),
-                )}
-              />
-            )}
-            <span className="basket-action-label">
-              PRODUCT QUESTIONS? CONTACT US
-            </span>
-            <div className="basket-contact-actions">
-              {dm && !unavailable && (
-                <a
-                  className="basket-contact whatsapp-contact"
-                  href={dm}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <MessageCircle size={19} /> WhatsApp{" "}
-                  <ArrowUpRight size={16} />
-                </a>
-              )}
-              {!unavailable && (
-                <EmailEnquiry message={message} label="Email" prominent />
-              )}
-            </div>
-            <p className="basket-reassurance">
-              Opens an editable message. Review and send it yourself.
-              <br />
-              No payment is taken or order placed here.
-            </p>
-          </div>
           <details className="basket-draft-details">
             <summary>Preview or copy your enquiry</summary>
             <label className="enquiry-message">
@@ -337,6 +289,62 @@ export default function EnquiryList({
           <p role="status" aria-live="polite">
             {status}
           </p>
+          <div className="basket-summary">
+            <div className="basket-summary-heading">
+              <span>ORDER SUMMARY</span>
+              <span>Hyderabad</span>
+            </div>
+            <div className="cart-total-row">
+              <span>Products subtotal</span>
+              <strong>{money(subtotal)}</strong>
+            </div>
+            <div className="cart-total-row">
+              <span>Standard delivery</span>
+              <strong>{money(quote.delivery!)}</strong>
+            </div>
+            <div className="cart-total-row cart-grand-total">
+              <span>Estimated total</span>
+              <strong>{money(quote.total!)}</strong>
+            </div>
+            <p className="basket-delivery-note">
+              Confirm availability, ingredients and delivery with the seller.
+            </p>
+          </div>
+          <div className="basket-action-panel">
+            <div className="basket-action-heading">
+              <span className="basket-action-label">SEND YOUR ENQUIRY</span>
+              {!blocked && <strong>Est. total · {money(quote.total!)}</strong>}
+            </div>
+            <div className="basket-contact-actions">
+              {dm && !blocked && (
+                <a
+                  className="basket-contact whatsapp-contact"
+                  href={dm}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <MessageCircle size={19} /> WhatsApp{" "}
+                  <ArrowUpRight size={16} />
+                </a>
+              )}
+              {!blocked && (
+                <EmailEnquiry message={message} label="Email" prominent />
+              )}
+            </div>
+            <p className="basket-reassurance">
+              Opens an editable draft. No payment or order is made here.
+            </p>
+          </div>
+          <div className="basket-secondary-actions">
+            {!blocked && onCheckout && (
+              <button className="text-link" onClick={onCheckout}>
+                Optional checkout with delivery details ↗
+              </button>
+            )}
+            <a href="/account" onClick={onNavigate}>
+              Manage account ↗
+            </a>
+          </div>
         </>
       )}
     </div>

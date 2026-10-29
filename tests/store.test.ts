@@ -594,7 +594,9 @@ test("primary homepage and shop are pickle-only, with enquiry controls and persi
       "",
     /Pineapple Pickle — Tropical Feast/,
   );
-  assert.equal(dialog.queryByRole("button", { name: /checkout/i }), null);
+  assert.equal(dialog.queryByLabelText("House / street address"), null);
+  assert.ok(dialog.getByRole("link", { name: "WhatsApp", exact: true }));
+  assert.ok(dialog.getByRole("link", { name: "Email", exact: true }));
   const previousClipboard = Object.getOwnPropertyDescriptor(
     navigator,
     "clipboard",
@@ -993,6 +995,50 @@ test("enquiry basket quantities, subtotal and both email routes persist and stay
     true,
   );
   cleanup();
+  window.history.replaceState({}, "", "/");
+});
+test("cart contact links need no address and optional details open separately", () => {
+  localStorage.clear();
+  window.history.replaceState({}, "", "/shop");
+  mountPantry();
+  fireEvent.click(
+    screen.getByRole("button", { name: "Add to cart: Pineapple Pickle" }),
+  );
+  fireEvent.click(screen.getByRole("button", { name: "Open cart, 1 items" }));
+
+  let dialog = within(screen.getByRole("dialog", { name: "Your cart" }));
+  assert.equal(dialog.queryByLabelText("House / street address"), null);
+  const whatsapp = new URL(
+    dialog.getByRole("link", { name: "WhatsApp" }).getAttribute("href")!,
+  );
+  const email = new URL(
+    dialog.getByRole("link", { name: "Email" }).getAttribute("href")!,
+  );
+  assert.match(whatsapp.searchParams.get("text")!, /1 × Pineapple Pickle/);
+  assert.match(email.searchParams.get("body")!, /Estimated total: ₹299/);
+  assert.equal(
+    JSON.parse(localStorage.getItem("fruity-pickle-quantities-v1")!)[
+      "tropical-pineapple-pickle"
+    ],
+    1,
+  );
+
+  fireEvent.click(
+    dialog.getByRole("button", {
+      name: "Optional checkout with delivery details ↗",
+    }),
+  );
+  dialog = within(screen.getByRole("dialog", { name: "Checkout details" }));
+  assert.ok(dialog.getByLabelText("House / street address"));
+  fireEvent.click(dialog.getByRole("button", { name: "Back to cart" }));
+  dialog = within(screen.getByRole("dialog", { name: "Your cart" }));
+  assert.equal(dialog.queryByLabelText("House / street address"), null);
+  assert.equal(
+    dialog.getByLabelText("Pineapple Pickle quantity").textContent,
+    "1",
+  );
+  cleanup();
+  localStorage.clear();
   window.history.replaceState({}, "", "/");
 });
 test("SPA metadata replaces product structured data after navigating to contact", () => {
