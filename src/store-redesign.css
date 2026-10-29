@@ -724,6 +724,25 @@
 
   .pantry-store .pickle-toolbar {
     padding: 12px;
+    gap: 10px;
+  }
+
+  .pantry-store .pickle-toolbar .filters {
+    justify-content: flex-start;
+    gap: 6px;
+  }
+
+  .pantry-store .pickle-toolbar .filters button {
+    padding-inline: 10px;
+    border: 1px solid #d8e3d2;
+    background: #fff;
+    color: #456147;
+  }
+
+  .pantry-store .pickle-toolbar .filters button.active {
+    border-color: #244f33;
+    background: #244f33;
+    color: #fff;
   }
 }
 
