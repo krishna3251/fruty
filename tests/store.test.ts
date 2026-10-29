@@ -651,7 +651,7 @@ test("primary ordering and missing routes offer useful recovery without fruit na
   mountPantry();
   assert.ok(
     screen.getByRole("heading", {
-      name: /Find your jar.*Ask the right questions/,
+      name: /How to order.*It’s easy/,
       exact: false,
     }),
   );
@@ -1450,47 +1450,22 @@ test("owner editor uploads a photo and publishes a new product with verified inp
   }
 });
 
-test("Jar Lab supports reversible pointer and slider controls without loading video in reduced motion", async () => {
-  const { default: JarLab } = await import("../src/components/JarLab.tsx");
-  render(React.createElement(JarLab));
-  assert.equal(document.querySelectorAll(".jar-lab video").length, 0);
-  const slider = screen.getByRole("slider", {
-    name: "Jar lid openness",
-  }) as HTMLInputElement;
-  assert.equal(slider.disabled, true);
-  fireEvent.click(screen.getByRole("button", { name: "Try the jar" }));
-  assert.equal(slider.disabled, false);
-  fireEvent.change(slider, { target: { value: "45" } });
-  assert.equal(slider.value, "45");
-  const stage = document.querySelector(".jar-lab-stage")!;
-  const pointer = (type: string, y: number) => {
-    const e = new dom.window.Event(type, { bubbles: true });
-    Object.defineProperties(e, {
-      pointerId: { value: 1 },
-      clientY: { value: y },
-      button: { value: 0 },
-    });
-    fireEvent(stage, e);
-  };
-  pointer("pointerdown", 180);
-  pointer("pointermove", 45);
-  pointer("pointerup", 45);
-  assert.equal(slider.value, "100");
-  assert.ok(screen.getByRole("button", { name: "Close the jar" }));
-  pointer("pointerdown", 45);
-  pointer("pointermove", 180);
-  pointer("pointerup", 180);
-  assert.equal(slider.value, "0");
-  fireEvent.click(screen.getByRole("button", { name: "Open the jar" }));
-  assert.equal(slider.value, "100");
-  assert.equal(document.querySelectorAll(".jar-lab video").length, 0);
-  assert.match(
-    document.querySelector<HTMLImageElement>(".jar-lab-poster")!.src,
-    /jar-lifted.webp/,
+test("homepage explains how to shop and no longer exposes the jar game", () => {
+  localStorage.clear();
+  window.history.replaceState({}, "", "/");
+  mountPantry();
+  assert.ok(screen.getByRole("heading", { name: "Meet the pickles." }));
+  assert.ok(screen.getByRole("heading", { name: "Choose your pickles" }));
+  assert.ok(screen.getByRole("heading", { name: "Review your cart" }));
+  assert.ok(screen.getByRole("heading", { name: "Send your enquiry" }));
+  assert.equal(document.querySelector("#jar-lab"), null);
+  assert.equal(document.querySelector('a[href*="#jar-lab"]'), null);
+  fireEvent.click(
+    screen.getByRole("button", { name: "Add to cart: Pineapple Pickle" }),
   );
-  fireEvent.click(screen.getByRole("button", { name: "Reset" }));
-  assert.equal(slider.value, "0");
+  assert.ok(screen.getByRole("button", { name: "Open cart, 1 items" }));
   cleanup();
+  localStorage.clear();
 });
 test("product quick look zooms and restores focus; the pair action opens an accurate guest cart with standard delivery and seller confirmation required", async () => {
   const { pickleProducts } = await import("../src/data/pickles.ts");

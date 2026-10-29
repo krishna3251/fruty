@@ -1,0 +1,735 @@
+/* A product-first storefront for Tropical Feast. */
+.pantry-store {
+  --store-ink: #183e2c;
+  --store-muted: #596a59;
+  --store-paper: #fcfaf4;
+  background: var(--store-paper);
+  color: #263c2c;
+}
+
+.pantry-store :is(#collections, #pickle-grid, #pantry-story, #questions) {
+  scroll-margin-top: 95px;
+}
+
+.pantry-store .pantry-announcement {
+  min-height: 32px;
+  align-items: center;
+  padding-block: 8px;
+  background: #173e2c;
+  color: #f8f2e4;
+  font-size: 10px;
+  font-weight: 650;
+  letter-spacing: 0.1em;
+}
+
+.pantry-store .pantry-header {
+  min-height: 78px;
+  background: #fcfaf4f5;
+  border-color: #e5e8db;
+  box-shadow: 0 5px 22px #1c392607;
+  backdrop-filter: blur(14px);
+}
+
+.pantry-store .pantry-logo > img {
+  width: 58px;
+  height: 58px;
+}
+
+.pantry-store .pantry-logo .brand-wordmark {
+  color: #273d2b;
+  font-size: 24px;
+}
+
+.pantry-store .pantry-navigation {
+  gap: clamp(16px, 2vw, 30px);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.pantry-store .pantry-list-button {
+  min-height: 44px;
+  border-color: #cfdacb;
+  border-radius: 999px;
+  background: #edf3e9;
+  color: #173e2c;
+  font-weight: 700;
+}
+
+.pantry-store .button.primary {
+  min-height: 50px;
+  border-radius: 8px;
+  background: #194a31;
+  border-color: #194a31;
+  font-weight: 700;
+}
+
+.pantry-store .button.primary:hover {
+  background: #2d6541;
+  border-color: #2d6541;
+}
+
+.pantry-store .cinema-hero.is-inline-film {
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.15fr);
+  gap: 0 clamp(30px, 5vw, 80px);
+  min-height: 0;
+  padding: clamp(40px, 5vw, 76px) 6% 0;
+  background: #f2e8d6;
+}
+
+.pantry-store .cinema-hero.is-inline-film .cinema-copy {
+  padding: 12px 0 40px;
+}
+
+.pantry-store .cinema-hero.is-inline-film .cinema-copy .eyebrow {
+  display: inline-block;
+  margin-bottom: 22px;
+  color: #526e49;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.pantry-store .cinema-hero.is-inline-film h1 {
+  max-width: 630px;
+  margin-bottom: 22px;
+  color: #183e2c;
+  font-size: clamp(52px, 5.8vw, 82px);
+  line-height: 1.02;
+  letter-spacing: -0.055em;
+}
+
+.pantry-store .cinema-hero.is-inline-film h1 em {
+  color: #708553;
+}
+
+.pantry-store .cinema-hero.is-inline-film .cinema-copy p {
+  max-width: 450px;
+  margin-bottom: 25px;
+  color: #405b42;
+  font-size: 15px;
+  line-height: 1.75;
+}
+
+.pantry-store .cinema-hero.is-inline-film .cinema-stage {
+  overflow: hidden;
+  border: 1px solid #c9b89555;
+  border-radius: 20px;
+  background: #e8d4b7;
+  box-shadow: 0 18px 50px #7359341a;
+}
+
+.hero-shopping-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px 22px;
+}
+
+.hero-order-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  color: #294e32;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 5px;
+}
+
+.hero-shopping-note {
+  max-width: 430px;
+  margin-top: 25px;
+  padding-top: 18px;
+  border-color: #b8bda844;
+}
+
+.hero-shopping-note strong {
+  color: #284a31;
+  font-size: 14px;
+}
+
+.hero-shopping-note span {
+  font-size: 12px;
+}
+
+.pantry-store .cinema-hero.is-inline-film .cinema-rail {
+  padding-block: 16px 18px;
+  border-color: #b8bda855;
+}
+
+.pantry-store .shopping-confidence {
+  grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
+  align-items: center;
+  gap: 24px;
+  padding: 25px 6%;
+  border-color: #e3eadc;
+  background: #edf3e8;
+}
+
+.shopping-confidence > div > svg {
+  color: #527850;
+}
+
+.shopping-confidence strong {
+  color: #244c31;
+  font-size: 13px;
+}
+
+.shopping-confidence small {
+  color: #63775f;
+  font-size: 12px;
+}
+
+.shopping-confidence > a {
+  grid-column: auto;
+  margin: 0;
+  color: #365d3a;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.pantry-store .homepage-picks,
+.pantry-store .pickle-catalogue {
+  padding-block: clamp(55px, 6vw, 90px);
+  background: #fcfaf4;
+}
+
+.pantry-store .section-heading h2,
+.pantry-store .shopping-steps h2,
+.pantry-store .store-story h2 {
+  color: #183e2c;
+  font-family: Georgia, serif;
+  font-weight: 400;
+  letter-spacing: -0.045em;
+}
+
+.pantry-store .homepage-picks .section-heading {
+  align-items: end;
+  margin-bottom: 32px;
+}
+
+.pantry-store .homepage-picks .section-heading h2 {
+  margin: 10px 0;
+  font-size: clamp(38px, 4.3vw, 60px);
+}
+
+.homepage-picks .section-heading p {
+  margin: 0;
+  color: #63715c;
+  font-size: 14px;
+}
+
+.pantry-store .pickle-grid {
+  gap: 24px;
+}
+
+.pantry-store .pantry-product-card,
+.pantry-store .pantry-product-card.flavour-green {
+  border-color: #e5e9dc;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 12px 32px #2c492b09;
+}
+
+.pantry-product-card .product-card-topline {
+  padding: 14px 22px;
+  border-color: #eef0e7;
+  color: #6e7c67;
+  font-weight: 700;
+}
+
+.pantry-product-card .pickle-card-image {
+  border: 0;
+}
+
+.pantry-product-card .pickle-card-copy {
+  padding: 22px 24px 24px;
+}
+
+.pantry-product-card .product-card-name h3 {
+  color: #1e422c;
+  font-size: clamp(26px, 2.8vw, 36px);
+}
+
+.pantry-product-card .pickle-descriptors {
+  margin: 10px 0;
+  color: #68825e;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.pantry-product-card .pickle-card-description {
+  min-height: 42px;
+  margin: 0 0 16px;
+  color: #62705f;
+  font-size: 12px;
+  line-height: 1.65;
+}
+
+.product-card-price strong {
+  color: #1e422c;
+  font-size: 26px;
+}
+
+.product-delivered-price {
+  color: #64735f;
+  font-size: 11px;
+}
+
+.pantry-product-card .product-add {
+  margin: 16px 0 10px;
+}
+
+.pantry-store .pair-pick {
+  border-color: #d6e3d0;
+  border-radius: 16px;
+  background: #e9f1e5;
+}
+
+.pair-pick h3 {
+  color: #1c4830;
+}
+
+.pair-pick p,
+.pair-pick-action small {
+  color: #526b4e;
+  font-size: 12px;
+}
+
+.pantry-store .pickle-home > .shopping-steps {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.7fr) minmax(0, 1.4fr);
+  gap: 8%;
+  align-items: start;
+  background: #193f2e;
+  color: #f9f7eb;
+}
+
+.shopping-steps-intro .eyebrow {
+  color: #bdcfa8;
+}
+
+.pantry-store .shopping-steps h2 {
+  max-width: 430px;
+  margin: 18px 0;
+  color: #fffaf0;
+  font-size: clamp(37px, 4vw, 56px);
+  line-height: 1.08;
+}
+
+.shopping-steps-intro > p {
+  max-width: 340px;
+  color: #d0deca;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.shopping-steps-intro .text-link {
+  margin-top: 12px;
+  color: #f6f3e8;
+}
+
+.shopping-step-list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.shopping-step-list li {
+  min-height: 230px;
+  padding: 22px;
+  border: 1px solid #ffffff25;
+  border-radius: 14px;
+  background: #ffffff0a;
+}
+
+.shopping-step-list li > svg {
+  display: block;
+  margin: 24px 0 18px;
+  color: #d7e5b8;
+}
+
+.shopping-step-number {
+  color: #b9caa9;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+
+.shopping-step-list h3 {
+  margin: 0 0 10px;
+  color: #fffaf0;
+  font-size: 15px;
+  line-height: 1.4;
+}
+
+.shopping-step-list p {
+  margin: 0;
+  color: #d0deca;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.pantry-store .pickle-home > .store-story {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(35px, 8vw, 110px);
+  align-items: center;
+  background: #f3ead9;
+}
+
+.store-story-photo {
+  overflow: hidden;
+  border-radius: 18px;
+  background: #eadbc4;
+}
+
+.store-story-photo img {
+  display: block;
+  width: 100%;
+  max-height: 520px;
+  aspect-ratio: 1.22;
+  object-fit: cover;
+  object-position: center 58%;
+}
+
+.pantry-store .store-story h2 {
+  max-width: 540px;
+  margin: 18px 0;
+  font-size: clamp(40px, 4.7vw, 64px);
+  line-height: 1.06;
+}
+
+.store-story-copy > p {
+  max-width: 470px;
+  margin: 0 0 24px;
+  color: #5a6a57;
+  font-size: 15px;
+  line-height: 1.8;
+}
+
+.pantry-store .pantry-faq {
+  gap: 10%;
+  background: #fcfaf4;
+}
+
+.pantry-faq summary {
+  color: #244a31;
+  font-size: 14px;
+  font-weight: 650;
+}
+
+.pantry-faq p {
+  font-size: 13px;
+}
+
+.pantry-store .pantry-footer {
+  background: #e9eee3;
+  border-color: #dbe4d5;
+}
+
+.pantry-store .pantry-footer-top a:not(.pantry-logo),
+.pantry-store .pantry-footer-top button,
+.pantry-store .pantry-footer p {
+  color: #456047;
+  font-size: 12px;
+}
+
+.pantry-store .pickle-page-heading,
+.pantry-store .pantry-order-intro {
+  background: #f2e8d6;
+}
+
+.pantry-store .pickle-page-heading {
+  max-width: none;
+}
+
+.pantry-store .pickle-page-heading h1,
+.pantry-store .pantry-order-intro h1 {
+  color: #183e2c;
+}
+
+.pantry-store .pickle-page-heading > p,
+.pantry-store .pantry-order-intro > p {
+  color: #526751;
+  font-size: 15px;
+  line-height: 1.75;
+}
+
+.pantry-store .pickle-catalogue {
+  padding-top: 40px;
+}
+
+.pantry-store .pickle-toolbar {
+  padding: 16px;
+  border: 1px solid #e2e9dc;
+  border-radius: 12px;
+  background: #f2f6ee;
+}
+
+.pantry-store .pickle-product-page {
+  background: #fcfaf4;
+}
+
+.pantry-store .pickle-detail {
+  gap: clamp(35px, 6vw, 90px);
+}
+
+.pantry-store .pickle-detail-image {
+  overflow: hidden;
+  border: 1px solid #e8e2d1;
+  border-radius: 16px;
+}
+
+.pantry-store .pickle-detail-copy {
+  padding-top: 10px;
+}
+
+.pantry-store .pickle-detail h1 {
+  margin: 15px 0;
+  color: #183e2c;
+  font-size: clamp(40px, 4vw, 58px);
+}
+
+.pantry-store .pickle-detail-copy > p {
+  color: #5c6d59;
+  font-size: 14px;
+  line-height: 1.75;
+}
+
+.pickle-detail-buy {
+  margin: 22px 0 8px;
+  padding: 20px;
+  border: 1px solid #dce8d8;
+  border-radius: 14px;
+  background: #f0f6ec;
+}
+
+.pickle-detail-price {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin: 0;
+}
+
+.pickle-detail-price strong {
+  color: #193f2e;
+  font-size: 29px;
+  line-height: 1.2;
+}
+
+.pickle-detail-price span {
+  color: #647a60;
+  font-size: 12px;
+}
+
+.pickle-detail-buy .delivery-note {
+  margin: 9px 0 0;
+  color: #526d4d;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.pantry-store .pickle-detail-buy .product-add {
+  margin: 16px 0 8px;
+}
+
+.pickle-buy-hint {
+  margin: 0;
+  color: #60765c;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.pantry-store .pickle-facts > div {
+  padding-block: 14px;
+  font-size: 12px;
+}
+
+.pantry-store .pickle-ordering {
+  border-top: 1px solid #dce8d8;
+  background: #edf3e8;
+}
+
+.pantry-store .information-page {
+  background: #fcfaf4;
+}
+
+@media (max-width: 1050px) {
+  .pantry-store .shopping-confidence {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .shopping-confidence > a {
+    grid-column: 1/-1;
+    justify-self: start;
+  }
+
+  .pantry-store .pickle-home > .shopping-steps {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+}
+
+@media (max-width: 767px) {
+  .pantry-store :is(#collections, #pickle-grid, #pantry-story, #questions) {
+    scroll-margin-top: 78px;
+  }
+
+  .pantry-store .pantry-announcement {
+    justify-content: center;
+    text-align: center;
+    font-size: 9px;
+    letter-spacing: 0.04em;
+  }
+
+  .pantry-announcement span:first-child {
+    display: none;
+  }
+
+  .pantry-store .pantry-header {
+    min-height: 65px;
+    padding: 6px 5%;
+  }
+
+  .pantry-store .pantry-logo > img {
+    width: 43px;
+    height: 43px;
+  }
+
+  .pantry-store .pantry-logo .brand-wordmark {
+    font-size: 19px;
+  }
+
+  .pantry-store .cinema-hero.is-inline-film {
+    display: flex;
+    padding: 30px 5% 0;
+    gap: 0;
+  }
+
+  .pantry-store .cinema-hero.is-inline-film .cinema-copy {
+    padding: 0 0 25px;
+  }
+
+  .pantry-store .cinema-hero.is-inline-film h1 {
+    font-size: clamp(46px, 10vw, 65px);
+  }
+
+  .pantry-store .cinema-hero.is-inline-film .cinema-copy p {
+    max-width: 100%;
+    font-size: 14px;
+  }
+
+  .pantry-store .cinema-hero.is-inline-film .cinema-stage {
+    width: 100%;
+    border-radius: 14px;
+  }
+
+  .pantry-store .cinema-hero.is-inline-film .cinema-rail {
+    width: 100%;
+    margin: 18px 0 0;
+    padding: 15px 0 18px;
+  }
+
+  .pantry-store .shopping-confidence {
+    grid-template-columns: 1fr;
+    gap: 17px;
+    padding: 24px 5%;
+  }
+
+  .shopping-confidence > a {
+    min-height: 34px;
+  }
+
+  .pantry-store .homepage-picks,
+  .pantry-store .pickle-catalogue {
+    padding-block: 48px;
+  }
+
+  .pantry-store .homepage-picks .section-heading {
+    align-items: start;
+  }
+
+  .pantry-store .homepage-picks .section-heading h2 {
+    font-size: 38px;
+  }
+
+  .homepage-picks .section-heading p {
+    max-width: 235px;
+    font-size: 13px;
+    line-height: 1.55;
+  }
+
+  .pantry-store .pickle-grid {
+    gap: 18px;
+  }
+
+  .pantry-product-card .pickle-card-description {
+    min-height: 0;
+  }
+
+  .shopping-step-list {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .shopping-step-list li {
+    min-height: 0;
+    display: grid;
+    grid-template-columns: 30px minmax(0, 1fr);
+    gap: 5px 12px;
+    padding: 18px;
+  }
+
+  .shopping-step-list li > svg {
+    grid-row: 2 / 4;
+    margin: 0;
+  }
+
+  .shopping-step-number {
+    grid-column: 1/-1;
+    margin-bottom: 5px;
+  }
+
+  .shopping-step-list h3,
+  .shopping-step-list p {
+    margin: 0;
+  }
+
+  .pantry-store .pickle-home > .store-story {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+
+  .store-story-photo img {
+    max-height: 400px;
+  }
+
+  .store-story-copy > p {
+    font-size: 14px;
+  }
+
+  .pantry-store .pickle-detail {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .pantry-store .pickle-detail-copy {
+    padding-top: 0;
+  }
+
+  .pantry-store .pickle-toolbar {
+    padding: 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pantry-store .button,
+  .pantry-store .pantry-product-card {
+    transition: none;
+  }
+}

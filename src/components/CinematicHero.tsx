@@ -213,21 +213,23 @@ export default function CinematicHero({
       </div>
       <div className="cinema-copy">
         <div className="cinema-intro">
-          <span className="eyebrow">TROPICAL FEAST / A PINEAPPLE STORY</span>
+          <span className="eyebrow">TROPICAL FEAST · HYDERABAD</span>
           <h1 id="cinema-title">
-            Your plate’s
-            <br /> <em>plot twist.</em>
+            Pickles with
+            <br /> <em>personality.</em>
           </h1>
           <p>
-            Pineapple or cucumber. Crisp, spicy, tangy pickles for the meals you
-            love. Small jar. Big personality.
+            Meet our pineapple and cucumber pickles: crisp, spicy and tangy.
+            Choose your favourite and enquire in just a few clicks.
           </p>
-          <a href="/shop" className="button primary">
-            Pick your jar <ArrowUpRight size={17} />
-          </a>
-          <a href="#jar-lab" className="hero-lab-link">
-            Play with the jar <ArrowUpRight size={15} />
-          </a>
+          <div className="hero-shopping-actions">
+            <a href="/shop" className="button primary">
+              Shop our pickles <ArrowUpRight size={17} />
+            </a>
+            <a href="/ordering" className="hero-order-link">
+              How ordering works <ArrowUpRight size={15} />
+            </a>
+          </div>
           <div className="hero-shopping-note">
             <strong>
               {sizes.length === 1 ? `${sizes[0]} jars` : "Explore our jars"}
@@ -236,8 +238,8 @@ export default function CinematicHero({
                 : " · ask about availability"}
             </strong>
             <span>
-              Hyderabad · {money(STANDARD_DELIVERY_CHARGE)} standard delivery
-              per order
+              Hyderabad enquiries · {money(STANDARD_DELIVERY_CHARGE)} standard
+              delivery per order
             </span>
           </div>
         </div>

@@ -102,7 +102,7 @@ export function pageMeta(
     "/": {
       title: "Tropical Feast | Pineapple & Cucumber Pickles",
       description:
-        "Watch the pineapple pickle film at Tropical Feast. Discover Tropical Feast’s pineapple and cucumber pickles and enquire in Hyderabad.",
+        "Discover Tropical Feast’s pineapple and cucumber pickles. Explore the flavours, build your cart and enquire in Hyderabad.",
     },
     "/shop": {
       title: "Shop Pineapple & Cucumber Pickles | Tropical Feast",
