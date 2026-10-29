@@ -1,3 +1,5 @@
+export type HeroVideoMode = "autoplay" | "scroll";
+
 export const businessDefaults = {
   name: "Tropical Feast",
   email: "tropicalfeast7@gmail.com",
@@ -9,6 +11,7 @@ export const businessDefaults = {
   areas: [] as { name: string; pins: string[]; rate: number | null }[],
   freeDeliveryThreshold: null as number | null,
   deliveryEstimate: "", // No unverified delivery promise.
+  heroVideoMode: "autoplay" as HeroVideoMode,
 };
 export type BusinessSettings = typeof businessDefaults;
 export const STANDARD_DELIVERY_CHARGE = 150;

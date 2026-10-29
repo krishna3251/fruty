@@ -5,7 +5,11 @@ import {
   type OrderStatus,
   type StoreOrder,
 } from "../lib/customer";
-import { businessDefaults, type BusinessSettings } from "../lib/business";
+import {
+  businessDefaults,
+  type BusinessSettings,
+  type HeroVideoMode,
+} from "../lib/business";
 import { money } from "../data/products";
 export default function OwnerOperations({
   getToken,
@@ -341,6 +345,31 @@ export default function OwnerOperations({
               }}
             >
               <fieldset disabled={busy}>
+                <div className="owner-hero-setting">
+                  <h4>Homepage video</h4>
+                  <p>Choose how the pineapple film appears on your homepage.</p>
+                  <label>
+                    Video style
+                    <select
+                      value={settings.heroVideoMode ?? "autoplay"}
+                      onChange={(e) =>
+                        setSettings({
+                          ...settings,
+                          heroVideoMode: e.target.value as HeroVideoMode,
+                        })
+                      }
+                    >
+                      <option value="autoplay">Autoplay background</option>
+                      <option value="scroll">Scroll-controlled story</option>
+                    </select>
+                  </label>
+                  <p>
+                    The scroll story follows the visitor’s scroll on larger
+                    screens. Phones use the autoplay background for a smoother
+                    shopping experience. Reduced-motion preferences are
+                    respected.
+                  </p>
+                </div>
                 {(
                   [
                     ["name", "Business name"],

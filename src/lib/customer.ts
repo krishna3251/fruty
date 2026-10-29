@@ -130,6 +130,12 @@ export function validateSettings(value: unknown): BusinessSettings {
   if (!value || typeof value !== "object")
     throw Error("Check business settings.");
   const s = value as BusinessSettings;
+  if (
+    s.heroVideoMode !== undefined &&
+    s.heroVideoMode !== "autoplay" &&
+    s.heroVideoMode !== "scroll"
+  )
+    throw Error("Choose a valid homepage video style.");
   const email = plain(s.email, "email", 5, 150);
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
     throw Error("Check the contact email.");
@@ -162,6 +168,7 @@ export function validateSettings(value: unknown): BusinessSettings {
     deliveryEstimate: s.deliveryEstimate
       ? plain(s.deliveryEstimate, "delivery estimate", 1, 120)
       : "",
+    heroVideoMode: s.heroVideoMode ?? businessDefaults.heroVideoMode,
     freeDeliveryThreshold: s.freeDeliveryThreshold,
     areas: s.areas.map((a) => {
       if (

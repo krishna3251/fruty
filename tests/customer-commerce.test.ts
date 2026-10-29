@@ -120,6 +120,9 @@ test("new confirmed catalogue and business configuration keep unknown stock and 
   assert.equal(deliveryQuote(s, "500001", 298).total, 348);
   assert.equal(deliveryQuote(s, "500001", 500).delivery, 0);
   assert.equal(deliveryQuote(s, "500002", 1000).delivery, 150);
+  const { heroVideoMode: _oldMode, ...legacySettings } = s;
+  assert.equal(validateSettings(legacySettings).heroVideoMode, "autoplay");
+  assert.throws(() => validateSettings({ ...s, heroVideoMode: "unexpected" }));
   assert.throws(() => validateSettings({ ...s, whatsapp: "javascript:bad" }));
   assert.throws(() =>
     validateSettings({
@@ -299,10 +302,15 @@ test("enquiries snapshot authoritative prices, calculate delivery estimates with
 test("business settings persist and stale edits fail without overwriting newer settings", async () => {
   const initial = await publicSettings();
   const saved = await saveSettings(
-    { ...initial.settings, hours: "Owner-confirmed test hours" },
+    {
+      ...initial.settings,
+      hours: "Owner-confirmed test hours",
+      heroVideoMode: "scroll",
+    },
     initial.version,
   );
   assert.equal(saved.settings.hours, "Owner-confirmed test hours");
+  assert.equal(saved.settings.heroVideoMode, "scroll");
   await assert.rejects(
     () =>
       saveSettings({ ...initial.settings, hours: "Stale" }, initial.version),
@@ -312,6 +320,7 @@ test("business settings persist and stale edits fail without overwriting newer s
     (await publicSettings()).settings.hours,
     "Owner-confirmed test hours",
   );
+  assert.equal((await publicSettings()).settings.heroVideoMode, "scroll");
 });
 test("persistent rate limits reject excess requests rather than relying on a function-local counter", async () => {
   const key = randomUUID();

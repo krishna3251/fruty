@@ -51,3 +51,15 @@ export function progressForVideoTime(time: number) {
   }
   return 1;
 }
+
+// Measure only the distance for which the hero stays sticky below the header.
+export function progressForScroll(
+  regionTop: number,
+  regionHeight: number,
+  heroHeight: number,
+  headerHeight: number,
+) {
+  const distance = regionHeight - heroHeight;
+  if (distance <= 0) return 0;
+  return Math.max(0, Math.min(1, (headerHeight - regionTop) / distance));
+}

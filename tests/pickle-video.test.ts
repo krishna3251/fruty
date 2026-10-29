@@ -5,8 +5,18 @@ import {
   PICKLE_VIDEO,
   storyStops,
   videoTimeForProgress,
+  progressForScroll,
 } from "../src/lib/pickleVideo.ts";
 import { createVideoSeeker } from "../src/lib/videoSeeker.ts";
+
+test("scroll progress accounts for the sticky header and clamps both ends", () => {
+  assert.equal(progressForScroll(78, 1600, 800, 78), 0);
+  assert.equal(progressForScroll(-322, 1600, 800, 78), 0.5);
+  assert.equal(progressForScroll(-722, 1600, 800, 78), 1);
+  assert.equal(progressForScroll(500, 1600, 800, 78), 0);
+  assert.equal(progressForScroll(-2000, 1600, 800, 78), 1);
+  assert.equal(progressForScroll(0, 800, 800, 78), 0);
+});
 
 test("scroll mapping follows the observed footage, holds its endpoints and reverses without a jump", () => {
   for (const [progress, time] of storyStops)
