@@ -309,6 +309,8 @@ export default function EnquiryList({
             <p className="basket-delivery-note">
               Confirm availability, ingredients and delivery with the seller.
             </p>
+          </div>
+          <div className="basket-action-panel">
             <span className="basket-action-label">SEND YOUR ENQUIRY</span>
             <div className="basket-contact-actions">
               {dm && !blocked && (
@@ -329,16 +331,16 @@ export default function EnquiryList({
             <p className="basket-reassurance">
               Opens an editable draft. No payment or order is made here.
             </p>
-            <div className="basket-secondary-actions">
-              {!blocked && onCheckout && (
-                <button className="text-link" onClick={onCheckout}>
-                  Optional checkout with delivery details ↗
-                </button>
-              )}
-              <a href="/account" onClick={onNavigate}>
-                Manage account ↗
-              </a>
-            </div>
+          </div>
+          <div className="basket-secondary-actions">
+            {!blocked && onCheckout && (
+              <button className="text-link" onClick={onCheckout}>
+                Optional checkout with delivery details ↗
+              </button>
+            )}
+            <a href="/account" onClick={onNavigate}>
+              Manage account ↗
+            </a>
           </div>
         </>
       )}

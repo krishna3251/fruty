@@ -246,10 +246,15 @@
 }
 
 .enquiry-list .basket-delivery-note {
-  margin: 6px 0 14px;
+  margin: 6px 0 0;
   color: #64785e;
   font-size: 11px;
   line-height: 1.4;
+}
+
+.basket-action-panel {
+  padding: 16px 2px 4px;
+  background: #fbfaf4;
 }
 
 .basket-action-label {
@@ -356,12 +361,12 @@
   }
 }
 
-@media (max-width: 767px) and (min-height: 650px) {
-  .enquiry-list.has-items .basket-summary {
+@media (min-height: 650px) {
+  .enquiry-list.has-items .basket-action-panel {
     position: sticky;
     bottom: -1px;
     z-index: 2;
-    box-shadow: 0 -10px 20px #fbfaf4e8;
+    box-shadow: 0 -10px 16px #fbfaf4ed;
   }
 }
 
