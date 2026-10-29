@@ -311,7 +311,10 @@ export default function EnquiryList({
             </p>
           </div>
           <div className="basket-action-panel">
-            <span className="basket-action-label">SEND YOUR ENQUIRY</span>
+            <div className="basket-action-heading">
+              <span className="basket-action-label">SEND YOUR ENQUIRY</span>
+              {!blocked && <strong>Est. total · {money(quote.total!)}</strong>}
+            </div>
             <div className="basket-contact-actions">
               {dm && !blocked && (
                 <a
