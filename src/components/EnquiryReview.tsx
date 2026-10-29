@@ -17,13 +17,19 @@ import EmailEnquiry from "./EmailEnquiry";
 export default function EnquiryReview({
   products,
   items,
+  startAtDetails = false,
+  onBackToCart,
 }: {
   products: PickleProduct[];
   items: Record<string, number>;
+  startAtDetails?: boolean;
+  onBackToCart?: () => void;
 }) {
   const session = useSession();
   const settings = useBusiness();
-  const [step, setStep] = useState<"cart" | "details" | "review">("cart");
+  const [step, setStep] = useState<"cart" | "details" | "review">(
+    startAtDetails ? "details" : "cart",
+  );
   const [address, setAddress] = useState<Address>({ ...emptyAddress });
   const [addresses, setAddresses] = useState<Address[]>([]);
   const [error, setError] = useState("");
@@ -48,8 +54,8 @@ export default function EnquiryReview({
   useEffect(() => {
     setResult(null);
     requestId.current = "";
-    setStep("cart");
-  }, [signatures]);
+    setStep(startAtDetails ? "details" : "cart");
+  }, [signatures, startAtDetails]);
   useEffect(() => {
     if (session.status !== "signed-in") {
       setAddresses([]);
@@ -300,6 +306,10 @@ export default function EnquiryReview({
         className="text-link"
         disabled={busy}
         onClick={() => {
+          if (step === "details" && onBackToCart) {
+            onBackToCart();
+            return;
+          }
           setStep(step === "review" ? "details" : "cart");
           setResult(null);
           setError("");
