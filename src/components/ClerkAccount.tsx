@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { SignIn, SignUp, UserProfile, useClerk, useUser } from "@clerk/react";
 import PasswordRecovery from "./PasswordRecovery";
-import CustomerDashboard from "./CustomerDashboard";
+import AccountWorkspace from "./AccountWorkspace";
 import AdminPanel from "./AdminPanel";
 import type { AccountMode } from "./AccountPage";
 function AccountContents({
@@ -22,50 +22,51 @@ function AccountContents({
     if (isLoaded) onReady();
   }, [isLoaded, onReady]);
   if (!isLoaded) return <p role="status">Loading your secure account…</p>;
-  if (isSignedIn)
-    return (
+  if (isSignedIn) {
+    const handleSignOut = async () => {
+      setLeaving(true);
+      setError("");
+      try {
+        await signOut({ redirectUrl: "/sign-in" });
+      } catch {
+        setError("Sign-out could not be completed. Please try again.");
+        setLeaving(false);
+      }
+    };
+    return mode === "admin" ? (
       <div className="account-profile">
         <div className="account-session-actions">
           <span>Signed in securely</span>
           <button
             className="text-link"
             disabled={leaving}
-            onClick={async () => {
-              setLeaving(true);
-              setError("");
-              try {
-                await signOut({ redirectUrl: "/sign-in" });
-              } catch {
-                setError("Sign-out could not be completed. Please try again.");
-                setLeaving(false);
-              }
-            }}
+            onClick={() => void handleSignOut()}
           >
             {leaving ? "Signing out…" : "Sign out"}
           </button>
         </div>
         <p role="alert">{error}</p>
-        {mode === "admin" ? (
-          <AdminPanel />
-        ) : (
-          <>
-            <CustomerDashboard />
-            <details>
-              <summary>Account security and sign-in methods</summary>
-              <UserProfile
-                routing="hash"
-                fallback={<p role="status">Loading profile controls…</p>}
-              />
-            </details>
-          </>
-        )}
+        <AdminPanel />
         <p className="account-scope">
           Saved carts and addresses use your account when storage is available.
           Enquiries require business confirmation; no online payment is
           processed.
         </p>
       </div>
+    ) : (
+      <AccountWorkspace
+        signOut={() => void handleSignOut()}
+        leaving={leaving}
+        error={error}
+        profileControls={
+          <UserProfile
+            routing="hash"
+            fallback={<p role="status">Loading profile controls…</p>}
+          />
+        }
+      />
     );
+  }
   if (recovering)
     return (
       <PasswordRecovery

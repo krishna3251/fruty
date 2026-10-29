@@ -7,7 +7,6 @@ import {
   Pause,
   Play,
   X,
-  UserRound,
 } from "lucide-react";
 import { useReducedMotion } from "framer-motion";
 import { useRoute } from "./hooks/useRoute";
@@ -49,6 +48,7 @@ import ServicePolicy from "./components/ServicePolicy";
 import InformationPage from "./components/InformationPage";
 import MobileShopCTA from "./components/MobileShopCTA";
 import { OfflineNotice } from "./components/Resilience";
+import AccountAvatar from "./components/AccountAvatar";
 const AccountPage = lazy(() => import("./components/AccountPage"));
 const LegacyFruitStore = lazy(() => import("./LegacyFruitStore"));
 function PantryQuestions() {
@@ -241,8 +241,12 @@ function PantryShell({ path }: { path: string }) {
                 : undefined
             }
           >
-            <UserRound size={18} />
-            <span>{session.status === "signed-in" ? "Account" : "Log in"}</span>
+            <AccountAvatar
+              profile={session.status === "signed-in" ? session.profile : null}
+            />
+            <span className="pantry-account-label">
+              {session.status === "signed-in" ? "Account" : "Log in"}
+            </span>
           </button>
           <button
             className="pantry-list-button"
@@ -540,7 +544,9 @@ function PantryShell({ path }: { path: string }) {
       )}
       {accountOpen && (
         <Modal title="Your account" onClose={closeAccount}>
-          <div className="login-dialog welcome-dialog">
+          <div
+            className={`login-dialog welcome-dialog ${session.status === "signed-in" ? "welcome-dialog-signed-in" : ""}`}
+          >
             <div className="welcome-photo">
               <img
                 src={brandAssets.hero}
@@ -565,16 +571,20 @@ function PantryShell({ path }: { path: string }) {
               <Suspense fallback={<p role="status">Loading sign-in…</p>}>
                 <AccountPage mode="account" />
               </Suspense>
-              <a className="text-link" href="/sign-up">
-                New here? Create an account ↗
-              </a>
-              <button className="text-link" onClick={closeAccount}>
-                Continue browsing as a guest
-              </button>
-              <p className="account-privacy">
-                Sign-in uses essential cookies.{" "}
-                <a href="/privacy">Privacy & storage</a>
-              </p>
+              {session.status !== "signed-in" && (
+                <>
+                  <a className="text-link" href="/sign-up">
+                    New here? Create an account ↗
+                  </a>
+                  <button className="text-link" onClick={closeAccount}>
+                    Continue browsing as a guest
+                  </button>
+                  <p className="account-privacy">
+                    Sign-in uses essential cookies.{" "}
+                    <a href="/privacy">Privacy & storage</a>
+                  </p>
+                </>
+              )}
             </div>
           </div>
         </Modal>

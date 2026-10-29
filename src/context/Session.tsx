@@ -8,7 +8,8 @@ import {
   type ReactNode,
 } from "react";
 import { useNotify } from "./Notifications";
-import { ClerkProvider, useAuth } from "@clerk/react";
+import { ClerkProvider, useAuth, useUser } from "@clerk/react";
+import { accountProfile, type AccountProfile } from "../lib/profile";
 import {
   clerkPublishableKey,
   validClerkPublishableKey,
@@ -17,6 +18,7 @@ type Session = {
   status: "loading" | "guest" | "signed-in" | "unavailable";
   userId: string | null;
   getToken: () => Promise<string | null>;
+  profile?: AccountProfile | null;
 };
 const guest: Session = {
   status: "unavailable",
@@ -26,6 +28,7 @@ const guest: Session = {
 export const SessionContext = createContext<Session>(guest);
 function Bridge({ children }: { children: ReactNode }) {
   const { isLoaded, isSignedIn, userId, getToken } = useAuth();
+  const { user } = useUser();
   const [slow, setSlow] = useState(false);
   const notify = useNotify();
   const previous = useRef<boolean | undefined>(undefined);
@@ -56,6 +59,7 @@ function Bridge({ children }: { children: ReactNode }) {
             : "loading",
         userId: userId || null,
         getToken,
+        profile: isSignedIn && user ? accountProfile(user) : null,
       }}
     >
       {children}
