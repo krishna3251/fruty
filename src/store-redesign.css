@@ -752,3 +752,151 @@
     transition: none;
   }
 }
+
+/* The same product film can play as a backdrop or follow the page scroll. */
+.pantry-store .cinema-hero.is-background-film {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: space-between;
+  gap: 0;
+  min-height: clamp(580px, 75svh, 800px);
+  padding: 0 6%;
+  background: #e7d4b8;
+}
+.pantry-store .cinema-hero.is-background-film .cinema-stage {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  aspect-ratio: auto;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  pointer-events: none;
+}
+.cinema-hero.is-background-film .cinema-stage::after {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  content: "";
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    #f7eedff7 0%,
+    #f7eedfe9 30%,
+    #f7eedf99 48%,
+    #f7eedf12 70%
+  );
+}
+.cinema-hero.is-background-film
+  :is(.cinema-video, .cinema-loading-poster, .cinema-error-poster) {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 65%;
+}
+.cinema-hero.is-background-film .cinema-video[controls] {
+  pointer-events: auto;
+}
+.pantry-store .cinema-hero.is-background-film .cinema-copy {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  width: min(45%, 560px);
+  padding: 58px 0 42px;
+}
+.pantry-store .cinema-hero.is-background-film .cinema-rail {
+  position: relative;
+  z-index: 3;
+  inset: auto;
+  width: 100%;
+  align-self: auto;
+  margin: 0;
+  padding: 16px 0 20px;
+  border-top: 1px solid #536e4e44;
+}
+.cinema-hero.is-background-film .cinema-playback {
+  z-index: 4;
+  right: 6%;
+  bottom: 84px;
+}
+.cinema-scroll-hint {
+  margin: 10px 0 0;
+  color: #476043;
+  font-size: 11px;
+  font-weight: 700;
+}
+.cinema-scroll-region.is-scroll-story {
+  min-height: 170svh;
+}
+.cinema-scroll-region.is-scroll-story .cinema-hero {
+  position: sticky;
+  top: var(--hero-sticky-top, 78px);
+  min-height: 0;
+  height: calc(100svh - var(--hero-sticky-top, 78px));
+}
+.owner-hero-setting {
+  display: grid;
+  gap: 10px;
+  padding: 18px;
+  border: 1px solid #d7e2d1;
+  border-radius: 10px;
+  background: #f2f6ed;
+}
+.owner-hero-setting h4,
+.owner-hero-setting p {
+  margin: 0;
+}
+.owner-hero-setting p {
+  color: #52664c;
+  font-size: 12px;
+  line-height: 1.6;
+}
+@media (max-width: 767px), (max-height: 759px) {
+  .cinema-scroll-region.is-scroll-story {
+    min-height: 0;
+  }
+  .cinema-scroll-region.is-scroll-story .cinema-hero {
+    position: relative;
+    top: 0;
+    height: auto;
+  }
+}
+@media (max-width: 767px) {
+  .pantry-store .cinema-hero.is-background-film {
+    min-height: 720px;
+    padding: 0 5%;
+  }
+  .cinema-hero.is-background-film .cinema-stage::after {
+    background: linear-gradient(
+      180deg,
+      #f8f0e3f7 0%,
+      #f8f0e3ee 42%,
+      #f8f0e395 64%,
+      #f8f0e355 100%
+    );
+  }
+  .cinema-hero.is-background-film
+    :is(.cinema-video, .cinema-loading-poster, .cinema-error-poster) {
+    object-position: center 68%;
+  }
+  .pantry-store .cinema-hero.is-background-film .cinema-copy {
+    flex: 1;
+    align-items: flex-start;
+    width: 100%;
+    padding: 38px 0 125px;
+  }
+  .pantry-store .cinema-hero.is-background-film .cinema-copy p {
+    max-width: 330px;
+  }
+  .pantry-store .cinema-hero.is-background-film .cinema-rail {
+    margin: 0;
+    width: 100%;
+  }
+  .cinema-hero.is-background-film .cinema-playback {
+    right: 5%;
+    bottom: 75px;
+  }
+}

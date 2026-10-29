@@ -1818,6 +1818,7 @@ test("owner enquiry and settings interfaces submit authenticated, revision-check
     if (body.action === "load")
       return Response.json({ settings: businessDefaults, version: 2 });
     assert.equal(body.version, 2);
+    assert.equal(body.settings.heroVideoMode, "scroll");
     settingsSaved = true;
     return Response.json({ settings: body.settings, version: 3 });
   };
@@ -1857,6 +1858,9 @@ test("owner enquiry and settings interfaces submit authenticated, revision-check
     );
     const hours = await screen.findByLabelText("Business hours");
     fireEvent.change(hours, { target: { value: "Owner verified hours" } });
+    fireEvent.change(screen.getByLabelText("Video style"), {
+      target: { value: "scroll" },
+    });
     fireEvent.submit(
       screen
         .getByRole("button", { name: "Save business settings" })
@@ -2159,4 +2163,109 @@ test("guest cart removal stays removed when an older tab replays legacy storage 
   cleanup();
   localStorage.clear();
   window.history.replaceState({}, "", "/");
+});
+
+test("owner-selected scroll hero seeks in both directions and falls back on smaller screens", async () => {
+  const { default: CinematicHero } =
+    await import("../src/components/CinematicHero.tsx");
+  const { BusinessContext } = await import("../src/context/Business.tsx");
+  const { businessDefaults } = await import("../src/lib/business.ts");
+  const originalMedia = window.matchMedia;
+  const proto = window.HTMLMediaElement.prototype;
+  const originalPlay = proto.play;
+  const originalPause = proto.pause;
+  proto.play = () => Promise.resolve();
+  proto.pause = () => {};
+  window.matchMedia = (query) => ({
+    ...originalMedia(query),
+    matches: query.includes("min-width"),
+  });
+  const renderHero = () =>
+    render(
+      React.createElement(
+        BusinessContext.Provider,
+        { value: { ...businessDefaults, heroVideoMode: "scroll" } },
+        React.createElement(CinematicHero),
+      ),
+    );
+  try {
+    renderHero();
+    const media = document.querySelector<HTMLVideoElement>(".cinema-video")!;
+    const region = document.querySelector<HTMLElement>(
+      ".cinema-scroll-region",
+    )!;
+    const hero = document.querySelector<HTMLElement>(".cinema-hero")!;
+    let top = 78;
+    let time = 0;
+    Object.defineProperty(region, "offsetHeight", {
+      configurable: true,
+      value: 1600,
+    });
+    Object.defineProperty(hero, "offsetHeight", {
+      configurable: true,
+      value: 800,
+    });
+    region.getBoundingClientRect = () => ({ top }) as DOMRect;
+    Object.defineProperty(media, "readyState", {
+      configurable: true,
+      value: 2,
+    });
+    Object.defineProperty(media, "duration", { configurable: true, value: 10 });
+    Object.defineProperty(media, "seeking", {
+      configurable: true,
+      value: false,
+    });
+    Object.defineProperty(media, "currentTime", {
+      configurable: true,
+      get: () => time,
+      set: (value: number) => {
+        time = value;
+      },
+    });
+    fireEvent.loadedData(media);
+    assert.equal(hero.dataset.mode, "scroll");
+    assert.equal(media.autoplay, false);
+    assert.equal(media.controls, false);
+    top = -722;
+    fireEvent.scroll(window);
+    await waitFor(() => assert.ok(time > 9.9));
+    top = 78;
+    fireEvent.scroll(window);
+    await waitFor(() => assert.equal(time, 0));
+    assert.ok(screen.getByRole("link", { name: "Shop our pickles" }));
+    cleanup();
+
+    window.matchMedia = (query) => ({
+      ...originalMedia(query),
+      matches: false,
+    });
+    renderHero();
+    assert.equal(
+      document.querySelector(".cinema-hero")?.getAttribute("data-mode"),
+      "autoplay",
+    );
+    assert.equal(document.querySelector<HTMLVideoElement>("video")?.loop, true);
+    cleanup();
+
+    window.matchMedia = (query) => ({
+      ...originalMedia(query),
+      matches:
+        query.includes("prefers-reduced-motion") || query.includes("min-width"),
+    });
+    renderHero();
+    assert.equal(
+      document.querySelector(".cinema-hero")?.getAttribute("data-mode"),
+      "manual",
+    );
+    assert.equal(
+      document.querySelector<HTMLVideoElement>("video")?.autoplay,
+      false,
+    );
+    assert.equal(screen.queryByText("Preparing your jar story…"), null);
+  } finally {
+    cleanup();
+    window.matchMedia = originalMedia;
+    proto.play = originalPlay;
+    proto.pause = originalPause;
+  }
 });
