@@ -67,7 +67,7 @@ export default function AccountPage({ mode }: { mode: AccountMode }) {
   const session = useSession();
   return (
     <section
-      className={`account-page section-pad ${mode === "admin" ? "admin-page" : ""}`}
+      className={`account-page section-pad ${mode === "admin" ? "admin-page" : ""} ${mode !== "admin" && session.status === "signed-in" ? "account-page-signed-in" : ""}`}
     >
       <div className="account-intro">
         <span className="eyebrow">TROPICAL FEAST / YOUR ACCOUNT</span>
