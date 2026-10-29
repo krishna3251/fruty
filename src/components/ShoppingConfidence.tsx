@@ -1,9 +1,6 @@
-import { useBusiness } from "../context/Business";
 import { MapPin, Truck, MessageCircle, ArrowUpRight } from "lucide-react";
-import { enquiryWhatsApp } from "../lib/contact";
 
 export default function ShoppingConfidence() {
-  const business = useBusiness();
   return (
     <section
       className="shopping-confidence section-pad"
@@ -12,36 +9,26 @@ export default function ShoppingConfidence() {
       <div>
         <MapPin size={21} />
         <span>
-          <strong>Hyderabad, this one’s for you.</strong>
-          <small>Tropical Feast enquiries in Hyderabad only.</small>
+          <strong>Hyderabad enquiries</strong>
+          <small>Check delivery coverage with us.</small>
         </span>
       </div>
       <div>
         <Truck size={21} />
         <span>
-          <strong>₹150 standard delivery. One order, one fee.</strong>
-          <small>
-            Standard delivery is ₹150 per order. Confirm coverage and timing on
-            WhatsApp.
-          </small>
+          <strong>₹150 standard delivery</strong>
+          <small>Per order, not per jar.</small>
         </span>
       </div>
       <div>
         <MessageCircle size={21} />
         <span>
-          <strong>A real conversation before you order.</strong>
-          <small>Browse as a guest. Confirm stock & delivery in chat.</small>
+          <strong>Order with a conversation</strong>
+          <small>Send your cart by WhatsApp or email.</small>
         </span>
       </div>
-      <a
-        href={enquiryWhatsApp(
-          "Hello! I’m in Hyderabad. Can you confirm delivery availability, timing, jar sizes and ingredients/allergens before I order?",
-          `https://wa.me/${business.whatsapp}`,
-        )!}
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        Ask about delivery <ArrowUpRight size={16} />
+      <a href="/shipping">
+        Delivery details <ArrowUpRight size={16} />
       </a>
     </section>
   );

@@ -1,16 +1,8 @@
-import {
-  lazy,
-  Suspense,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { lazy, Suspense, useCallback, useEffect, useState } from "react";
 import {
   ArrowRight,
   ArrowUpRight,
   ShoppingBag,
-  Leaf,
   Menu,
   Pause,
   Play,
@@ -19,13 +11,12 @@ import {
 } from "lucide-react";
 import { useReducedMotion } from "framer-motion";
 import { useRoute } from "./hooks/useRoute";
-import { usePantryMotion } from "./hooks/usePantryMotion";
 import {
   pickleCollections,
   brandAssets,
   retiredPickleRoutes,
 } from "./data/pickles";
-import { products as archivedFruit } from "./data/products";
+import { products as archivedFruit, money } from "./data/products";
 import { CatalogueProvider, useCatalogue } from "./context/Catalogue";
 import {
   PickleSelectionProvider,
@@ -99,8 +90,8 @@ function PantryQuestions() {
             "Confirm delivery availability and timing for your Hyderabad location before ordering. We do not show an estimated arrival date until the supplier has confirmed it.",
           ],
           [
-            "What images are shown?",
-            "The homepage, logo and both product images were supplied by the owner. Product images do not replace an ingredient list; confirm ingredients, allergens, jar size and availability before ordering.",
+            "Do I need an account to shop?",
+            "No. Browse and send an enquiry as a guest, or sign in if you would like to use the account features.",
           ],
         ].map(([title, text]) => (
           <details key={title}>
@@ -117,7 +108,6 @@ function PantryQuestions() {
 }
 function PantryShell({ path }: { path: string }) {
   const business = useBusiness();
-  const root = useRef<HTMLDivElement>(null);
   const [menu, setMenu] = useState(false);
   const {
     products: pickleProducts,
@@ -161,7 +151,6 @@ function PantryShell({ path }: { path: string }) {
     );
   const closeList = useCallback(() => setListOpen(false), []);
   const closeCheckout = useCallback(() => setCheckoutOpen(false), []);
-  usePantryMotion(root, path, paused || !!reduced);
   useEffect(() => {
     setMenu(false);
     setListOpen(false);
@@ -184,21 +173,16 @@ function PantryShell({ path }: { path: string }) {
   const catalogue = ["/shop", "/pickles"].includes(path);
   const home = path === "/";
   return (
-    <div
-      ref={root}
-      className={`storefront pantry-store ${paused ? "motion-paused" : ""}`}
-    >
+    <div className={`storefront pantry-store ${paused ? "motion-paused" : ""}`}>
       <PageMetadata path={path} />
       <OfflineNotice />
       <a className="skip-link" href="#pantry-main">
         Skip to content
       </a>
-      {!home && (
-        <div className="pantry-announcement">
-          <span>THE PICKLE PANTRY</span>
-          <span>Pick your next jar. Tropical Feast.</span>
-        </div>
-      )}
+      <div className="pantry-announcement">
+        <span>THE TROPICAL FEAST PANTRY</span>
+        <span>HYDERABAD · ₹150 STANDARD DELIVERY PER ORDER</span>
+      </div>
       <header className="pantry-header">
         <a href="/" className="pantry-logo" aria-label="Tropical Feast home">
           <img
@@ -226,9 +210,6 @@ function PantryShell({ path }: { path: string }) {
           <a href="/#collections" onClick={() => setMenu(false)}>
             Our flavours
           </a>
-          <a href="/#jar-lab" onClick={() => setMenu(false)}>
-            Jar Lab
-          </a>
           <a href="/#pantry-story" onClick={() => setMenu(false)}>
             Our story
           </a>
@@ -238,6 +219,9 @@ function PantryShell({ path }: { path: string }) {
             onClick={() => setMenu(false)}
           >
             How to order
+          </a>
+          <a href="/contact" onClick={() => setMenu(false)}>
+            Contact us
           </a>
         </nav>
         <div className="pantry-tools">
@@ -295,37 +279,8 @@ function PantryShell({ path }: { path: string }) {
         {home ? (
           <>
             <CinematicHero paused={paused} />
-            <div className="pantry-editorial-strip">
-              <span>
-                <Leaf size={17} /> A fresh perspective on pickles
-              </span>
-              <i aria-hidden="true">✳</i>
-              <span>Pineapple Pickle</span>
-              <i aria-hidden="true">✳</i>
-              <span>Cucumber Pickle</span>
-            </div>
             <ShoppingConfidence />
-            <PickleHome paused={paused} />
-            <section className="pantry-story section-pad" id="pantry-story">
-              <span className="eyebrow">THE TROPICAL FEAST STORY</span>
-              <h2>
-                Good food.
-                <br />
-                <em>A little more character.</em>
-              </h2>
-              <p>
-                Two pickle flavours, thoughtfully presented: golden pineapple
-                and green cucumber. Explore the pair and choose your next jar.
-              </p>
-              <p>
-                Tropical Feast brings both flavours together with the supplied
-                crisp, spicy and tangy descriptors. Confirm the product details
-                before ordering.
-              </p>
-              <a href="/shop" className="text-link">
-                Explore the pantry <ArrowUpRight size={17} />
-              </a>
-            </section>
+            <PickleHome />
             <PantryQuestions />
             {siteConfig.newsletterEndpoint && (
               <section className="newsletter section-pad pantry-newsletter">
@@ -385,30 +340,29 @@ function PantryShell({ path }: { path: string }) {
                 <span>/</span>
                 <span>How to order</span>
               </nav>
-              <span className="eyebrow">FROM DISCOVERY TO ENQUIRY</span>
+              <span className="eyebrow">ORDERING WITH TROPICAL FEAST</span>
               <h1>
-                Find your jar.
+                How to order.
                 <br />
-                <em>Ask the right questions.</em>
+                <em>It’s easy.</em>
               </h1>
               <p>
-                Choose pineapple, cucumber or both. Build your cart, then
-                confirm the details with Tropical Feast before ordering.
+                Choose your favourite jars, review your cart and send us an
+                enquiry. We’ll confirm the details with you before ordering.
               </p>
               <ol>
                 <li>
-                  <strong>Explore.</strong> Read the flavour and product
-                  details.
+                  <strong>Choose your pickles.</strong> Browse the flavours and
+                  add your favourites to the cart.
                 </li>
                 <li>
-                  <strong>Add to cart.</strong> Review products, jar sizes and
-                  the ₹150 standard delivery charge.
+                  <strong>Review your cart.</strong> Check your jars, quantities
+                  and the ₹150 standard delivery charge.
                 </li>
                 <li>
-                  <strong>Enquire.</strong> Open your cart and send the draft on
-                  WhatsApp or email. You can also add delivery details in the
-                  optional checkout. The seller confirms stock, coverage and
-                  payment arrangements.
+                  <strong>Send your enquiry.</strong> Open WhatsApp or email
+                  from your cart. The seller confirms stock, delivery coverage
+                  and payment arrangements.
                 </li>
               </ol>
               <div
@@ -425,7 +379,10 @@ function PantryShell({ path }: { path: string }) {
                     />
                     <span>
                       {p.name}
-                      <small>₹{p.price} · Tropical Feast</small>
+                      <small>
+                        {p.price === null ? "Price on enquiry" : money(p.price)}{" "}
+                        · {p.jarSize || "Size to confirm"}
+                      </small>
                     </span>
                     <ArrowUpRight size={18} />
                   </a>
@@ -497,7 +454,6 @@ function PantryShell({ path }: { path: string }) {
             <a href="/shop">All pickles</a>
             <a href="/#pantry-story">Our story</a>
             <a href="/#questions">FAQs</a>
-            <a href="/#jar-lab">Play in the Jar Lab</a>
             <a href="/products/tropical-pineapple-pickle">Pineapple Pickle</a>
             <a href="/products/tropical-cucumber-pickle">Cucumber Pickle</a>
           </div>
@@ -560,13 +516,16 @@ function PantryShell({ path }: { path: string }) {
         <div className="pantry-footer-bottom">
           <span>© {new Date().getFullYear()} Tropical Feast</span>
           <span>WhatsApp-first · orders confirmed by the business</span>
-          <span>Product and brand images supplied by the owner</span>
+          <span>Pineapple & cucumber pickles · Hyderabad</span>
         </div>
       </footer>
-      <PrivacyControls path={path} blocked={listOpen || accountOpen || menu} />
+      <PrivacyControls
+        path={path}
+        blocked={listOpen || checkoutOpen || accountOpen || menu}
+      />
       <MobileShopCTA
         path={path}
-        blocked={listOpen || accountOpen || path === "/admin"}
+        blocked={listOpen || checkoutOpen || accountOpen || path === "/admin"}
       />
       {!reduced && (
         <button

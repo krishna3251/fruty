@@ -52,8 +52,8 @@ export default function ProductGallery({
             </button>
           </div>
           <p className="product-photo-caption">
-            Owner-supplied product photo. Read the product details and confirm
-            ingredients and jar size before ordering.
+            Read the product details and confirm ingredients and jar size before
+            ordering.
           </p>
         </Modal>
       )}

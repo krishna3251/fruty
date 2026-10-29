@@ -1,5 +1,4 @@
 import ProductGallery from "./ProductGallery";
-import JarLab from "./JarLab";
 import ShoppingConfidence from "./ShoppingConfidence";
 import { useCatalogue } from "../context/Catalogue";
 import { useBusiness } from "../context/Business";
@@ -12,6 +11,8 @@ import {
   Search,
   Leaf,
   ShoppingBag,
+  MessageCircle,
+  ClipboardList,
   Check,
 } from "lucide-react";
 import {
@@ -156,6 +157,7 @@ function PickleCard({ product: p }: { product: PickleProduct }) {
           <span className="product-colour-dot" aria-hidden="true" />
         </div>
         <p className="pickle-descriptors">{p.flavourDescriptors.join(" · ")}</p>
+        <p className="pickle-card-description">{p.description}</p>
         <div className="product-card-price">
           <strong>
             {p.price === null ? "Price on enquiry" : money(p.price)}
@@ -223,48 +225,6 @@ function PairPick() {
   );
 }
 
-function FlavourFeature({
-  product: p,
-  index,
-}: {
-  product: PickleProduct;
-  index: number;
-}) {
-  return (
-    <section
-      className={`pickle-feature flavour-feature ${index === 0 ? "is-pineapple" : "is-cucumber"}`}
-      aria-labelledby={`${p.id}-feature-title`}
-    >
-      <div className="pickle-feature-copy">
-        <span className="eyebrow">0{index + 1} / TROPICAL FEAST</span>
-        <h2 id={`${p.id}-feature-title`}>{p.name}</h2>
-        <p className="pickle-feature-headline">
-          {index === 0
-            ? "A golden kind of tang."
-            : "A fresh-looking green favourite."}
-        </p>
-        <p>{p.description}</p>
-        <span className="pickle-descriptors">
-          {p.flavourDescriptors.join(" · ")}
-        </span>
-        <a className="button primary" href={`/products/${p.id}`}>
-          Discover {p.name.toLowerCase()} <ArrowUpRight size={18} />
-        </a>
-      </div>
-      <div className="pickle-feature-jars flavour-feature-image">
-        <a href={`/products/${p.id}`} aria-label={`Discover ${p.name}`}>
-          <FruitImage
-            src={p.image}
-            alt={p.imageAlt}
-            width="1200"
-            height="800"
-            loading="lazy"
-          />
-        </a>
-      </div>
-    </section>
-  );
-}
 export function PickleCraft() {
   return (
     <section className="pickle-craft section-pad">
@@ -367,18 +327,61 @@ export function TropicalOrdering({
     </section>
   );
 }
-export function PickleHome({ paused = false }: { paused?: boolean }) {
+function ShoppingSteps() {
+  return (
+    <section
+      className="shopping-steps section-pad"
+      aria-labelledby="shopping-steps-title"
+    >
+      <div className="shopping-steps-intro">
+        <span className="eyebrow">SIMPLE FROM START TO FINISH</span>
+        <h2 id="shopping-steps-title">Your next jar in three steps.</h2>
+        <p>Choose what you love and we’ll take it from there, together.</p>
+        <a className="text-link" href="/ordering">
+          Read the ordering guide <ArrowUpRight size={16} />
+        </a>
+      </div>
+      <ol className="shopping-step-list">
+        <li>
+          <span className="shopping-step-number">01</span>
+          <ShoppingBag size={21} aria-hidden="true" />
+          <h3>Choose your pickles</h3>
+          <p>Explore the flavours and add your favourites to the cart.</p>
+        </li>
+        <li>
+          <span className="shopping-step-number">02</span>
+          <ClipboardList size={21} aria-hidden="true" />
+          <h3>Review your cart</h3>
+          <p>Check your jars, quantities and the delivery estimate.</p>
+        </li>
+        <li>
+          <span className="shopping-step-number">03</span>
+          <MessageCircle size={21} aria-hidden="true" />
+          <h3>Send your enquiry</h3>
+          <p>Open WhatsApp or email and confirm the details with us.</p>
+        </li>
+      </ol>
+    </section>
+  );
+}
+
+export function PickleHome() {
   const { products: pickleProducts } = useCatalogue();
   return (
     <div className="pickle-home" id="collections">
       <section className="section-pad homepage-picks" id="pickle-grid">
         <div className="section-heading">
           <div>
-            <span className="eyebrow">YOUR NEXT MEAL’S PLUS ONE</span>
-            <h2>Pick your flavour.</h2>
+            <span className="eyebrow">THE TROPICAL FEAST COLLECTION</span>
+            <h2>Meet the pickles.</h2>
+            <p>
+              {pickleProducts.length === 2
+                ? "Two flavours. Pick one, or make room for both."
+                : "Explore the flavours and find your favourite."}
+            </p>
           </div>
           <a className="text-link" href="/shop">
-            Explore the pantry <ArrowUpRight size={16} />
+            View all pickles <ArrowUpRight size={16} />
           </a>
         </div>
         <div className="pickle-grid">
@@ -388,29 +391,30 @@ export function PickleHome({ paused = false }: { paused?: boolean }) {
         </div>
         <PairPick />
       </section>
-      <JarLab paused={paused} />
-      <div className="pickle-intro section-pad">
-        <span className="eyebrow">A LITTLE MORE CHARACTER</span>
-        <h2>
-          Good food.
-          <br />
-          <em>Great company.</em>
-        </h2>
-        <p>
-          Meet the original Tropical Feast pair: golden pineapple and green
-          cucumber.
-        </p>
-      </div>
-      {pickleProducts
-        .filter((p) =>
-          ["tropical-pineapple-pickle", "tropical-cucumber-pickle"].includes(
-            p.id,
-          ),
-        )
-        .map((p, i) => (
-          <FlavourFeature key={p.id} product={p} index={i} />
-        ))}
-      <TropicalOrdering />
+      <ShoppingSteps />
+      <section className="store-story section-pad" id="pantry-story">
+        <div className="store-story-photo">
+          <FruitImage
+            src={brandAssets.hero}
+            alt="Tropical Feast pineapple and cucumber pickle jars together"
+            width="1254"
+            height="1254"
+            loading="lazy"
+          />
+        </div>
+        <div className="store-story-copy">
+          <span className="eyebrow">A LITTLE ABOUT TROPICAL FEAST</span>
+          <h2>A little tang for the table.</h2>
+          <p>
+            Tropical Feast brings together two distinctive pickle flavours:
+            golden pineapple and green cucumber. Discover the one you’d love to
+            have with your next meal.
+          </p>
+          <a className="button primary" href="/shop">
+            Explore the flavours <ArrowUpRight size={17} />
+          </a>
+        </div>
+      </section>
     </div>
   );
 }
@@ -450,8 +454,8 @@ export function PickleCatalogue({
               : "Two flavours. Your pick."}
         </h1>
         <p>
-          Explore Pineapple Pickle and Cucumber Pickle. Two distinctive
-          flavours, one Tropical Feast: crisp, spicy and tangy.
+          Discover crisp, spicy and tangy pickle flavours. Choose your jars and
+          send your cart to us on WhatsApp or email.
         </p>
       </div>
       <section
@@ -546,7 +550,6 @@ export function PickleProductPage({ product: p }: { product: PickleProduct }) {
       <section className="pickle-detail section-pad">
         <figure className="pickle-detail-image">
           <ProductGallery product={p} />
-          <figcaption>Product image supplied by the owner</figcaption>
         </figure>
         <div className="pickle-detail-copy">
           <span className="eyebrow">{c.name}</span>
@@ -555,17 +558,21 @@ export function PickleProductPage({ product: p }: { product: PickleProduct }) {
           <p className="pickle-descriptors">
             {p.flavourDescriptors.join(" · ")}
           </p>
+          <div className="pickle-detail-buy">
+            <p className="pickle-detail-price">
+              <strong>
+                {p.price === null ? "Price on enquiry" : money(p.price)}
+              </strong>
+              <span>{p.jarSize || "Size to confirm"} / jar</span>
+            </p>
+            <p className="delivery-note">{DELIVERY_NOTICE}</p>
+            <SavePickle product={p} detail />
+            <p className="pickle-buy-hint">
+              Review your cart and enquire by WhatsApp or email. No online
+              payment is taken here.
+            </p>
+          </div>
           <dl className="pickle-facts">
-            <div>
-              <dt>Price (INR)</dt>
-              <dd>
-                {p.price === null ? "Awaiting confirmation" : money(p.price)}
-              </dd>
-            </div>
-            <div>
-              <dt>Jar size</dt>
-              <dd>{p.jarSize || "Awaiting confirmation"}</dd>
-            </div>
             <div>
               <dt>Ingredients & allergens</dt>
               <dd>
@@ -592,12 +599,6 @@ export function PickleProductPage({ product: p }: { product: PickleProduct }) {
               <dd>WhatsApp or email enquiry</dd>
             </div>
           </dl>
-          <p className="pickle-disclosure">
-            Add your chosen flavour to your cart, then confirm the details
-            before ordering. No order or payment is processed here.
-          </p>
-          <p className="delivery-note">{DELIVERY_NOTICE} Hyderabad only.</p>
-          <SavePickle product={p} detail />
           <a
             className="text-link pickle-detail-enquiry"
             href="#tropical-ordering"
